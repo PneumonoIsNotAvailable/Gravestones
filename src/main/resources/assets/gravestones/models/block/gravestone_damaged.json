@@ -1,0 +1,6 @@
+{
+	"parent": "gravestones:block/gravestone",
+	"textures": {
+		"1": "gravestones:block/gravestone_damaged"
+	}
+}

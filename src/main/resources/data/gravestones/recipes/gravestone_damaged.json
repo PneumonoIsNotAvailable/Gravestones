@@ -1,0 +1,9 @@
+{
+    "type": "minecraft:smelting",
+    "category": "blocks",
+    "ingredient": {
+        "item": "gravestones:gravestone_chipped"
+    },
+    "result": "gravestones:gravestone_damaged",
+    "experience": 0.25
+}

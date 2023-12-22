@@ -1,0 +1,36 @@
+{
+    "block.gravestones.gravestone_default": "Gravestone",
+    "block.gravestones.gravestone_chipped": "Chipped Gravestone",
+    "block.gravestones.gravestone_damaged": "Damaged Gravestone",
+    "block.gravestones.gravestone_technical": "Technical Gravestone",
+
+    "gravestones.cannot_open_wrong_player": "This gravestone can only be interacted with by it's owner, %s!",
+    "gravestones.cannot_open_no_owner": "This gravestone has no owner!",
+    "gravestones.player_collected_grave": "%s has found their grave!",
+    "gravestones.player_collected_grave_at_coords": "%1$s has found their grave at %2$s!",
+    "gravestones.grave_spawned": "%1$s's grave is at %2$s",
+
+    "entity.gravestones.gravestone_skeleton": "Gravestone Skeleton",
+
+    "stat.gravestones.gravestones_collected": "Gravestones Collected",
+
+    "gravestones.configs_screen.title": "Gravestones Configs",
+    "gravestones.configs.gravestones_decay_with_time" : "Time decay",
+    "gravestones.configs.gravestones_decay_with_time.tooltip" : "Whether or not gravestones are damaged over time",
+    "gravestones.configs.gravestones_decay_with_deaths" : "Death decay",
+    "gravestones.configs.gravestones_decay_with_deaths.tooltip" : "Whether or not gravestones are damaged from further deaths",
+    "gravestones.configs.gravestone_decay_time_hours" : "Time to decay",
+    "gravestones.configs.gravestone_decay_time_hours.tooltip" : "The amount of time (in hours) it takes for gravestones to be damaged by time (if enabled)",
+    "gravestones.configs.gravestone_accessible_owner_only" : "Owner-only access",
+    "gravestones.configs.gravestone_accessible_owner_only.tooltip" : "Whether or not only the owner of a grave is able to access its items",
+    "gravestones.configs.spawn_gravestone_skeletons" : "Spawn Skeletons",
+    "gravestones.configs.spawn_gravestone_skeletons.tooltip" : "Whether or not gravestones spawn skeletons when their owner is near",
+    "gravestones.configs.broadcast_collect_in_chat" : "Broadcast collection",
+    "gravestones.configs.broadcast_collect_in_chat.tooltip" : "Whether or not the collection of graves is broadcasted in chat",
+    "gravestones.configs.broadcast_coordinates_in_chat" : "Broadcast coordinates",
+    "gravestones.configs.broadcast_coordinates_in_chat.tooltip" : "Whether or not the coordinates of placed graves are broadcasted in chat",
+    "gravestones.configs.gravestone_console_info" : "Console info",
+    "gravestones.configs.gravestone_console_info.tooltip" : "Whether or not detailed information about graves is recorded in console",
+    "gravestones.configs.time_format" : "Time format",
+    "gravestones.configs.time_format.tooltip" : "Time format"
+}

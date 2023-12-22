@@ -1,0 +1,8 @@
+{
+	"replace": false,
+  	"values": [
+		"gravestones:gravestone_default",
+		"gravestones:gravestone_chipped",
+		"gravestones:gravestone_damaged"
+	]
+}
