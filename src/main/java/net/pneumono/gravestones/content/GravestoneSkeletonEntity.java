@@ -11,7 +11,7 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     }
 
     public GravestoneSkeletonEntity(World world) {
-        super(ModEntities.GRAVESTONE_SKELETON_ENTITY_TYPE, world);
+        super(ModContent.GRAVESTONE_SKELETON_ENTITY_TYPE, world);
     }
 
     @Override

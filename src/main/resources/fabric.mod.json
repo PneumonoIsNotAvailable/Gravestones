@@ -2,12 +2,14 @@
 	"schemaVersion": 1,
 	"id": "gravestones",
 	"version": "${version}",
-	"name": "Pneumono's Gravestones",
+	"name": "Gravestones",
 	"description": "Adds Gravestones that store items after death.",
 	"authors": [
 		"Pneumono_"
 	],
-	"contact": {},
+	"contact": {
+		"sources": "https://github.com/PneumonoIsNotAvailable/Gravestones"
+	},
 	"license": "MIT License",
 	"icon": "assets/gravestones/icon.png",
 	"environment": "*",

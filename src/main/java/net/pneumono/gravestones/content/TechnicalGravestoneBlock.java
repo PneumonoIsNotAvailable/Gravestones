@@ -154,7 +154,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (state.isOf(ModBlocks.GRAVESTONE_TECHNICAL) && !world.isClient()) {
+        if (state.isOf(ModContent.GRAVESTONE_TECHNICAL) && !world.isClient()) {
             if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone) {
                 GameProfile graveOwner = gravestone.getGraveOwner();
                 if (Objects.equals(graveOwner, player.getGameProfile()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
@@ -206,6 +206,6 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, ModBlocks.GRAVESTONE, GravestoneBlockEntity::tick);
+        return validateTicker(type, ModContent.GRAVESTONE, GravestoneBlockEntity::tick);
     }
 }

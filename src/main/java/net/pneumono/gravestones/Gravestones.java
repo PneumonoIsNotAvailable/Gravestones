@@ -25,8 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pneumono.gravestones.content.ModBlocks;
-import net.pneumono.gravestones.content.ModEntities;
+import net.pneumono.gravestones.content.ModContent;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneData;
 import net.pneumono.gravestones.gravestones.GravestonePosition;
@@ -66,21 +65,20 @@ public class Gravestones implements ModInitializer {
 		LOGGER.info("Initializing Gravestones");
 		Configs.reload(MOD_ID);
 
-		ModBlocks.registerModBlocks();
-		ModEntities.registerModEntities();
+		ModContent.registerModContent();
 		registerCommands();
 
 		Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
 		Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
 
 		addToVanillaGroup(ItemGroups.BUILDING_BLOCKS,
-				ModBlocks.GRAVESTONE_DEFAULT,
-				ModBlocks.GRAVESTONE_CHIPPED,
-				ModBlocks.GRAVESTONE_DAMAGED
+				ModContent.GRAVESTONE_DEFAULT,
+				ModContent.GRAVESTONE_CHIPPED,
+				ModContent.GRAVESTONE_DAMAGED
 		);
 
 		addToVanillaGroup(ItemGroups.OPERATOR,
-				ModBlocks.GRAVESTONE_TECHNICAL
+				ModContent.GRAVESTONE_TECHNICAL
 		);
 	}
 
@@ -105,7 +103,7 @@ public class Gravestones implements ModInitializer {
 
 								if (world.getBlockState(pos).isIn(AESTHETIC_GRAVESTONES)) {
 									context.getSource().sendMessage(Text.literal("Haha, see what you did there. No gravestone *with gravestone data* at that position!").formatted(Formatting.RED));
-								} else if (!(world.getBlockState(pos).isOf(ModBlocks.GRAVESTONE_TECHNICAL))) {
+								} else if (!(world.getBlockState(pos).isOf(ModContent.GRAVESTONE_TECHNICAL))) {
 									context.getSource().sendMessage(Text.literal("No gravestone at that position!").formatted(Formatting.RED));
 								} else if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity entity){
 									GameProfile owner = entity.getGraveOwner();

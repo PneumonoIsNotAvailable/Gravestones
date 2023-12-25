@@ -24,7 +24,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
-import net.pneumono.gravestones.content.ModBlocks;
+import net.pneumono.gravestones.content.ModContent;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +39,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     private String spawnDate;
 
     public GravestoneBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocks.GRAVESTONE, pos, state);
+        super(ModContent.GRAVESTONE, pos, state);
     }
 
     public void setGraveOwner(GameProfile graveOwner) {
