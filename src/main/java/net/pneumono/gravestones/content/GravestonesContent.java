@@ -12,7 +12,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
@@ -26,13 +25,13 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 
 public class GravestonesContent {
-    public static final Block GRAVESTONE_TECHNICAL = registerBlockWithoutItem("gravestone_technical",
+    public static final Block GRAVESTONE_TECHNICAL = registerTechnicalGravestone(
             new TechnicalGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(-1.0F, 3600000.0F).nonOpaque()));
-    public static final Block GRAVESTONE_DEFAULT = registerBlock("gravestone_default",
+    public static final Block GRAVESTONE_DEFAULT = registerAestheticGravestone("gravestone_default",
             new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
-    public static final Block GRAVESTONE_CHIPPED = registerBlock("gravestone_chipped",
+    public static final Block GRAVESTONE_CHIPPED = registerAestheticGravestone("gravestone_chipped",
             new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
-    public static final Block GRAVESTONE_DAMAGED = registerBlock("gravestone_damaged",
+    public static final Block GRAVESTONE_DAMAGED = registerAestheticGravestone("gravestone_damaged",
             new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
 
     public static final TagKey<Block> TAG_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, new Identifier(Gravestones.MOD_ID, "gravestone_irreplaceable"));
@@ -52,18 +51,13 @@ public class GravestonesContent {
                     .build()
     );
 
-    private static Block registerBlockWithoutItem(String name, Block block) {
-        return Registry.register(Registries.BLOCK, new Identifier(Gravestones.MOD_ID, name), block);
+    private static Block registerTechnicalGravestone(Block block) {
+        return Registry.register(Registries.BLOCK, new Identifier(Gravestones.MOD_ID, "gravestone_technical"), block);
     }
 
-    private static Block registerBlock(String name, Block block) {
-        registerBlockItem(name, block);
+    private static Block registerAestheticGravestone(String name, Block block) {
+        Registry.register(Registries.ITEM, new Identifier(Gravestones.MOD_ID, name), new AestheticGravestoneBlockItem(block, new FabricItemSettings()));
         return Registry.register(Registries.BLOCK, new Identifier(Gravestones.MOD_ID, name), block);
-    }
-
-    private static void registerBlockItem(String name, Block block) {
-        Registry.register(Registries.ITEM, new Identifier(Gravestones.MOD_ID, name),
-                new BlockItem(block, new FabricItemSettings()));
     }
 
     private static void addToFunctionalGroup(ItemConvertible... items) {

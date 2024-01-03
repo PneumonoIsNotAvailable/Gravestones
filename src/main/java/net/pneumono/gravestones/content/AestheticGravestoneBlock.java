@@ -6,6 +6,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -20,6 +21,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.pneumono.gravestones.Gravestones;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -133,5 +135,10 @@ public class AestheticGravestoneBlock extends Block implements Waterloggable {
         }
 
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+    }
+
+    @Override
+    public boolean isEnabled(FeatureSet enabledFeatures) {
+        return Gravestones.AESTHETIC_GRAVESTONES.getValue() && super.isEnabled(enabledFeatures);
     }
 }
