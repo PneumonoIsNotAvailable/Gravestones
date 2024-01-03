@@ -40,7 +40,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "gravestones:gravestone_default"
+        "recipe": "gravestones:gravestone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -54,7 +54,7 @@
   ],
   "rewards": {
     "recipes": [
-      "gravestones:gravestone_default"
+      "gravestones:gravestone"
     ]
   },
   "sends_telemetry_event": false

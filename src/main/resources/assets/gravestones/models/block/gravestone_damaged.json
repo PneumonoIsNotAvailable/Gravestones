@@ -1,5 +1,5 @@
 {
-	"parent": "gravestones:block/gravestone",
+	"parent": "gravestones:block/gravestone_template",
 	"textures": {
 		"1": "gravestones:block/gravestone_damaged"
 	}

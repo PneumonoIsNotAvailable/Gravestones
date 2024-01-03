@@ -57,7 +57,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generate(RecipeExporter exporter) {
-            ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, GravestonesContent.GRAVESTONE_DEFAULT)
+            ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, GravestonesContent.GRAVESTONE)
                     .pattern(" S ")
                     .pattern("S#S")
                     .pattern("sDs")
@@ -70,7 +70,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
                     .offerTo(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))));
 
             RecipeProvider.offerSmelting(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))),
-                    List.of(GravestonesContent.GRAVESTONE_DEFAULT),
+                    List.of(GravestonesContent.GRAVESTONE),
                     RecipeCategory.DECORATIONS,
                     GravestonesContent.GRAVESTONE_CHIPPED,
                     0.1F,
@@ -96,7 +96,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generate() {
-            addDrop(GravestonesContent.GRAVESTONE_DEFAULT, drops(GravestonesContent.GRAVESTONE_DEFAULT));
+            addDrop(GravestonesContent.GRAVESTONE, drops(GravestonesContent.GRAVESTONE));
             addDrop(GravestonesContent.GRAVESTONE_CHIPPED, drops(GravestonesContent.GRAVESTONE_CHIPPED));
             addDrop(GravestonesContent.GRAVESTONE_DAMAGED, drops(GravestonesContent.GRAVESTONE_DAMAGED));
         }

@@ -39,7 +39,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     private String spawnDate;
 
     public GravestoneBlockEntity(BlockPos pos, BlockState state) {
-        super(GravestonesContent.GRAVESTONE, pos, state);
+        super(GravestonesContent.GRAVESTONE_ENTITY, pos, state);
     }
 
     @Override

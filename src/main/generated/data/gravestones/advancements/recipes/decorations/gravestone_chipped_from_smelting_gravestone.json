@@ -14,12 +14,12 @@
   ],
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_gravestone_default": {
+    "has_gravestone": {
       "conditions": {
         "items": [
           {
             "items": [
-              "gravestones:gravestone_default"
+              "gravestones:gravestone"
             ]
           }
         ]
@@ -28,7 +28,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:gravestone_chipped_from_smelting_gravestone_default"
+        "recipe": "minecraft:gravestone_chipped_from_smelting_gravestone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -36,12 +36,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_gravestone_default"
+      "has_gravestone"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:gravestone_chipped_from_smelting_gravestone_default"
+      "minecraft:gravestone_chipped_from_smelting_gravestone"
     ]
   },
   "sends_telemetry_event": false

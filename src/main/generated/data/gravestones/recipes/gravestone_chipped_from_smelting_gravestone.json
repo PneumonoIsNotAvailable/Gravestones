@@ -18,7 +18,7 @@
   "experience": 0.1,
   "group": "gravestone_cracking",
   "ingredient": {
-    "item": "gravestones:gravestone_default"
+    "item": "gravestones:gravestone"
   },
   "result": "gravestones:gravestone_chipped"
 }

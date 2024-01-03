@@ -11,6 +11,6 @@ public class GravestonesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         EntityRendererRegistry.register(GravestonesContent.GRAVESTONE_SKELETON_ENTITY_TYPE, SkeletonEntityRenderer::new);
-        BlockEntityRendererFactories.register(GravestonesContent.GRAVESTONE, GravestoneBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(GravestonesContent.GRAVESTONE_ENTITY, GravestoneBlockEntityRenderer::new);
     }
 }
