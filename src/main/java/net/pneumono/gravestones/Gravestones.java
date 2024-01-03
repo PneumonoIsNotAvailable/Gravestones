@@ -32,6 +32,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class Gravestones implements ModInitializer {
 	public static final String MOD_ID = "gravestones";
 	public static final Logger LOGGER = LoggerFactory.getLogger("Gravestones");
+
+	public static final BooleanConfiguration AESTHETIC_GRAVESTONES = Configs.register(new BooleanConfiguration(MOD_ID, "aesthetic_gravestones", ConfigEnv.SERVER, true, MOD_ID + ".configs.aesthetic_gravestones.tooltip"));
 	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_TIME = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_time", ConfigEnv.SERVER, true, MOD_ID + ".configs.gravestones_decay_with_time.tooltip"));
 	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_DEATHS = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_deaths", ConfigEnv.SERVER, true, MOD_ID + ".configs.gravestones_decay_with_deaths.tooltip"));
 	public static final IntegerConfiguration GRAVESTONE_DECAY_TIME_HOURS = Configs.register(new IntegerConfiguration(MOD_ID, "gravestone_decay_time_hours",ConfigEnv.SERVER, 0, 100, 8, MOD_ID + ".configs.gravestone_decay_time_hours.tooltip"));

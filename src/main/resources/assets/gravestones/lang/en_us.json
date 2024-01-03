@@ -15,6 +15,8 @@
     "stat.gravestones.gravestones_collected": "Gravestones Collected",
 
     "gravestones.configs_screen.title": "Gravestones Configs",
+    "gravestones.configs.aesthetic_gravestones" : "Aesthetic Gravestones",
+    "gravestones.configs.aesthetic_gravestones.tooltip" : "Whether or not aesthetic gravestones can be crafted for building purposes",
     "gravestones.configs.gravestones_decay_with_time" : "Time decay",
     "gravestones.configs.gravestones_decay_with_time.tooltip" : "Whether or not gravestones are damaged over time",
     "gravestones.configs.gravestones_decay_with_deaths" : "Death decay",

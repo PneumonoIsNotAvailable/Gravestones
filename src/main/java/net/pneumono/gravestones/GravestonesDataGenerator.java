@@ -17,6 +17,9 @@ import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.pneumono.gravestones.content.GravestonesContent;
+import net.pneumono.pneumonocore.datagen.ConfigCondition;
+import net.pneumono.pneumonocore.datagen.PneumonoDatagenHelper;
+import net.pneumono.pneumonocore.datagen.enums.Operator;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -64,9 +67,9 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
                     .input('D', Items.COARSE_DIRT)
                     .criterion(FabricRecipeProvider.hasItem(Items.LEATHER), FabricRecipeProvider.conditionsFromItem(Items.LEATHER))
                     .criterion(FabricRecipeProvider.hasItem(Items.STICK), FabricRecipeProvider.conditionsFromItem(Items.STICK))
-                    .offerTo(exporter);
+                    .offerTo(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))));
 
-            RecipeProvider.offerSmelting(exporter,
+            RecipeProvider.offerSmelting(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))),
                     List.of(GravestonesContent.GRAVESTONE_DEFAULT),
                     RecipeCategory.DECORATIONS,
                     GravestonesContent.GRAVESTONE_CHIPPED,
@@ -75,7 +78,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
                     "gravestone_cracking"
             );
 
-            RecipeProvider.offerSmelting(exporter,
+            RecipeProvider.offerSmelting(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))),
                     List.of(GravestonesContent.GRAVESTONE_CHIPPED),
                     RecipeCategory.DECORATIONS,
                     GravestonesContent.GRAVESTONE_DAMAGED,
