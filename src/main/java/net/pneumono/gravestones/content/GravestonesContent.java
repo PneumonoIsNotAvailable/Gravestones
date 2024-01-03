@@ -1,6 +1,7 @@
 package net.pneumono.gravestones.content;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -12,8 +13,14 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.stat.StatFormatter;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
@@ -27,6 +34,10 @@ public class GravestonesContent {
             new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
     public static final Block GRAVESTONE_DAMAGED = registerBlock("gravestone_damaged",
             new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
+
+    public static final TagKey<Block> TAG_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, new Identifier(Gravestones.MOD_ID, "gravestone_irreplaceable"));
+
+    public static final Identifier GRAVESTONES_COLLECTED = new Identifier(Gravestones.MOD_ID, "gravestones_collected");
 
     public static BlockEntityType<GravestoneBlockEntity> GRAVESTONE = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, new Identifier("gravestone"), FabricBlockEntityTypeBuilder.create(GravestoneBlockEntity::new, GravestonesContent.GRAVESTONE_TECHNICAL).build()
@@ -55,7 +66,24 @@ public class GravestonesContent {
                 new BlockItem(block, new FabricItemSettings()));
     }
 
+    private static void addToFunctionalGroup(ItemConvertible... items) {
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register((content) -> {
+            for (ItemConvertible item : items) {
+                content.add(item);
+            }
+        });
+    }
+
     public static void registerModContent() {
         FabricDefaultAttributeRegistry.register(GRAVESTONE_SKELETON_ENTITY_TYPE, GravestoneSkeletonEntity.createAbstractSkeletonAttributes());
+
+        addToFunctionalGroup(
+                GravestonesContent.GRAVESTONE_DEFAULT,
+                GravestonesContent.GRAVESTONE_CHIPPED,
+                GravestonesContent.GRAVESTONE_DAMAGED
+        );
+
+        Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
+        Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
     }
 }

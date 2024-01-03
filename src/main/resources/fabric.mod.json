@@ -23,6 +23,9 @@
 		],
 		"modmenu": [
 			"net.pneumono.gravestones.GravestonesModMenu"
+		],
+		"fabric-datagen": [
+			"net.pneumono.gravestones.GravestonesDataGenerator"
 		]
 	},
 	"mixins": [

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:soul_sand"
+    },
+    "D": {
+      "item": "minecraft:coarse_dirt"
+    },
+    "S": {
+      "item": "minecraft:stone"
+    },
+    "s": {
+      "item": "minecraft:stone_slab"
+    }
+  },
+  "pattern": [
+    " S ",
+    "S#S",
+    "sDs"
+  ],
+  "result": {
+    "item": "gravestones:gravestone_default"
+  },
+  "show_notification": true
+}

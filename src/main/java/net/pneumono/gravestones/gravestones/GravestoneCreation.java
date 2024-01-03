@@ -220,7 +220,7 @@ public class GravestoneCreation {
     }
 
     private static boolean hasNoIrreplaceableBlocks(World world, BlockPos blockPos) {
-        return !world.getBlockState(blockPos).isIn(Gravestones.GRAVESTONE_IRREPLACEABLE);
+        return !world.getBlockState(blockPos).isIn(GravestonesContent.TAG_GRAVESTONE_IRREPLACEABLE);
     }
 
     private static void placeGravestoneAtPos(World world, BlockPos blockPos) {
@@ -288,7 +288,7 @@ public class GravestoneCreation {
     }
 
     private static void removeIslandBlock(World world, BlockPos blockPos) {
-        if (!world.getBlockState(blockPos).isIn(Gravestones.GRAVESTONE_IRREPLACEABLE)) {
+        if (!world.getBlockState(blockPos).isIn(GravestonesContent.TAG_GRAVESTONE_IRREPLACEABLE)) {
             world.breakBlock(blockPos, true);
         }
     }

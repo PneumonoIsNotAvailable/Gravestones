@@ -182,7 +182,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                         }
                     }
 
-                    player.incrementStat(Gravestones.GRAVESTONES_COLLECTED);
+                    player.incrementStat(GravestonesContent.GRAVESTONES_COLLECTED);
                     MinecraftServer server = world.getServer();
                     if (server != null && Gravestones.BROADCAST_COLLECT_IN_CHAT.getValue()) {
                         if (Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {

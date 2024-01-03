@@ -4,24 +4,11 @@ import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.block.Block;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.stat.StatFormatter;
-import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -55,11 +42,6 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_console_info", ConfigEnv.CLIENT, false, MOD_ID + ".configs.gravestone_console_info.tooltip"));
 	public static final StringConfiguration TIME_FORMAT = Configs.register(new StringConfiguration(MOD_ID, "time_format", ConfigEnv.CLIENT, "MM/dd/yyyy HH:mm:ss", MOD_ID + ".configs.time_format.tooltip"));
 
-	public static final TagKey<Block> GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, new Identifier(MOD_ID, "gravestone_irreplaceable"));
-	public static final TagKey<Block> AESTHETIC_GRAVESTONES = TagKey.of(RegistryKeys.BLOCK, new Identifier(MOD_ID, "aesthetic_gravestones"));
-
-	public static final Identifier GRAVESTONES_COLLECTED = new Identifier(MOD_ID, "gravestones_collected");
-
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing Gravestones");
@@ -67,27 +49,6 @@ public class Gravestones implements ModInitializer {
 
 		GravestonesContent.registerModContent();
 		registerCommands();
-
-		Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
-		Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
-
-		addToVanillaGroup(ItemGroups.BUILDING_BLOCKS,
-				GravestonesContent.GRAVESTONE_DEFAULT,
-				GravestonesContent.GRAVESTONE_CHIPPED,
-				GravestonesContent.GRAVESTONE_DAMAGED
-		);
-
-		addToVanillaGroup(ItemGroups.OPERATOR,
-				GravestonesContent.GRAVESTONE_TECHNICAL
-		);
-	}
-
-	private static void addToVanillaGroup(RegistryKey<ItemGroup> group, ItemConvertible... items) {
-		ItemGroupEvents.modifyEntriesEvent(group).register((content) -> {
-			for (ItemConvertible item : items) {
-				content.add(item);
-			}
-		});
 	}
 
 	private void registerCommands() {
@@ -101,9 +62,7 @@ public class Gravestones implements ModInitializer {
 								World world = context.getSource().getWorld();
 								BlockPos pos = BlockPosArgumentType.getBlockPos(context, "position");
 
-								if (world.getBlockState(pos).isIn(AESTHETIC_GRAVESTONES)) {
-									context.getSource().sendMessage(Text.literal("Haha, see what you did there. No gravestone *with gravestone data* at that position!").formatted(Formatting.RED));
-								} else if (!(world.getBlockState(pos).isOf(GravestonesContent.GRAVESTONE_TECHNICAL))) {
+								if (!(world.getBlockState(pos).isOf(GravestonesContent.GRAVESTONE_TECHNICAL))) {
 									context.getSource().sendMessage(Text.literal("No gravestone at that position!").formatted(Formatting.RED));
 								} else if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity entity){
 									GameProfile owner = entity.getGraveOwner();
