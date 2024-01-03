@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntity.class)
+@SuppressWarnings("unused")
 public abstract class PlayerEntityMixin {
     @Inject(method = "dropInventory", at = @At("HEAD"), cancellable = true)
     public void spawnGravestone(CallbackInfo ci) {

@@ -22,7 +22,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.pneumono.gravestones.Gravestones;
-import net.pneumono.gravestones.content.ModContent;
+import net.pneumono.gravestones.content.GravestonesContent;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 
@@ -108,7 +108,7 @@ public class GravestoneCreation {
                         for (GravestonePosition oldPos : oldGravePositions) {
                             ServerWorld graveWorld = serverWorld.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, oldPos.dimension));
                             if (graveWorld != null) {
-                                if (graveWorld.getBlockState(oldPos.asBlockPos()).isOf(ModContent.GRAVESTONE_TECHNICAL)) {
+                                if (graveWorld.getBlockState(oldPos.asBlockPos()).isOf(GravestonesContent.GRAVESTONE_TECHNICAL)) {
                                     int damage = graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE);
                                     String damageType;
                                     String graveData = "Age: " + graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.AGE_DAMAGE) + ", Death: " + graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE);
@@ -224,7 +224,7 @@ public class GravestoneCreation {
     }
 
     private static void placeGravestoneAtPos(World world, BlockPos blockPos) {
-        BlockState gravestoneBlock = ModContent.GRAVESTONE_TECHNICAL.getDefaultState();
+        BlockState gravestoneBlock = GravestonesContent.GRAVESTONE_TECHNICAL.getDefaultState();
         world.breakBlock(blockPos, true);
         world.setBlockState(blockPos, gravestoneBlock);
     }

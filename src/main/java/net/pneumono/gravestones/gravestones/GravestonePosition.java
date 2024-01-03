@@ -9,13 +9,6 @@ public class GravestonePosition {
     public final int posY;
     public final int posZ;
 
-    public GravestonePosition(Identifier dimension, int posX, int posY, int posZ) {
-        this.dimension = dimension;
-        this.posX = posX;
-        this.posY = posY;
-        this.posZ = posZ;
-    }
-
     public GravestonePosition(Identifier dimension, BlockPos pos) {
         this.dimension = dimension;
         this.posX = pos.getX();

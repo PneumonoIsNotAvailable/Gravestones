@@ -8,7 +8,8 @@
 		"Pneumono_"
 	],
 	"contact": {
-		"sources": "https://github.com/PneumonoIsNotAvailable/Gravestones"
+		"sources": "https://github.com/PneumonoIsNotAvailable/Gravestones",
+		"issues": "https://github.com/PneumonoIsNotAvailable/Gravestones/issues"
 	},
 	"license": "MIT License",
 	"icon": "assets/gravestones/icon.png",
@@ -36,7 +37,7 @@
 		"minecraft": "~1.20.2",
 		"java": ">=17",
 		"fabric-api": "*",
-		"pneumonocore": "*"
+		"pneumonocore": ">=1.0.5"
 	},
 	"suggests": {}
 }

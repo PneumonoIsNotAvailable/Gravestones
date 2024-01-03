@@ -18,8 +18,8 @@ import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 
-public class ModContent {
-    public static final Block GRAVESTONE_TECHNICAL = registerBlock("gravestone_technical",
+public class GravestonesContent {
+    public static final Block GRAVESTONE_TECHNICAL = registerBlockWithoutItem("gravestone_technical",
             new TechnicalGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(-1.0F, 3600000.0F).nonOpaque()));
     public static final Block GRAVESTONE_DEFAULT = registerBlock("gravestone_default",
             new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
@@ -29,7 +29,7 @@ public class ModContent {
             new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
 
     public static BlockEntityType<GravestoneBlockEntity> GRAVESTONE = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, new Identifier("gravestone"), FabricBlockEntityTypeBuilder.create(GravestoneBlockEntity::new, ModContent.GRAVESTONE_TECHNICAL).build()
+            Registries.BLOCK_ENTITY_TYPE, new Identifier("gravestone"), FabricBlockEntityTypeBuilder.create(GravestoneBlockEntity::new, GravestonesContent.GRAVESTONE_TECHNICAL).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
@@ -40,6 +40,10 @@ public class ModContent {
                     .trackRangeBlocks(8)
                     .build()
     );
+
+    private static Block registerBlockWithoutItem(String name, Block block) {
+        return Registry.register(Registries.BLOCK, new Identifier(Gravestones.MOD_ID, name), block);
+    }
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);

@@ -25,7 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pneumono.gravestones.content.ModContent;
+import net.pneumono.gravestones.content.GravestonesContent;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneData;
 import net.pneumono.gravestones.gravestones.GravestonePosition;
@@ -65,20 +65,20 @@ public class Gravestones implements ModInitializer {
 		LOGGER.info("Initializing Gravestones");
 		Configs.reload(MOD_ID);
 
-		ModContent.registerModContent();
+		GravestonesContent.registerModContent();
 		registerCommands();
 
 		Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
 		Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
 
 		addToVanillaGroup(ItemGroups.BUILDING_BLOCKS,
-				ModContent.GRAVESTONE_DEFAULT,
-				ModContent.GRAVESTONE_CHIPPED,
-				ModContent.GRAVESTONE_DAMAGED
+				GravestonesContent.GRAVESTONE_DEFAULT,
+				GravestonesContent.GRAVESTONE_CHIPPED,
+				GravestonesContent.GRAVESTONE_DAMAGED
 		);
 
 		addToVanillaGroup(ItemGroups.OPERATOR,
-				ModContent.GRAVESTONE_TECHNICAL
+				GravestonesContent.GRAVESTONE_TECHNICAL
 		);
 	}
 
@@ -91,7 +91,7 @@ public class Gravestones implements ModInitializer {
 	}
 
 	private void registerCommands() {
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
 			dispatcher.register(literal("gravestones")
 				.requires(source -> source.hasPermissionLevel(4))
 				.then(literal("getdata")
@@ -103,7 +103,7 @@ public class Gravestones implements ModInitializer {
 
 								if (world.getBlockState(pos).isIn(AESTHETIC_GRAVESTONES)) {
 									context.getSource().sendMessage(Text.literal("Haha, see what you did there. No gravestone *with gravestone data* at that position!").formatted(Formatting.RED));
-								} else if (!(world.getBlockState(pos).isOf(ModContent.GRAVESTONE_TECHNICAL))) {
+								} else if (!(world.getBlockState(pos).isOf(GravestonesContent.GRAVESTONE_TECHNICAL))) {
 									context.getSource().sendMessage(Text.literal("No gravestone at that position!").formatted(Formatting.RED));
 								} else if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity entity){
 									GameProfile owner = entity.getGraveOwner();
@@ -155,7 +155,7 @@ public class Gravestones implements ModInitializer {
 						)
 					)
 				)
-			);
-		});
+			)
+		);
 	}
 }

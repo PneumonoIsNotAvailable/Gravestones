@@ -24,7 +24,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
-import net.pneumono.gravestones.content.ModContent;
+import net.pneumono.gravestones.content.GravestonesContent;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
 import org.jetbrains.annotations.Nullable;
@@ -39,27 +39,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     private String spawnDate;
 
     public GravestoneBlockEntity(BlockPos pos, BlockState state) {
-        super(ModContent.GRAVESTONE, pos, state);
-    }
-
-    public void setGraveOwner(GameProfile graveOwner) {
-        this.graveOwner = graveOwner;
-        this.markDirty();
-    }
-    public GameProfile getGraveOwner() {
-        return this.graveOwner;
-    }
-    public void setSpawnDate(String spawnDate) {
-        this.spawnDate = spawnDate;
-        this.markDirty();
-    }
-    public String getSpawnDate() {
-        return this.spawnDate;
-    }
-
-    @Override
-    public DefaultedList<ItemStack> getItems() {
-        return this.inventory;
+        super(GravestonesContent.GRAVESTONE, pos, state);
     }
 
     @Override
@@ -233,5 +213,28 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     @Override
     public NbtCompound toInitialChunkDataNbt() {
         return createNbt();
+    }
+
+    public void setGraveOwner(GameProfile graveOwner) {
+        this.graveOwner = graveOwner;
+        this.markDirty();
+    }
+
+    public GameProfile getGraveOwner() {
+        return this.graveOwner;
+    }
+
+    public void setSpawnDate(String spawnDate) {
+        this.spawnDate = spawnDate;
+        this.markDirty();
+    }
+
+    public String getSpawnDate() {
+        return this.spawnDate;
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getItems() {
+        return this.inventory;
     }
 }

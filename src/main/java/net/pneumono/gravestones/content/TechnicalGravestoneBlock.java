@@ -67,16 +67,19 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public VoxelShape getOutlineShape(BlockState state,BlockView view, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public FluidState getFluidState(BlockState state) {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED)) {
             world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
@@ -101,11 +104,13 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
@@ -130,6 +135,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -153,8 +159,9 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (state.isOf(ModContent.GRAVESTONE_TECHNICAL) && !world.isClient()) {
+        if (state.isOf(GravestonesContent.GRAVESTONE_TECHNICAL) && !world.isClient()) {
             if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone) {
                 GameProfile graveOwner = gravestone.getGraveOwner();
                 if (Objects.equals(graveOwner, player.getGameProfile()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
@@ -206,6 +213,6 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, ModContent.GRAVESTONE, GravestoneBlockEntity::tick);
+        return validateTicker(type, GravestonesContent.GRAVESTONE, GravestoneBlockEntity::tick);
     }
 }

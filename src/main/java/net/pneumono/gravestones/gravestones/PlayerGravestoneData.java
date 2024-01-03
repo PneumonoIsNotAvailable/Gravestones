@@ -1,8 +1,5 @@
 package net.pneumono.gravestones.gravestones;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
