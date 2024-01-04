@@ -2,13 +2,13 @@ package net.pneumono.gravestones.gravestones;
 
 
 import com.google.gson.GsonBuilder;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registries;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
@@ -32,7 +32,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class GravestoneCreation {
@@ -70,29 +69,26 @@ public class GravestoneCreation {
         return "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")";
     }
 
-    public static void handleGravestones(PlayerEntity player) {
+    public static void handleGravestones(World world, BlockPos playerPos, String playerName, GameProfile playerProfile, PlayerInventory inventory) {
         logger("----- ----- Beginning Gravestone Work ----- -----");
         logger("If you don't want to see all this every time someone dies, disable 'gravestoneInfoInConsole' in the config!");
-        World world = player.getWorld();
         if (!world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
-            BlockPos playerPos = player.getBlockPos();
-
             BlockPos gravestonePos = placeGravestone(world, playerPos);
 
             if (gravestonePos == null) {
                 logger("Gravestone was not placed successfully! The items have been dropped on the floor", LoggerInfoType.ERROR);
             } else {
-                logger("Placed " + player.getName().getString() + "'s (" + player.getGameProfile().getId() + ") Gravestone at " + posToString(gravestonePos));
+                logger("Placed " + playerName + "'s (" + playerProfile.getId() + ") Gravestone at " + posToString(gravestonePos));
 
                 MinecraftServer server = world.getServer();
                 if (server != null && Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-                    server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", player.getName().getString(), posToString(gravestonePos)).formatted(Formatting.AQUA), false);
+                    server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)).formatted(Formatting.AQUA), false);
                 }
 
                 if (world.getBlockEntity(gravestonePos) instanceof GravestoneBlockEntity gravestone) {
-                    gravestone.setGraveOwner(player.getGameProfile());
+                    gravestone.setGraveOwner(playerProfile);
                     gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString());
-                    insertPlayerItems(gravestone, player);
+                    insertPlayerItems(gravestone, inventory);
                     world.updateListeners(gravestonePos, world.getBlockState(gravestonePos), world.getBlockState(gravestonePos), Block.NOTIFY_LISTENERS);
 
                     logger("Gave Gravestone it's data (graveOwner, spawnDate, and inventory)");
@@ -102,7 +98,7 @@ public class GravestoneCreation {
             }
 
             if (world instanceof ServerWorld serverWorld) {
-                List<GravestonePosition> oldGravePositions = readAndWriteData(serverWorld, player, gravestonePos);
+                List<GravestonePosition> oldGravePositions = readAndWriteData(serverWorld, playerProfile, playerName, gravestonePos);
                 if (Gravestones.GRAVESTONES_DECAY_WITH_DEATHS.getValue()) {
                     if (oldGravePositions != null) {
                         for (GravestonePosition oldPos : oldGravePositions) {
@@ -144,30 +140,21 @@ public class GravestoneCreation {
         logger("----- ----- Ending Gravestone Work ----- -----");
     }
 
-    public static void insertPlayerItems(GravestoneBlockEntity gravestone, PlayerEntity player) {
+    public static void insertPlayerItems(GravestoneBlockEntity gravestone, PlayerInventory inventory) {
         logger("Inserting Inventory items into grave...");
-        StringBuilder inventoryString = new StringBuilder().append("Inserting the Following Items: ");
-        for (int i = 0; i < player.getInventory().size(); ++i) {
-            Registries.ITEM.getId(player.getInventory().getStack(i).getItem());
-            Identifier id = Registries.ITEM.getId(player.getInventory().getStack(i).getItem());
-            inventoryString.append(id.getNamespace()).append(id.getPath());
-            if (player.getInventory().getStack(i).hasNbt()) {
-                inventoryString.append(" with NBT ").append(Objects.requireNonNull(player.getInventory().getStack(i).getNbt()).asString());
-            }
-            inventoryString.append(", ");
-
-            if (!(EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, player.getInventory().getStack(i)) > 0)) {
-                gravestone.setStack(i, player.getInventory().removeStack(i));
+        for (int i = 0; i < inventory.size(); ++i) {
+            if (EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, inventory.getStack(i)) == 0) {
+                gravestone.setStack(i, inventory.removeStack(i));
             } else {
-                player.getInventory().removeStack(i);
+                inventory.removeStack(i);
             }
         }
 
         logger("Items inserted!");
     }
 
-    private static List<GravestonePosition> readAndWriteData(ServerWorld serverWorld, PlayerEntity player, BlockPos gravestonePos) {
-        UUID uuid = player.getGameProfile().getId();
+    private static List<GravestonePosition> readAndWriteData(ServerWorld serverWorld, GameProfile playerProfile, String playerName, BlockPos gravestonePos) {
+        UUID uuid = playerProfile.getId();
 
         File gravestoneFile = new File(serverWorld.getServer().getSavePath(WorldSavePath.ROOT).toString(), "gravestone_data.json");
         List<GravestonePosition> posList = null;
@@ -205,7 +192,7 @@ public class GravestoneCreation {
                 logger("Player does not have existing gravestone data, and so new data was created");
             }
             data.setPlayerData(playerData, uuid, new GravestonePosition(dimension, gravestonePos));
-            logger("Data added, " + player.getName().getString() + " (" + uuid + ") has a new gravestone at " + posToString(playerData.firstGrave.asBlockPos()) + " in dimension " + playerData.firstGrave.dimension.toString());
+            logger("Data added, " + playerName + " (" + uuid + ") has a new gravestone at " + posToString(playerData.firstGrave.asBlockPos()) + " in dimension " + playerData.firstGrave.dimension.toString());
 
             logger("Writing updated data back to file");
             Writer writer = Files.newBufferedWriter(gravestoneFile.toPath());
