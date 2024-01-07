@@ -11,7 +11,7 @@
 		"sources": "https://github.com/PneumonoIsNotAvailable/Gravestones",
 		"issues": "https://github.com/PneumonoIsNotAvailable/Gravestones/issues"
 	},
-	"license": "MIT License",
+	"license": "MIT",
 	"icon": "assets/gravestones/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -40,7 +40,7 @@
 		"minecraft": "~1.20.2",
 		"java": ">=17",
 		"fabric-api": "*",
-		"pneumonocore": ">=1.0.8"
+		"pneumonocore": ">=1.0.9"
 	},
 	"suggests": {}
 }

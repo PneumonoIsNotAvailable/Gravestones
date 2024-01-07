@@ -33,16 +33,16 @@ public class Gravestones implements ModInitializer {
 	public static final String MOD_ID = "gravestones";
 	public static final Logger LOGGER = LoggerFactory.getLogger("Gravestones");
 
-	public static final BooleanConfiguration AESTHETIC_GRAVESTONES = Configs.register(new BooleanConfiguration(MOD_ID, "aesthetic_gravestones", ConfigEnv.SERVER, true, MOD_ID + ".configs.aesthetic_gravestones.tooltip"));
-	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_TIME = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_time", ConfigEnv.SERVER, true, MOD_ID + ".configs.gravestones_decay_with_time.tooltip"));
-	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_DEATHS = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_deaths", ConfigEnv.SERVER, true, MOD_ID + ".configs.gravestones_decay_with_deaths.tooltip"));
-	public static final IntegerConfiguration GRAVESTONE_DECAY_TIME_HOURS = Configs.register(new IntegerConfiguration(MOD_ID, "gravestone_decay_time_hours",ConfigEnv.SERVER, 0, 100, 8, MOD_ID + ".configs.gravestone_decay_time_hours.tooltip"));
-	public static final BooleanConfiguration GRAVESTONE_ACCESSIBLE_OWNER_ONLY = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_accessible_owner_only", ConfigEnv.SERVER, true, MOD_ID + ".configs.gravestone_accessible_owner_only.tooltip"));
-	public static final BooleanConfiguration SPAWN_GRAVESTONE_SKELETONS = Configs.register(new BooleanConfiguration(MOD_ID, "spawn_gravestone_skeletons", ConfigEnv.SERVER, false, MOD_ID + ".configs.spawn_gravestone_skeletons.tooltip"));
-	public static final BooleanConfiguration BROADCAST_COLLECT_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_collect_in_chat", ConfigEnv.SERVER, false, MOD_ID + ".configs.broadcast_collect_in_chat.tooltip"));
-	public static final BooleanConfiguration BROADCAST_COORDINATES_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_coordinates_in_chat", ConfigEnv.SERVER, false, MOD_ID + ".configs.broadcast_coordinates_in_chat.tooltip"));
-	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_console_info", ConfigEnv.CLIENT, false, MOD_ID + ".configs.gravestone_console_info.tooltip"));
-	public static final StringConfiguration TIME_FORMAT = Configs.register(new StringConfiguration(MOD_ID, "time_format", ConfigEnv.CLIENT, "MM/dd/yyyy HH:mm:ss", MOD_ID + ".configs.time_format.tooltip"));
+	public static final BooleanConfiguration AESTHETIC_GRAVESTONES = Configs.register(new BooleanConfiguration(MOD_ID, "aesthetic_gravestones", ConfigEnv.SERVER, true));
+	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_TIME = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_time", ConfigEnv.SERVER, true));
+	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_DEATHS = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_deaths", ConfigEnv.SERVER, true));
+	public static final IntegerConfiguration GRAVESTONE_DECAY_TIME_HOURS = Configs.register(new IntegerConfiguration(MOD_ID, "gravestone_decay_time_hours",ConfigEnv.SERVER, 0, 100, 8));
+	public static final BooleanConfiguration GRAVESTONE_ACCESSIBLE_OWNER_ONLY = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_accessible_owner_only", ConfigEnv.SERVER, true));
+	public static final BooleanConfiguration SPAWN_GRAVESTONE_SKELETONS = Configs.register(new BooleanConfiguration(MOD_ID, "spawn_gravestone_skeletons", ConfigEnv.SERVER, false));
+	public static final BooleanConfiguration BROADCAST_COLLECT_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_collect_in_chat", ConfigEnv.SERVER, false));
+	public static final BooleanConfiguration BROADCAST_COORDINATES_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_coordinates_in_chat", ConfigEnv.SERVER, false));
+	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_console_info", ConfigEnv.CLIENT, false));
+	public static final StringConfiguration TIME_FORMAT = Configs.register(new StringConfiguration(MOD_ID, "time_format", ConfigEnv.CLIENT, "MM/dd/yyyy HH:mm:ss"));
 
 	@Override
 	public void onInitialize() {
