@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Blocks;
-import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.RecipeProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Items;
@@ -23,6 +23,7 @@ import net.pneumono.pneumonocore.datagen.enums.Operator;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
     @Override
@@ -56,7 +57,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
         }
 
         @Override
-        public void generate(RecipeExporter exporter) {
+        public void generate(Consumer<RecipeJsonProvider> exporter) {
             ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, GravestonesContent.GRAVESTONE)
                     .pattern(" S ")
                     .pattern("S#S")
