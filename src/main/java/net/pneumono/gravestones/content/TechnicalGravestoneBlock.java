@@ -161,7 +161,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Override
     @SuppressWarnings("deprecation")
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (state.isOf(GravestonesContent.GRAVESTONE_TECHNICAL) && !world.isClient()) {
+        if (state.isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL) && !world.isClient()) {
             if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone) {
                 GameProfile graveOwner = gravestone.getGraveOwner();
                 if (Objects.equals(graveOwner, player.getGameProfile()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
@@ -182,7 +182,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                         }
                     }
 
-                    player.incrementStat(GravestonesContent.GRAVESTONES_COLLECTED);
+                    player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
                     MinecraftServer server = world.getServer();
                     if (server != null && Gravestones.BROADCAST_COLLECT_IN_CHAT.getValue()) {
                         if (Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
@@ -213,6 +213,6 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, GravestonesContent.GRAVESTONE_ENTITY, GravestoneBlockEntity::tick);
+        return checkType(type, GravestonesRegistry.GRAVESTONE_ENTITY, GravestoneBlockEntity::tick);
     }
 }

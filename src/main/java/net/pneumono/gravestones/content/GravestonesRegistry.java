@@ -25,7 +25,7 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 import net.pneumono.pneumonocore.migration.Migration;
 
-public class GravestonesContent {
+public class GravestonesRegistry {
     public static final Block GRAVESTONE_TECHNICAL = registerTechnicalGravestone(
             new TechnicalGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(-1.0F, 3600000.0F).nonOpaque()));
     public static final Block GRAVESTONE = registerAestheticGravestone("gravestone",
@@ -40,7 +40,7 @@ public class GravestonesContent {
     public static final Identifier GRAVESTONES_COLLECTED = new Identifier(Gravestones.MOD_ID, "gravestones_collected");
 
     public static BlockEntityType<GravestoneBlockEntity> GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "gravestone"), FabricBlockEntityTypeBuilder.create(GravestoneBlockEntity::new, GravestonesContent.GRAVESTONE_TECHNICAL).build()
+            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "gravestone"), FabricBlockEntityTypeBuilder.create(GravestoneBlockEntity::new, GravestonesRegistry.GRAVESTONE_TECHNICAL).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
@@ -73,9 +73,9 @@ public class GravestonesContent {
         FabricDefaultAttributeRegistry.register(GRAVESTONE_SKELETON_ENTITY_TYPE, GravestoneSkeletonEntity.createAbstractSkeletonAttributes());
 
         addToFunctionalGroup(
-                GravestonesContent.GRAVESTONE,
-                GravestonesContent.GRAVESTONE_CHIPPED,
-                GravestonesContent.GRAVESTONE_DAMAGED
+                GravestonesRegistry.GRAVESTONE,
+                GravestonesRegistry.GRAVESTONE_CHIPPED,
+                GravestonesRegistry.GRAVESTONE_DAMAGED
         );
 
         Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);

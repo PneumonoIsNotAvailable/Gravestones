@@ -12,7 +12,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pneumono.gravestones.content.GravestonesContent;
+import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneData;
 import net.pneumono.gravestones.gravestones.GravestonePosition;
@@ -49,7 +49,7 @@ public class Gravestones implements ModInitializer {
 		LOGGER.info("Initializing Gravestones");
 		Configs.reload(MOD_ID);
 
-		GravestonesContent.registerModContent();
+		GravestonesRegistry.registerModContent();
 		registerCommands();
 	}
 
@@ -64,7 +64,7 @@ public class Gravestones implements ModInitializer {
 								World world = context.getSource().getWorld();
 								BlockPos pos = BlockPosArgumentType.getBlockPos(context, "position");
 
-								if (!(world.getBlockState(pos).isOf(GravestonesContent.GRAVESTONE_TECHNICAL))) {
+								if (!(world.getBlockState(pos).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL))) {
 									context.getSource().sendMessage(Text.literal("No gravestone at that position!").formatted(Formatting.RED));
 								} else if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity entity){
 									GameProfile owner = entity.getGraveOwner();

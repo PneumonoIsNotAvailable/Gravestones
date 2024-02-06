@@ -22,7 +22,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.pneumono.gravestones.Gravestones;
-import net.pneumono.gravestones.content.GravestonesContent;
+import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 
@@ -104,7 +104,7 @@ public class GravestoneCreation {
                         for (GravestonePosition oldPos : oldGravePositions) {
                             ServerWorld graveWorld = serverWorld.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, oldPos.dimension));
                             if (graveWorld != null) {
-                                if (graveWorld.getBlockState(oldPos.asBlockPos()).isOf(GravestonesContent.GRAVESTONE_TECHNICAL)) {
+                                if (graveWorld.getBlockState(oldPos.asBlockPos()).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL)) {
                                     int damage = graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE);
                                     String damageType;
                                     String graveData = "Age: " + graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.AGE_DAMAGE) + ", Death: " + graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE);
@@ -207,11 +207,11 @@ public class GravestoneCreation {
     }
 
     private static boolean hasNoIrreplaceableBlocks(World world, BlockPos blockPos) {
-        return !world.getBlockState(blockPos).isIn(GravestonesContent.TAG_GRAVESTONE_IRREPLACEABLE);
+        return !world.getBlockState(blockPos).isIn(GravestonesRegistry.TAG_GRAVESTONE_IRREPLACEABLE);
     }
 
     private static void placeGravestoneAtPos(World world, BlockPos blockPos) {
-        BlockState gravestoneBlock = GravestonesContent.GRAVESTONE_TECHNICAL.getDefaultState();
+        BlockState gravestoneBlock = GravestonesRegistry.GRAVESTONE_TECHNICAL.getDefaultState();
         world.breakBlock(blockPos, true);
         world.setBlockState(blockPos, gravestoneBlock);
     }
@@ -275,7 +275,7 @@ public class GravestoneCreation {
     }
 
     private static void removeIslandBlock(World world, BlockPos blockPos) {
-        if (!world.getBlockState(blockPos).isIn(GravestonesContent.TAG_GRAVESTONE_IRREPLACEABLE)) {
+        if (!world.getBlockState(blockPos).isIn(GravestonesRegistry.TAG_GRAVESTONE_IRREPLACEABLE)) {
             world.breakBlock(blockPos, true);
         }
     }

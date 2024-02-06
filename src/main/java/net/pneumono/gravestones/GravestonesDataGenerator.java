@@ -16,7 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
-import net.pneumono.gravestones.content.GravestonesContent;
+import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.pneumonocore.datagen.ConfigCondition;
 import net.pneumono.pneumonocore.datagen.PneumonoDatagenHelper;
 import net.pneumono.pneumonocore.datagen.enums.Operator;
@@ -41,7 +41,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         protected void configure(RegistryWrapper.WrapperLookup arg) {
-            FabricTagBuilder builder = getOrCreateTagBuilder(GravestonesContent.TAG_GRAVESTONE_IRREPLACEABLE);
+            FabricTagBuilder builder = getOrCreateTagBuilder(GravestonesRegistry.TAG_GRAVESTONE_IRREPLACEABLE);
             for (Block block : Registries.BLOCK.stream().toList()) {
                 if (block.getHardness() < 0 || block.getBlastResistance() >= 3600000 || block instanceof BlockWithEntity) {
                     builder.add(block);
@@ -58,7 +58,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generate(Consumer<RecipeJsonProvider> exporter) {
-            ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, GravestonesContent.GRAVESTONE)
+            ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE)
                     .pattern(" S ")
                     .pattern("S#S")
                     .pattern("sDs")
@@ -71,18 +71,18 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
                     .offerTo(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))));
 
             RecipeProvider.offerSmelting(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))),
-                    List.of(GravestonesContent.GRAVESTONE),
+                    List.of(GravestonesRegistry.GRAVESTONE),
                     RecipeCategory.DECORATIONS,
-                    GravestonesContent.GRAVESTONE_CHIPPED,
+                    GravestonesRegistry.GRAVESTONE_CHIPPED,
                     0.1F,
                     200,
                     "gravestone_cracking"
             );
 
             RecipeProvider.offerSmelting(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))),
-                    List.of(GravestonesContent.GRAVESTONE_CHIPPED),
+                    List.of(GravestonesRegistry.GRAVESTONE_CHIPPED),
                     RecipeCategory.DECORATIONS,
-                    GravestonesContent.GRAVESTONE_DAMAGED,
+                    GravestonesRegistry.GRAVESTONE_DAMAGED,
                     0.1F,
                     200,
                     "gravestone_cracking"
@@ -97,9 +97,9 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generate() {
-            addDrop(GravestonesContent.GRAVESTONE, drops(GravestonesContent.GRAVESTONE));
-            addDrop(GravestonesContent.GRAVESTONE_CHIPPED, drops(GravestonesContent.GRAVESTONE_CHIPPED));
-            addDrop(GravestonesContent.GRAVESTONE_DAMAGED, drops(GravestonesContent.GRAVESTONE_DAMAGED));
+            addDrop(GravestonesRegistry.GRAVESTONE, drops(GravestonesRegistry.GRAVESTONE));
+            addDrop(GravestonesRegistry.GRAVESTONE_CHIPPED, drops(GravestonesRegistry.GRAVESTONE_CHIPPED));
+            addDrop(GravestonesRegistry.GRAVESTONE_DAMAGED, drops(GravestonesRegistry.GRAVESTONE_DAMAGED));
         }
     }
 }
