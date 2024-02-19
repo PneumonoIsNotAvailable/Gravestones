@@ -42,7 +42,7 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
         try {
             SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
             SimpleDateFormat toClient = new SimpleDateFormat(Gravestones.TIME_FORMAT.getValue());
-            text = Text.literal(toClient.format(fromServer.parse(entity.getSpawnDate())));
+            text = Text.literal(toClient.format(fromServer.parse(entity.getSpawnDateTime())));
         } catch (ParseException e) {
             text = Text.literal("");
         }

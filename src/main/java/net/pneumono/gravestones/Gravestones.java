@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
+import net.pneumono.gravestones.gravestones.DecayTimeType;
 import net.pneumono.gravestones.gravestones.GravestoneData;
 import net.pneumono.gravestones.gravestones.GravestonePosition;
 import net.pneumono.pneumonocore.config.*;
@@ -36,12 +37,13 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration AESTHETIC_GRAVESTONES = Configs.register(new BooleanConfiguration(MOD_ID, "aesthetic_gravestones", ConfigEnv.SERVER, true));
 	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_TIME = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_time", ConfigEnv.SERVER, true));
 	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_DEATHS = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_deaths", ConfigEnv.SERVER, true));
-	public static final IntegerConfiguration GRAVESTONE_DECAY_TIME_HOURS = Configs.register(new IntegerConfiguration(MOD_ID, "gravestone_decay_time_hours",ConfigEnv.SERVER, 0, 100, 8));
+	public static final IntegerConfiguration GRAVESTONE_DECAY_TIME_HOURS = Configs.register(new IntegerConfiguration(MOD_ID, "decay_time_hours", ConfigEnv.SERVER, 0, 100, 8));
+	public static final EnumConfiguration<DecayTimeType> GRAVESTONE_DECAY_TIME_TYPE = Configs.register(new EnumConfiguration<>(MOD_ID, "decay_time_type", ConfigEnv.SERVER, DecayTimeType.REAL_TIME));
 	public static final BooleanConfiguration GRAVESTONE_ACCESSIBLE_OWNER_ONLY = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_accessible_owner_only", ConfigEnv.SERVER, true));
 	public static final BooleanConfiguration SPAWN_GRAVESTONE_SKELETONS = Configs.register(new BooleanConfiguration(MOD_ID, "spawn_gravestone_skeletons", ConfigEnv.SERVER, false));
 	public static final BooleanConfiguration BROADCAST_COLLECT_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_collect_in_chat", ConfigEnv.SERVER, false));
 	public static final BooleanConfiguration BROADCAST_COORDINATES_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_coordinates_in_chat", ConfigEnv.SERVER, false));
-	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_console_info", ConfigEnv.CLIENT, false));
+	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "console_info", ConfigEnv.CLIENT, false));
 	public static final StringConfiguration TIME_FORMAT = Configs.register(new StringConfiguration(MOD_ID, "time_format", ConfigEnv.CLIENT, "MM/dd/yyyy HH:mm:ss"));
 
 	@Override
@@ -69,9 +71,9 @@ public class Gravestones implements ModInitializer {
 								} else if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity entity){
 									GameProfile owner = entity.getGraveOwner();
 									if (owner != null) {
-										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDate() + " and a graveOwner of " + owner.getName() + ", " + owner.getId().toString()).formatted(Formatting.GREEN));
+										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.getName() + ", " + owner.getId().toString()).formatted(Formatting.GREEN));
 									} else {
-										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDate() + " but no graveOwner!").formatted(Formatting.RED));
+										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " but no graveOwner!").formatted(Formatting.RED));
 									}
 
 									StringBuilder itemMessage = new StringBuilder();

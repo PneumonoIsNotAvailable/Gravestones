@@ -98,7 +98,7 @@ public class GravestoneCreation {
                 gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString());
                 insertPlayerItems(gravestone, inventory, trinketComponent);
                 world.updateListeners(gravestonePos, world.getBlockState(gravestonePos), world.getBlockState(gravestonePos), Block.NOTIFY_LISTENERS);
-
+              
                 logger("Gave Gravestone it's data (graveOwner, spawnDate, and inventory)");
             } else {
                 logger("Gravestone position does not have a block entity!", LoggerInfoType.ERROR);

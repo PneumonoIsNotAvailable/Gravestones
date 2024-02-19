@@ -171,7 +171,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof GravestoneBlockEntity gravestone && placer instanceof PlayerEntity player) {
             gravestone.setGraveOwner(player.getGameProfile());
-            gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString());
+            gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
             world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
         }
     }
