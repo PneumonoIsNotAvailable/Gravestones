@@ -35,15 +35,15 @@ import java.util.List;
 import java.util.UUID;
 
 public class GravestoneCreation {
-    private static void logger(String string) {
+    public static void logger(String string) {
         logger(string, LoggerInfoType.INFO, null);
     }
 
-    private static void logger(String string, LoggerInfoType type) {
+    public static void logger(String string, LoggerInfoType type) {
         logger(string, type, null);
     }
 
-    private static void logger(String string, LoggerInfoType type, Throwable t) {
+    public static void logger(String string, LoggerInfoType type, Throwable t) {
         if (Gravestones.CONSOLE_INFO.getValue()) {
             switch (type) {
                 case INFO -> Gravestones.LOGGER.info(string);
