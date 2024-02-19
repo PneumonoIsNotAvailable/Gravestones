@@ -95,7 +95,7 @@ public class GravestoneCreation {
 
             if (world.getBlockEntity(gravestonePos) instanceof GravestoneBlockEntity gravestone) {
                 gravestone.setGraveOwner(playerProfile);
-                gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString());
+                gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
                 insertPlayerItems(gravestone, inventory, trinketComponent);
                 world.updateListeners(gravestonePos, world.getBlockState(gravestonePos), world.getBlockState(gravestonePos), Block.NOTIFY_LISTENERS);
               
