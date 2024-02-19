@@ -26,6 +26,7 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
+import net.pneumono.gravestones.gravestones.DecayTimeType;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +37,8 @@ import java.util.Random;
 public class GravestoneBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
     private GameProfile graveOwner;
-    private String spawnDate;
+    private String spawnDateTime;
+    private long spawnDateTicks;
 
     public GravestoneBlockEntity(BlockPos pos, BlockState state) {
         super(GravestonesRegistry.GRAVESTONE_ENTITY, pos, state);
@@ -47,10 +49,13 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.inventory);
         if (this.graveOwner != null) {
-            nbt.put("gravestone.owner", NbtHelper.writeGameProfile(new NbtCompound(), this.graveOwner));
+            nbt.put("owner", NbtHelper.writeGameProfile(new NbtCompound(), this.graveOwner));
         }
-        if (this.spawnDate != null) {
-            nbt.putString("gravestone.spawndate", this.spawnDate);
+        if (this.spawnDateTime != null) {
+            nbt.putString("spawnDateTime", this.spawnDateTime);
+        }
+        if (this.spawnDateTicks != 0) {
+            nbt.putLong("spawnDateTicks", this.spawnDateTicks);
         }
     }
 
@@ -58,20 +63,31 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         Inventories.readNbt(nbt, this.inventory);
-        if (nbt.contains("gravestone.owner")) {
-            this.graveOwner = NbtHelper.toGameProfile(nbt.getCompound("gravestone.owner"));
+        if (nbt.contains("owner")) {
+            this.graveOwner = NbtHelper.toGameProfile(nbt.getCompound("owner"));
         }
-        if (nbt.contains("gravestone.spawndate")) {
-            this.spawnDate = nbt.getString("gravestone.spawndate");
+        if (nbt.contains("spawnDateTime")) {
+            this.spawnDateTime = nbt.getString("spawnDateTime");
+        }
+        if (nbt.contains("spawnDateTicks")) {
+            this.spawnDateTicks = nbt.getLong("spawnDateTicks");
         }
     }
 
     public static void tick(World world, BlockPos blockPos, BlockState state, GravestoneBlockEntity entity) {
         if (world.getTime() % 20 == 0) {
             if (!world.isClient()) {
-                if (Gravestones.GRAVESTONES_DECAY_WITH_TIME.getValue() && entity.spawnDate != null && entity.graveOwner != null) {
-                    long difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.getCurrentTimeAsString(), entity.spawnDate);
-                    // timeUnit default: 28800 (GravestoneTime.secondsInDay / 3)
+                if (Gravestones.GRAVESTONES_DECAY_WITH_TIME.getValue() && entity.graveOwner != null) {
+                    long difference;
+
+                    if (Gravestones.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
+                        difference = world.getTime() - entity.spawnDateTicks;
+                    } else if (entity.spawnDateTime != null) {
+                        difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.getCurrentTimeAsString(), entity.spawnDateTime);
+                    } else {
+                        difference = 0;
+                    }
+
                     long timeUnit = Gravestones.GRAVESTONE_DECAY_TIME_HOURS.getValue() * 60 * 60;
                     if (difference > (timeUnit * 3)) {
                         world.breakBlock(blockPos, true);
@@ -224,13 +240,14 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         return this.graveOwner;
     }
 
-    public void setSpawnDate(String spawnDate) {
-        this.spawnDate = spawnDate;
+    public void setSpawnDate(String spawnDateTime, long spawnDateTicks) {
+        this.spawnDateTime = spawnDateTime;
+        this.spawnDateTicks = spawnDateTicks;
         this.markDirty();
     }
 
-    public String getSpawnDate() {
-        return this.spawnDate;
+    public String getSpawnDateTime() {
+        return this.spawnDateTime;
     }
 
     @Override
