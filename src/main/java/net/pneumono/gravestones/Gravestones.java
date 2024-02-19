@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.ItemStack;
@@ -46,6 +47,8 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "console_info", ConfigEnv.CLIENT, false));
 	public static final StringConfiguration TIME_FORMAT = Configs.register(new StringConfiguration(MOD_ID, "time_format", ConfigEnv.CLIENT, "MM/dd/yyyy HH:mm:ss"));
 
+	public static boolean trinketsEnabled = false;
+
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing Gravestones");
@@ -53,6 +56,7 @@ public class Gravestones implements ModInitializer {
 
 		GravestonesRegistry.registerModContent();
 		registerCommands();
+		trinketsEnabled = FabricLoader.getInstance().isModLoaded("trinkets");
 	}
 
 	private void registerCommands() {
@@ -77,7 +81,7 @@ public class Gravestones implements ModInitializer {
 									}
 
 									StringBuilder itemMessage = new StringBuilder();
-									for (ItemStack item : entity.getInventoryAsItemList()) {
+									for (ItemStack item : entity.getItems()) {
 										itemMessage.append(", ").append(item.toString());
 									}
 

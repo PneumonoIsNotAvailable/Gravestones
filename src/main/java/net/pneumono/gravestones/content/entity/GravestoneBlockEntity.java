@@ -12,7 +12,9 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -32,10 +34,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class GravestoneBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
+    private NbtList modData;
     private GameProfile graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
@@ -57,6 +61,9 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         if (this.spawnDateTicks != 0) {
             nbt.putLong("spawnDateTicks", this.spawnDateTicks);
         }
+        if (this.modData != null) {
+            nbt.put("modData", this.modData);
+        }
     }
 
     @Override
@@ -71,6 +78,9 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         }
         if (nbt.contains("spawnDateTicks")) {
             this.spawnDateTicks = nbt.getLong("spawnDateTicks");
+        }
+        if (nbt.contains("modData")) {
+            this.modData = nbt.getList("modData", NbtElement.COMPOUND_TYPE);
         }
     }
 
@@ -142,7 +152,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
 
                         Random random = new Random();
                         BlockPos finalPos = null;
-                        while (possiblePos.size() > 0) {
+                        while (!possiblePos.isEmpty()) {
                             int randInt = random.nextInt(possiblePos.size());
                             BlockPos possible = possiblePos.get(randInt);
                             possiblePos.remove(randInt);
@@ -216,10 +226,6 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         return entityCount;
     }
 
-    public List<ItemStack> getInventoryAsItemList() {
-        return new ArrayList<>(inventory);
-    }
-
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
@@ -248,6 +254,35 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
 
     public String getSpawnDateTime() {
         return this.spawnDateTime;
+    }
+
+    /**
+     * Adds data from other mods to the gravestone.
+     *
+     * @param modID The mod ID of the mod adding data.
+     * @param compound The data being added.
+     */
+    public void addModData(String modID, NbtCompound compound) {
+        NbtCompound nbt = new NbtCompound();
+        nbt.putString("modID", modID);
+        nbt.put("data", compound);
+        modData.add(nbt);
+    }
+
+    /**
+     * Gets data added from other mods from the gravestone.
+     *
+     * @param modID The mod ID of the mod that added the data.
+     * @return The data previously added.
+     */
+    public NbtCompound getModData(String modID) {
+        for (int i = 0; i < modData.size(); ++i) {
+            NbtCompound nbt = modData.getCompound(i);
+            if (nbt != null && nbt.contains("modID") && Objects.equals(nbt.getString("modID"), modID)) {
+                return nbt;
+            }
+        }
+        return null;
     }
 
     @Override

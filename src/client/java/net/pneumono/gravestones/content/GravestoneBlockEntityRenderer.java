@@ -1,5 +1,6 @@
 package net.pneumono.gravestones.content;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -31,18 +32,28 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
         matrices.translate(-8, -13, -12.95);
 
         // Name
-        Text text = Text.literal(entity.getGraveOwner().getName());
-        float scale = 10F / this.textRenderer.getWidth(text);
-        matrices.scale(scale, scale, scale);
+        GameProfile profile = entity.getGraveOwner();
+        Text text;
+        float scale;
+        if (profile != null) {
+            text = Text.literal(profile.getName());
+            scale = 10F / this.textRenderer.getWidth(text);
+            matrices.scale(scale, scale, scale);
 
-        this.textRenderer.draw(text, (float)(-this.textRenderer.getWidth(text) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
-        matrices.scale(1/scale, 1/scale, 1/scale);
+            this.textRenderer.draw(text, (float) (-this.textRenderer.getWidth(text) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
+            matrices.scale(1 / scale, 1 / scale, 1 / scale);
+        }
 
         // Date
+        String spawnDateTime = entity.getSpawnDateTime();
         try {
-            SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
-            SimpleDateFormat toClient = new SimpleDateFormat(Gravestones.TIME_FORMAT.getValue());
-            text = Text.literal(toClient.format(fromServer.parse(entity.getSpawnDateTime())));
+            if (spawnDateTime != null) {
+                SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
+                SimpleDateFormat toClient = new SimpleDateFormat(Gravestones.TIME_FORMAT.getValue());
+                text = Text.literal(toClient.format(fromServer.parse(spawnDateTime)));
+            } else {
+                text = Text.literal("");
+            }
         } catch (ParseException e) {
             text = Text.literal("");
         }

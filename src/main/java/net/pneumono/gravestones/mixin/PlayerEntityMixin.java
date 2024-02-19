@@ -1,6 +1,5 @@
 package net.pneumono.gravestones.mixin;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,9 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @SuppressWarnings("unused")
 public abstract class PlayerEntityMixin extends LivingEntity {
     @Shadow
-    private @Final GameProfile gameProfile;
-
-    @Shadow
     private @Final PlayerInventory inventory;
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
@@ -29,7 +25,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "dropInventory", at = @At("HEAD"), cancellable = true)
     public void spawnGravestone(CallbackInfo ci) {
-        GravestoneCreation.handleGravestones(getWorld(), getBlockPos(), getName().getString(), gameProfile, inventory);
+        GravestoneCreation.handleGravestones(inventory.player);
         ci.cancel();
     }
 }

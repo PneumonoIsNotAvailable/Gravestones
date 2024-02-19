@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -22,6 +23,8 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
@@ -69,73 +72,85 @@ public class GravestoneCreation {
         return "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")";
     }
 
-    public static void handleGravestones(World world, BlockPos playerPos, String playerName, GameProfile playerProfile, PlayerInventory inventory) {
+    public static void handleGravestones(PlayerEntity player) {
         logger("----- ----- Beginning Gravestone Work ----- -----");
-        logger("If you don't want to see all this every time someone dies, disable 'gravestoneInfoInConsole' in the config!");
-        if (!world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
-            BlockPos gravestonePos = placeGravestone(world, playerPos);
+        logger("This mostly exists for debugging purposes, but might be useful for server owners. " +
+                "If you don't want to see all this every time someone dies, disable 'gravestoneInfoInConsole' in the config!");
 
-            if (gravestonePos == null) {
-                logger("Gravestone was not placed successfully! The items have been dropped on the floor", LoggerInfoType.ERROR);
-            } else {
-                logger("Placed " + playerName + "'s (" + playerProfile.getId() + ") Gravestone at " + posToString(gravestonePos));
+        World world = player.getWorld();
+        BlockPos playerPos = player.getBlockPos();
+        String playerName = player.getName().getString();
+        GameProfile playerProfile = player.getGameProfile();
+        PlayerInventory inventory = player.getInventory();
 
-                MinecraftServer server = world.getServer();
-                if (server != null && Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-                    server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)).formatted(Formatting.AQUA), false);
-                }
+        if (world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+            logger("Nevermind, keepInventory is on!");
+            return;
+        }
 
-                if (world.getBlockEntity(gravestonePos) instanceof GravestoneBlockEntity gravestone) {
-                    gravestone.setGraveOwner(playerProfile);
-                    gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
-                    insertPlayerItems(gravestone, inventory);
-                    world.updateListeners(gravestonePos, world.getBlockState(gravestonePos), world.getBlockState(gravestonePos), Block.NOTIFY_LISTENERS);
+        BlockPos gravestonePos = placeGravestone(world, playerPos);
 
-                    logger("Gave Gravestone it's data (graveOwner, spawnDate, and inventory)");
-                } else {
-                    logger("Gravestone position does not have a block entity!", LoggerInfoType.ERROR);
-                }
+        if (gravestonePos == null) {
+            logger("Gravestone was not placed successfully! The items have been dropped on the floor", LoggerInfoType.ERROR);
+        } else {
+            logger("Placed " + playerName + "'s (" + playerProfile.getId() + ") Gravestone at " + posToString(gravestonePos));
+
+            MinecraftServer server = world.getServer();
+            if (server != null && Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
+                server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)).formatted(Formatting.AQUA), false);
             }
 
-            if (world instanceof ServerWorld serverWorld) {
-                List<GravestonePosition> oldGravePositions = readAndWriteData(serverWorld, playerProfile, playerName, gravestonePos);
-                if (Gravestones.GRAVESTONES_DECAY_WITH_DEATHS.getValue()) {
-                    if (oldGravePositions != null) {
-                        for (GravestonePosition oldPos : oldGravePositions) {
-                            ServerWorld graveWorld = serverWorld.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, oldPos.dimension));
-                            if (graveWorld != null) {
-                                if (graveWorld.getBlockState(oldPos.asBlockPos()).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL)) {
-                                    int damage = graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE);
-                                    String damageType;
-                                    String graveData = "Age: " + graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.AGE_DAMAGE) + ", Death: " + graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE);
-                                    if (damage + 1 > 2) {
-                                        graveWorld.breakBlock(oldPos.asBlockPos(), true);
-                                        damageType = "broken";
-                                    } else {
-                                        if (graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.AGE_DAMAGE) + graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE) >= 2) {
-                                            damageType = "broken";
-                                        } else {
-                                            damageType = "damaged";
-                                        }
-                                        graveWorld.setBlockState(oldPos.asBlockPos(), graveWorld.getBlockState(oldPos.asBlockPos()).with(TechnicalGravestoneBlock.DEATH_DAMAGE, damage + 1));
-                                    }
-                                    logger("Gravestone (" + graveData + ") " + damageType + " at the position " + posToString(oldPos.asBlockPos()) + " in dimension " + oldPos.dimension.toString());
-                                } else {
-                                    logger("No gravestone was found at the position " + posToString(oldPos.asBlockPos()) + " in dimension " + oldPos.dimension.toString() + ". Most likely this is because the grave has already been collected, or was decayed");
-                                }
+            if (world.getBlockEntity(gravestonePos) instanceof GravestoneBlockEntity gravestone) {
+                insertModData(player, gravestone);
+                gravestone.setGraveOwner(playerProfile);
+                gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
+                insertPlayerItems(gravestone, inventory);
+
+                world.updateListeners(gravestonePos, world.getBlockState(gravestonePos), world.getBlockState(gravestonePos), Block.NOTIFY_LISTENERS);
+
+                logger("Gave Gravestone it's data (graveOwner, spawnDate, and inventory)");
+            } else {
+                logger("Gravestone position does not have a block entity!", LoggerInfoType.ERROR);
+            }
+        }
+
+        if (world instanceof ServerWorld serverWorld) {
+            List<GravestonePosition> oldGravePositions = readAndWriteData(serverWorld, playerProfile, playerName, gravestonePos);
+            if (!Gravestones.GRAVESTONES_DECAY_WITH_DEATHS.getValue()) {
+                logger("Gravestone death damage has been disabled in the config, so no graves were damaged");
+            } else {
+                if (oldGravePositions == null) {
+                    logger("No graves to damage!");
+                } else {
+                    for (GravestonePosition oldPos : oldGravePositions) {
+                        ServerWorld graveWorld = serverWorld.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, oldPos.dimension));
+
+                        if (graveWorld == null) {
+                            logger("GravePosition's dimension (" + oldPos.dimension.toString() + ") does not exist!", LoggerInfoType.ERROR);
+                        } else {
+                            if (!graveWorld.getBlockState(oldPos.asBlockPos()).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL)) {
+                                logger("No gravestone was found at the position " + posToString(oldPos.asBlockPos()) + " in dimension " + oldPos.dimension.toString()
+                                        + ". Most likely this is because the grave has already been collected, or was decayed");
                             } else {
-                                logger("GravePosition's dimension (" + oldPos.dimension.toString() + ") does not exist!", LoggerInfoType.ERROR);
+
+                                int deathDamage = graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE);
+                                int ageDamage = graveWorld.getBlockState(oldPos.asBlockPos()).get(TechnicalGravestoneBlock.AGE_DAMAGE);
+                                String damageType;
+
+                                String graveData = "Age: " + ageDamage + ", Death: " + deathDamage;
+                                if (ageDamage + deathDamage >= 2) {
+                                    damageType = "broken";
+                                    graveWorld.breakBlock(oldPos.asBlockPos(), true);
+                                } else {
+                                    damageType = "damaged";
+                                    graveWorld.setBlockState(oldPos.asBlockPos(), graveWorld.getBlockState(oldPos.asBlockPos()).with(TechnicalGravestoneBlock.DEATH_DAMAGE, deathDamage + 1));
+                                }
+                                logger("Gravestone (" + graveData + ") " + damageType + " at the position " + posToString(oldPos.asBlockPos()) + " in dimension " + oldPos.dimension.toString());
                             }
                         }
-                    } else {
-                        logger("No graves to damage!");
                     }
-                } else {
-                    logger("Gravestone death damage has been disabled in the config, so no graves were damaged");
                 }
             }
-        } else {
-            logger("Nevermind, keepInventory is on!");
         }
         logger("----- ----- Ending Gravestone Work ----- -----");
     }
@@ -151,6 +166,16 @@ public class GravestoneCreation {
         }
 
         logger("Items inserted!");
+    }
+
+    public static void insertModData(PlayerEntity entity, GravestoneBlockEntity gravestone) {
+        logger("Inserting additional mod data into grave...");
+
+        for (ModSupport support : GravestonesApi.getModSupports()) {
+            support.insertData(entity, gravestone);
+        }
+
+        logger("Data inserted!");
     }
 
     private static List<GravestonePosition> readAndWriteData(ServerWorld serverWorld, GameProfile playerProfile, String playerName, BlockPos gravestonePos) {

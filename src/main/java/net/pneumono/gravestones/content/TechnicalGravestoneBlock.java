@@ -6,7 +6,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.FluidState;
@@ -36,7 +35,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.pneumono.gravestones.Gravestones;
-import net.pneumono.gravestones.gravestones.GravestoneTime;
+import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneCreation;
 import org.jetbrains.annotations.Nullable;
@@ -94,6 +94,16 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         createSoulParticles(world, pos);
     }
 
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
+        super.onStacksDropped(state, world, pos, tool, dropExperience);
+        GravestoneBlockEntity entity = (GravestoneBlockEntity)world.getBlockEntity(pos);
+        for (ModSupport support : GravestonesApi.getModSupports()) {
+            support.onBreak(entity);
+        }
+    }
+
     private void createSoulParticles(World world, BlockPos pos) {
         Random random = new Random();
         if (!world.isClient() && world instanceof ServerWorld serverWorld) {
@@ -148,17 +158,6 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        super.onPlaced(world, pos, state, placer, itemStack);
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof GravestoneBlockEntity gravestone && placer instanceof PlayerEntity player) {
-            gravestone.setGraveOwner(player.getGameProfile());
-            gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
-            world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
-        }
-    }
-
-    @Override
     @SuppressWarnings("deprecation")
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone && !world.isClient()) {
@@ -167,6 +166,11 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                 Gravestones.LOGGER.info(player.getName().getString() + " (" + player.getGameProfile().getId() + ") has found their grave at " + GravestoneCreation.posToString(pos));
 
                 GravestoneCreation.logger("Returning items...");
+
+                for (ModSupport support : GravestonesApi.getModSupports()) {
+                    support.onCollect(player, gravestone);
+                }
+
                 PlayerInventory inventory = player.getInventory();
                 for (int i = 0; i < gravestone.size(); ++i) {
                     if (gravestone.getStack(i) != null) {
