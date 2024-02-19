@@ -161,43 +161,41 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Override
     @SuppressWarnings("deprecation")
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (state.isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL) && !world.isClient()) {
-            if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone) {
-                GameProfile graveOwner = gravestone.getGraveOwner();
-                if (Objects.equals(graveOwner, player.getGameProfile()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
-                    Gravestones.LOGGER.info(player.getName().getString() + " (" + player.getGameProfile().getId() + ") has found their grave at " + GravestoneCreation.posToString(pos) + "");
+        if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone && !world.isClient()) {
+            GameProfile graveOwner = gravestone.getGraveOwner();
+            if (Objects.equals(graveOwner, player.getGameProfile()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
+                Gravestones.LOGGER.info(player.getName().getString() + " (" + player.getGameProfile().getId() + ") has found their grave at " + GravestoneCreation.posToString(pos) + "");
 
-                    Gravestones.LOGGER.info("Returning items...");
-                    PlayerInventory inventory = player.getInventory();
-                    for (int i = 0; i < gravestone.size(); ++i) {
-                        if (gravestone.getStack(i) != null) {
-                            if (i < 41 && inventory.getStack(i).isEmpty()) {
-                                inventory.setStack(i, gravestone.getStack(i));
-                            } else {
-                                ItemEntity item = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), gravestone.getStack(i));
-                                world.spawnEntity(item);
-                            }
-
-                            gravestone.removeStack(i);
-                        }
-                    }
-
-                    player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
-                    MinecraftServer server = world.getServer();
-                    if (server != null && Gravestones.BROADCAST_COLLECT_IN_CHAT.getValue()) {
-                        if (Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-                            server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneCreation.posToString(pos)).formatted(Formatting.AQUA), false);
+                Gravestones.LOGGER.info("Returning items...");
+                PlayerInventory inventory = player.getInventory();
+                for (int i = 0; i < gravestone.size(); ++i) {
+                    if (gravestone.getStack(i) != null) {
+                        if (i < 41 && inventory.getStack(i).isEmpty()) {
+                            inventory.setStack(i, gravestone.getStack(i));
                         } else {
-                            server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave", player.getName().getString()).formatted(Formatting.AQUA), false);
+                            ItemEntity item = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), gravestone.getStack(i));
+                            world.spawnEntity(item);
                         }
+
+                        gravestone.removeStack(i);
                     }
-                    world.breakBlock(pos, true);
-                    createSoulParticles(world, pos);
-                } else if (graveOwner != null) {
-                    player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.getName()), true);
-                } else {
-                    player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
                 }
+
+                player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
+                MinecraftServer server = world.getServer();
+                if (server != null && Gravestones.BROADCAST_COLLECT_IN_CHAT.getValue()) {
+                    if (Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
+                        server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneCreation.posToString(pos)).formatted(Formatting.AQUA), false);
+                    } else {
+                        server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave", player.getName().getString()).formatted(Formatting.AQUA), false);
+                    }
+                }
+                world.breakBlock(pos, true);
+                createSoulParticles(world, pos);
+            } else if (graveOwner != null) {
+                player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.getName()), true);
+            } else {
+                player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
             }
         }
 
