@@ -94,8 +94,22 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         super.onBreak(world, pos, state, player);
-//        TODO: drop trinkets
         createSoulParticles(world, pos);
+
+
+
+        Gravestones.LOGGER.info("Returning trinkets...");
+
+        if (state.isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL) && !world.isClient()) {
+            if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone) {
+                var gravestoneTrinkets = gravestone.getTrinkets();
+
+                for (var pair : gravestoneTrinkets) {
+                    ItemEntity item = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), pair.getRight());
+                    world.spawnEntity(item);
+                }
+            }
+        }
     }
 
     private void createSoulParticles(World world, BlockPos pos) {
