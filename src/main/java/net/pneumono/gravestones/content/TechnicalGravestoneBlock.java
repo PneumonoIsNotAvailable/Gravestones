@@ -164,7 +164,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone && !world.isClient()) {
             GameProfile graveOwner = gravestone.getGraveOwner();
             if (Objects.equals(graveOwner, player.getGameProfile()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
-                Gravestones.LOGGER.info(player.getName().getString() + " (" + player.getGameProfile().getId() + ") has found their grave at " + GravestoneCreation.posToString(pos) + "");
+                Gravestones.LOGGER.info(player.getName().getString() + " (" + player.getGameProfile().getId() + ") has found their grave at " + GravestoneCreation.posToString(pos));
 
                 Gravestones.LOGGER.info("Returning items...");
                 PlayerInventory inventory = player.getInventory();
