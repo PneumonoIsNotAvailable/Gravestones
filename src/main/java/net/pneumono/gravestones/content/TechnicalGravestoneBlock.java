@@ -1,6 +1,8 @@
 package net.pneumono.gravestones.content;
 
 import com.mojang.authlib.GameProfile;
+import dev.emi.trinkets.api.TrinketInventory;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -36,6 +38,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.content.entity.SlotReferencePrimitive;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneCreation;
@@ -91,6 +94,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         super.onBreak(world, pos, state, player);
+//        TODO: drop trinkets
         createSoulParticles(world, pos);
     }
 
@@ -158,6 +162,32 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         }
     }
 
+    private TrinketInventory getTrinketInventory(PlayerEntity player, String groupId, String slotId) {
+        var optional = TrinketsApi.getTrinketComponent(player);
+        if (optional.isPresent()) {
+            var group = optional.get().getInventory().get(groupId);
+
+            if (group != null) {
+                return group.get(slotId);
+            }
+        }
+        return null;
+    }
+
+    private boolean moveTrinketToPlayer(PlayerEntity player, SlotReferencePrimitive slot, ItemStack stack) {
+        var playerTrinketInventory = getTrinketInventory(player, slot.groupName(), slot.slotName());
+        if (playerTrinketInventory != null) {
+            for (int i = 0; i < playerTrinketInventory.size(); i++) {
+                if (playerTrinketInventory.getStack(i).isEmpty()) {
+                    playerTrinketInventory.setStack(i, stack);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
@@ -165,7 +195,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
             if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone) {
                 GameProfile graveOwner = gravestone.getGraveOwner();
                 if (Objects.equals(graveOwner, player.getGameProfile()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
-                    Gravestones.LOGGER.info(player.getName().getString() + " (" + player.getGameProfile().getId() + ") has found their grave at " + GravestoneCreation.posToString(pos) + "");
+                    Gravestones.LOGGER.info(player.getName().getString() + " (" + player.getGameProfile().getId() + ") has found their grave at " + GravestoneCreation.posToString(pos));
 
                     Gravestones.LOGGER.info("Returning items...");
                     PlayerInventory inventory = player.getInventory();
@@ -181,6 +211,30 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                             gravestone.removeStack(i);
                         }
                     }
+
+                    var gravestoneTrinkets = gravestone.getTrinkets();
+                    var playerTrinketcomponent = TrinketsApi.getTrinketComponent(player).orElse(null);
+
+                    Gravestones.LOGGER.info("Returning trinkets...");
+
+                    if (playerTrinketcomponent == null) {
+                        for (var pair : gravestoneTrinkets) {
+                            ItemEntity item = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), pair.getRight());
+                            world.spawnEntity(item);
+                        }
+                    } else {
+                        for (var trinketPair: gravestoneTrinkets) {
+                            var slot = trinketPair.getLeft();
+                            var stack = trinketPair.getRight();
+
+                            boolean moved = moveTrinketToPlayer(player, slot, stack);
+                            if (!moved) {
+                                ItemEntity item = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+                                world.spawnEntity(item);
+                            }
+                        }
+                    }
+
 
                     player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
                     MinecraftServer server = world.getServer();

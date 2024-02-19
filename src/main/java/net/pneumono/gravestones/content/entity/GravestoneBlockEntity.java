@@ -18,6 +18,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -35,6 +36,7 @@ import java.util.Random;
 
 public class GravestoneBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
+    private List<Pair<SlotReferencePrimitive, ItemStack>> trinkets = new ArrayList<>();
     private GameProfile graveOwner;
     private String spawnDate;
 
@@ -42,10 +44,21 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         super(GravestonesRegistry.GRAVESTONE_ENTITY, pos, state);
     }
 
+    public void setTrinkets(List<Pair<SlotReferencePrimitive, ItemStack>> trinkets) {
+        this.trinkets = trinkets;
+    }
+
+    public List<Pair<SlotReferencePrimitive, ItemStack>> getTrinkets() {
+        return this.trinkets;
+    }
+
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.inventory);
+
+        nbt.put("gravestone.trinkets", TrinketNbtHelper.serializeSlotData(this.trinkets));
+
         if (this.graveOwner != null) {
             nbt.put("gravestone.owner", NbtHelper.writeGameProfile(new NbtCompound(), this.graveOwner));
         }
@@ -58,6 +71,9 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         Inventories.readNbt(nbt, this.inventory);
+
+        this.trinkets = TrinketNbtHelper.deserializeSlotData(nbt.getCompound("gravestone.trinkets"));
+
         if (nbt.contains("gravestone.owner")) {
             this.graveOwner = NbtHelper.toGameProfile(nbt.getCompound("gravestone.owner"));
         }
@@ -126,7 +142,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
 
                         Random random = new Random();
                         BlockPos finalPos = null;
-                        while (possiblePos.size() > 0) {
+                        while (!possiblePos.isEmpty()) {
                             int randInt = random.nextInt(possiblePos.size());
                             BlockPos possible = possiblePos.get(randInt);
                             possiblePos.remove(randInt);

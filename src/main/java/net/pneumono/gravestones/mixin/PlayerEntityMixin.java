@@ -1,6 +1,8 @@
 package net.pneumono.gravestones.mixin;
 
 import com.mojang.authlib.GameProfile;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +31,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "dropInventory", at = @At("HEAD"), cancellable = true)
     public void spawnGravestone(CallbackInfo ci) {
-        GravestoneCreation.handleGravestones(getWorld(), getBlockPos(), getName().getString(), gameProfile, inventory);
+        TrinketComponent trinketComponent = TrinketsApi.getTrinketComponent(inventory.player).orElse(null);
+        GravestoneCreation.handleGravestones(getWorld(), getBlockPos(), getName().getString(), gameProfile, inventory, trinketComponent);
         ci.cancel();
     }
 }

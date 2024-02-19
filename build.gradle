@@ -6,6 +6,8 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
+var trinkets_version = "3.7.1"
+
 base {
 	archivesName = project.archives_base_name
 }
@@ -21,7 +23,13 @@ repositories {
 	}
 
 	maven {
-		url "https://maven.terraformersmc.com/releases"
+		name = "TerraformersMC"
+		url = "https://maven.terraformersmc.com/"
+	}
+
+	maven {
+		name = "Ladysnake Libs"
+		url = 'https://maven.ladysnake.org/releases'
 	}
 }
 
@@ -42,6 +50,7 @@ fabricApi {
 }
 
 dependencies {
+	modImplementation "dev.emi:trinkets:${trinkets_version}"
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
