@@ -25,7 +25,7 @@ public interface ModSupport {
 
     /**
      * Called when a player collects a gravestone. If owner-only access is disabled in the configs, this may be a player other than the grave's owner.<p>
-     * Keep in mind the fact that {@link ModSupport#onBreak(GravestoneBlockEntity)} will be called after this, so you may need to remove data to prevent it being duplicated<p>
+     * Keep in mind the fact that {@link ModSupport#onBreak(GravestoneBlockEntity)} will be called after this, as well anything other mods have added to the dropInventory method, so you may need to remove data to prevent it being duplicated<p>
      * {@link GravestoneBlockEntity#getModData(String)} can be used to get previously added data.
      *
      * @param player The player collecting the gravestone.
