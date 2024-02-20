@@ -35,8 +35,8 @@
     "gravestones.configs.broadcast_collect_in_chat.tooltip" : "Whether or not grave collection is broadcasted in chat",
     "gravestones.configs.broadcast_coordinates_in_chat" : "Broadcast coordinates",
     "gravestones.configs.broadcast_coordinates_in_chat.tooltip" : "Whether or not the coordinates of placed graves are broadcasted in chat",
-    "gravestones.configs.gravestone_console_info" : "Console info",
-    "gravestones.configs.gravestone_console_info.tooltip" : "Whether or not detailed information about graves is recorded in console",
+    "gravestones.configs.console_info" : "Console info",
+    "gravestones.configs.console_info.tooltip" : "Whether or not detailed information about graves is recorded in console",
     "gravestones.configs.time_format" : "Time format",
     "gravestones.configs.time_format.tooltip" : "Time format"
 }
