@@ -36,9 +36,9 @@ public class Gravestones implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Gravestones");
 
 	public static final BooleanConfiguration AESTHETIC_GRAVESTONES = Configs.register(new BooleanConfiguration(MOD_ID, "aesthetic_gravestones", ConfigEnv.SERVER, true));
-	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_TIME = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_time", ConfigEnv.SERVER, true));
-	public static final BooleanConfiguration GRAVESTONES_DECAY_WITH_DEATHS = Configs.register(new BooleanConfiguration(MOD_ID, "gravestones_decay_with_deaths", ConfigEnv.SERVER, true));
-	public static final TimeConfiguration GRAVESTONE_DECAY_TIME = Configs.register(new TimeConfiguration(MOD_ID, "decay_time", ConfigEnv.SERVER, 8L * TimeUnit.HOURS.getDivision()));
+	public static final BooleanConfiguration DECAY_WITH_TIME = Configs.register(new BooleanConfiguration(MOD_ID, "decay_with_time", ConfigEnv.SERVER, true));
+	public static final BooleanConfiguration DECAY_WITH_DEATHS = Configs.register(new BooleanConfiguration(MOD_ID, "decay_with_deaths", ConfigEnv.SERVER, true));
+	public static final TimeConfiguration DECAY_TIME = Configs.register(new TimeConfiguration(MOD_ID, "decay_time", ConfigEnv.SERVER, 8L * TimeUnit.HOURS.getDivision()));
 	public static final EnumConfiguration<DecayTimeType> GRAVESTONE_DECAY_TIME_TYPE = Configs.register(new EnumConfiguration<>(MOD_ID, "decay_time_type", ConfigEnv.SERVER, DecayTimeType.REAL_TIME));
 	public static final BooleanConfiguration GRAVESTONE_ACCESSIBLE_OWNER_ONLY = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_accessible_owner_only", ConfigEnv.SERVER, true));
 	public static final BooleanConfiguration SPAWN_GRAVESTONE_SKELETONS = Configs.register(new BooleanConfiguration(MOD_ID, "spawn_gravestone_skeletons", ConfigEnv.SERVER, false));
