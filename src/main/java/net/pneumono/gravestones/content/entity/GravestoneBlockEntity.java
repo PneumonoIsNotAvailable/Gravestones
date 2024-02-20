@@ -94,12 +94,12 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
                     if (Gravestones.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
                         difference = world.getTime() - entity.spawnDateTicks;
                     } else if (entity.spawnDateTime != null) {
-                        difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.getCurrentTimeAsString(), entity.spawnDateTime);
+                        difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.getCurrentTimeAsString(), entity.spawnDateTime) * 20;
                     } else {
                         difference = 0;
                     }
 
-                    long timeUnit = Gravestones.GRAVESTONE_DECAY_TIME_HOURS.getValue() * 60 * 60;
+                    long timeUnit = Gravestones.GRAVESTONE_DECAY_TIME.getValue();
                     if (difference > (timeUnit * 3)) {
                         world.breakBlock(blockPos, true);
                     } else if (difference > (timeUnit * 2) && !(state.get(TechnicalGravestoneBlock.AGE_DAMAGE) > 1)) {
