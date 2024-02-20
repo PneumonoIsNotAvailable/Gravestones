@@ -100,12 +100,12 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @SuppressWarnings("deprecation")
     public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
         super.onStacksDropped(state, world, pos, tool, dropExperience);
-        GravestoneBlockEntity entity = (GravestoneBlockEntity)world.getBlockEntity(pos);
+        BlockEntity entity = world.getBlockEntity(pos);
 
-        if (entity != null) {
-            ExperienceOrbEntity.spawn(world, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), entity.getExperience());
+        if (entity instanceof GravestoneBlockEntity gravestone) {
+            ExperienceOrbEntity.spawn(world, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
             for (ModSupport support : GravestonesApi.getModSupports()) {
-                support.onBreak(entity);
+                support.onBreak(gravestone);
             }
         }
     }
@@ -187,7 +187,8 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                 }
 
                 if (world instanceof ServerWorld serverWorld) {
-                    ExperienceOrbEntity.spawn(serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperience());
+                    ExperienceOrbEntity.spawn(serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
+                    gravestone.setExperience(0);
                 }
 
                 for (ModSupport support : GravestonesApi.getModSupports()) {

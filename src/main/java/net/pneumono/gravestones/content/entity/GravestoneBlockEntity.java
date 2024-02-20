@@ -266,6 +266,15 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         return experience;
     }
 
+    public int getExperienceToDrop(BlockState state) {
+        int experience = getExperience();
+        if (Gravestones.EXPERIENCE_DECAY.getValue()) {
+            return experience / (state.get(TechnicalGravestoneBlock.DAMAGE) + 1);
+        } else {
+            return experience;
+        }
+    }
+
     public void setExperience(int experience) {
         this.experience = experience;
     }
