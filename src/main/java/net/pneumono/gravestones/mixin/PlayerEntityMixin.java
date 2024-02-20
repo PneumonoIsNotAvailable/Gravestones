@@ -23,9 +23,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    @Inject(method = "dropInventory", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "dropInventory", at = @At("HEAD"))
     public void spawnGravestone(CallbackInfo ci) {
         GravestoneCreation.handleGravestones(inventory.player);
-        ci.cancel();
     }
 }

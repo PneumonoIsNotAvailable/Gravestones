@@ -46,6 +46,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
 
     public GravestoneBlockEntity(BlockPos pos, BlockState state) {
         super(GravestonesRegistry.GRAVESTONE_ENTITY, pos, state);
+        this.modData = new NbtList();
     }
 
     @Override
@@ -257,16 +258,25 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     }
 
     /**
-     * Adds data from other mods to the gravestone.
+     * Adds data from other mods to the gravestone. If the mod ID is already in use, replaces the data.
      *
      * @param modID The mod ID of the mod adding data.
-     * @param compound The data being added.
+     * @param data The data being added.
      */
-    public void addModData(String modID, NbtCompound compound) {
-        NbtCompound nbt = new NbtCompound();
-        nbt.putString("modID", modID);
-        nbt.put("data", compound);
-        modData.add(nbt);
+    public void addOrReplaceModData(String modID, NbtCompound data) {
+        NbtList newData = new NbtList();
+        for (NbtElement element : modData) {
+            if (!(element instanceof NbtCompound compound && compound.contains("modID") && Objects.equals(compound.getString("modID"), modID))) {
+                newData.add(element);
+            }
+        }
+
+        NbtCompound compound = new NbtCompound();
+        compound.putString("modID", modID);
+        compound.put("data", data);
+
+        newData.add(compound);
+        modData = newData;
     }
 
     /**
@@ -279,10 +289,14 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         for (int i = 0; i < modData.size(); ++i) {
             NbtCompound nbt = modData.getCompound(i);
             if (nbt != null && nbt.contains("modID") && Objects.equals(nbt.getString("modID"), modID)) {
-                return nbt;
+                return nbt.getCompound("data");
             }
         }
         return null;
+    }
+
+    public NbtList getAllModData() {
+        return modData;
     }
 
     @Override

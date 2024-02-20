@@ -11,7 +11,7 @@ public class GravestonesApi {
     }
 
     /**
-     * Registers a list of instructions (ModSupport instance) so that data from other mods can also be saved into gravestones if they are present.
+     * Registers a list of instructions (ModSupport instance) so that data from other mods can also be saved into gravestones if necessary.
      *
      * @param support ModSupport instance
      */
