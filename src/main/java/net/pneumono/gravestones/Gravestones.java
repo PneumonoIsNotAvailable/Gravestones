@@ -40,6 +40,7 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration DECAY_WITH_DEATHS = Configs.register(new BooleanConfiguration(MOD_ID, "decay_with_deaths", ConfigEnv.SERVER, true));
 	public static final TimeConfiguration DECAY_TIME = Configs.register(new TimeConfiguration(MOD_ID, "decay_time", ConfigEnv.SERVER, 8L * TimeUnit.HOURS.getDivision()));
 	public static final EnumConfiguration<DecayTimeType> GRAVESTONE_DECAY_TIME_TYPE = Configs.register(new EnumConfiguration<>(MOD_ID, "decay_time_type", ConfigEnv.SERVER, DecayTimeType.REAL_TIME));
+	public static final BooleanConfiguration STORE_EXPERIENCE = Configs.register(new BooleanConfiguration(MOD_ID, "store_experience", ConfigEnv.SERVER, true));
 	public static final BooleanConfiguration GRAVESTONE_ACCESSIBLE_OWNER_ONLY = Configs.register(new BooleanConfiguration(MOD_ID, "gravestone_accessible_owner_only", ConfigEnv.SERVER, true));
 	public static final BooleanConfiguration SPAWN_GRAVESTONE_SKELETONS = Configs.register(new BooleanConfiguration(MOD_ID, "spawn_gravestone_skeletons", ConfigEnv.SERVER, false));
 	public static final BooleanConfiguration BROADCAST_COLLECT_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_collect_in_chat", ConfigEnv.SERVER, false));
@@ -87,6 +88,7 @@ public class Gravestones implements ModInitializer {
 									}
 
 									context.getSource().sendMessage(Text.literal("Gravestone has the following items" + itemMessage).formatted(Formatting.GOLD));
+									context.getSource().sendMessage(Text.literal("Gravestone has " + entity.getExperience() + " experience points").formatted(Formatting.GOLD));
 									context.getSource().sendMessage(Text.literal("Gravestone has the following mod data" + entity.getAllModData().toString()).formatted(Formatting.GOLD));
 								}
 								return 1;

@@ -5,6 +5,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -29,6 +30,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -99,8 +101,12 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
         super.onStacksDropped(state, world, pos, tool, dropExperience);
         GravestoneBlockEntity entity = (GravestoneBlockEntity)world.getBlockEntity(pos);
-        for (ModSupport support : GravestonesApi.getModSupports()) {
-            support.onBreak(entity);
+
+        if (entity != null) {
+            ExperienceOrbEntity.spawn(world, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), entity.getExperience());
+            for (ModSupport support : GravestonesApi.getModSupports()) {
+                support.onBreak(entity);
+            }
         }
     }
 
@@ -166,11 +172,6 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                 Gravestones.LOGGER.info(player.getName().getString() + " (" + player.getGameProfile().getId() + ") has found their grave at " + GravestoneCreation.posToString(pos));
 
                 GravestoneCreation.logger("Returning items...");
-
-                for (ModSupport support : GravestonesApi.getModSupports()) {
-                    support.onCollect(player, gravestone);
-                }
-
                 PlayerInventory inventory = player.getInventory();
                 for (int i = 0; i < gravestone.size(); ++i) {
                     if (gravestone.getStack(i) != null) {
@@ -183,6 +184,14 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
 
                         gravestone.removeStack(i);
                     }
+                }
+
+                if (world instanceof ServerWorld serverWorld) {
+                    ExperienceOrbEntity.spawn(serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperience());
+                }
+
+                for (ModSupport support : GravestonesApi.getModSupports()) {
+                    support.onCollect(player, gravestone);
                 }
 
                 player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);

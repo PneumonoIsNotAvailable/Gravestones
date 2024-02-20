@@ -39,6 +39,7 @@ import java.util.Random;
 
 public class GravestoneBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
+    private int experience;
     private NbtList modData;
     private GameProfile graveOwner;
     private String spawnDateTime;
@@ -53,6 +54,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.inventory);
+        nbt.putInt("experience", this.experience);
         if (this.graveOwner != null) {
             nbt.put("owner", NbtHelper.writeGameProfile(new NbtCompound(), this.graveOwner));
         }
@@ -71,6 +73,9 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         Inventories.readNbt(nbt, this.inventory);
+        if (nbt.contains("experience")) {
+            this.experience = nbt.getInt("experience");
+        }
         if (nbt.contains("owner")) {
             this.graveOwner = NbtHelper.toGameProfile(nbt.getCompound("owner"));
         }
@@ -88,7 +93,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     public static void tick(World world, BlockPos blockPos, BlockState state, GravestoneBlockEntity entity) {
         if (world.getTime() % 20 == 0) {
             if (!world.isClient()) {
-                if (Gravestones.GRAVESTONES_DECAY_WITH_TIME.getValue() && entity.graveOwner != null) {
+                if (Gravestones.DECAY_WITH_TIME.getValue() && entity.graveOwner != null) {
                     long difference;
 
                     if (Gravestones.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
@@ -99,7 +104,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
                         difference = 0;
                     }
 
-                    long timeUnit = Gravestones.GRAVESTONE_DECAY_TIME.getValue();
+                    long timeUnit = Gravestones.DECAY_TIME.getValue();
                     if (difference > (timeUnit * 3)) {
                         world.breakBlock(blockPos, true);
                     } else if (difference > (timeUnit * 2) && !(state.get(TechnicalGravestoneBlock.AGE_DAMAGE) > 1)) {
@@ -255,6 +260,14 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
 
     public String getSpawnDateTime() {
         return this.spawnDateTime;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public void setExperience(int experience) {
+        this.experience = experience;
     }
 
     /**

@@ -81,7 +81,6 @@ public class GravestoneCreation {
         BlockPos playerPos = player.getBlockPos();
         String playerName = player.getName().getString();
         GameProfile playerProfile = player.getGameProfile();
-        PlayerInventory inventory = player.getInventory();
 
         if (world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             logger("Nevermind, keepInventory is on!");
@@ -103,7 +102,7 @@ public class GravestoneCreation {
             if (world.getBlockEntity(gravestonePos) instanceof GravestoneBlockEntity gravestone) {
                 gravestone.setGraveOwner(playerProfile);
                 gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
-                insertPlayerItems(gravestone, inventory);
+                insertPlayerItemsAndExperience(gravestone, player);
                 insertModData(player, gravestone);
 
                 world.updateListeners(gravestonePos, world.getBlockState(gravestonePos), world.getBlockState(gravestonePos), Block.NOTIFY_LISTENERS);
@@ -116,7 +115,7 @@ public class GravestoneCreation {
 
         if (world instanceof ServerWorld serverWorld) {
             List<GravestonePosition> oldGravePositions = readAndWriteData(serverWorld, playerProfile, playerName, gravestonePos);
-            if (!Gravestones.GRAVESTONES_DECAY_WITH_DEATHS.getValue()) {
+            if (!Gravestones.DECAY_WITH_DEATHS.getValue()) {
                 logger("Gravestone death damage has been disabled in the config, so no graves were damaged");
             } else {
                 if (oldGravePositions == null) {
@@ -155,8 +154,9 @@ public class GravestoneCreation {
         logger("----- ----- Ending Gravestone Work ----- -----");
     }
 
-    public static void insertPlayerItems(GravestoneBlockEntity gravestone, PlayerInventory inventory) {
-        logger("Inserting Inventory items into grave...");
+    public static void insertPlayerItemsAndExperience(GravestoneBlockEntity gravestone, PlayerEntity player) {
+        logger("Inserting Inventory items and experience into grave...");
+        PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
             if (EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, inventory.getStack(i)) == 0) {
                 gravestone.setStack(i, inventory.removeStack(i));
@@ -166,6 +166,17 @@ public class GravestoneCreation {
         }
 
         logger("Items inserted!");
+
+        if (Gravestones.STORE_EXPERIENCE.getValue()) {
+            gravestone.setExperience(player.getXpToDrop());
+            player.experienceProgress = 0;
+            player.experienceLevel = 0;
+            player.totalExperience = 0;
+
+            logger("Experience inserted!");
+        } else {
+            logger("Experience storing is disabled!");
+        }
     }
 
     public static void insertModData(PlayerEntity entity, GravestoneBlockEntity gravestone) {
