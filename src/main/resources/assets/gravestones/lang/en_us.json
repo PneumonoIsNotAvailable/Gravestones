@@ -38,5 +38,5 @@
     "configs.gravestones.console_info" : "Console info",
     "configs.gravestones.console_info.tooltip" : "Whether or not detailed information about graves is recorded in console",
     "configs.gravestones.time_format" : "Time format",
-    "configs.gravestones.time_format.tooltip" : "Time format"
+    "configs.gravestones.time_format.tooltip" : "The format of the death time shown on gravestones"
 }
