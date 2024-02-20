@@ -21,7 +21,12 @@ repositories {
 	}
 
 	maven {
-		url "https://maven.terraformersmc.com/releases"
+		name = "TerraformersMC"
+		url = "https://maven.terraformersmc.com/"
+	}
+	maven {
+		name = "Ladysnake Libs"
+		url = 'https://maven.ladysnake.org/releases'
 	}
 }
 
@@ -55,6 +60,9 @@ dependencies {
 
 	// ModMenu
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+	// Trinkets
+	modImplementation "dev.emi:trinkets:${project.trinkets_version}"
 
 	// Uncomment the following line to enable the deprecated Fabric API modules. 
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.

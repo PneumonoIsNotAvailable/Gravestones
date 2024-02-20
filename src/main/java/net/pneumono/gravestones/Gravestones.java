@@ -47,8 +47,6 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "console_info", ConfigEnv.CLIENT, false));
 	public static final StringConfiguration TIME_FORMAT = Configs.register(new StringConfiguration(MOD_ID, "time_format", ConfigEnv.CLIENT, "MM/dd/yyyy HH:mm:ss"));
 
-	public static boolean trinketsEnabled = false;
-
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing Gravestones");
@@ -56,7 +54,10 @@ public class Gravestones implements ModInitializer {
 
 		GravestonesRegistry.registerModContent();
 		registerCommands();
-		trinketsEnabled = FabricLoader.getInstance().isModLoaded("trinkets");
+
+		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
+			TrinketsSupport.register();
+		}
 	}
 
 	private void registerCommands() {
@@ -72,7 +73,7 @@ public class Gravestones implements ModInitializer {
 
 								if (!(world.getBlockState(pos).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL))) {
 									context.getSource().sendMessage(Text.literal("No gravestone at that position!").formatted(Formatting.RED));
-								} else if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity entity){
+								} else if (world.getBlockEntity(pos) instanceof GravestoneBlockEntity entity) {
 									GameProfile owner = entity.getGraveOwner();
 									if (owner != null) {
 										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.getName() + ", " + owner.getId().toString()).formatted(Formatting.GREEN));
@@ -86,6 +87,7 @@ public class Gravestones implements ModInitializer {
 									}
 
 									context.getSource().sendMessage(Text.literal("Gravestone has the following items" + itemMessage).formatted(Formatting.GOLD));
+									context.getSource().sendMessage(Text.literal("Gravestone has the following mod data" + entity.getAllModData().toString()).formatted(Formatting.GOLD));
 								}
 								return 1;
 							})
