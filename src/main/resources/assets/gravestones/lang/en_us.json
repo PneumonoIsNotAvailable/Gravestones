@@ -24,7 +24,7 @@
     "configs.gravestones.decay_time" : "Time to decay",
     "configs.gravestones.decay_time.tooltip" : "The amount of time it takes for gravestones to be damaged by time (if enabled)",
     "configs.gravestones.decay_time_type" : "Decay time measurement",
-    "configs.gravestones.decay_time_type.tooltip" : "Whether decay time is based on real-world time, or time the server is active",
+    "configs.gravestones.decay_time_type.tooltip" : "Whether decay time is based on real-world time (Real Time), or time the server is active (Ticks). Gravestone decay will occur regardless of whether chunks are loaded",
     "configs.gravestones.decay_time_type.ticks": "Ticks",
     "configs.gravestones.decay_time_type.real_time": "Real Time",
     "configs.gravestones.gravestone_accessible_owner_only" : "Owner-only access",
