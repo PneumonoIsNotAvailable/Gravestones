@@ -2,12 +2,11 @@ package net.pneumono.gravestones;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import net.pneumono.pneumonocore.config.ConfigOptionsScreen;
-import net.pneumono.pneumonocore.config.Configs;
+import net.pneumono.pneumonocore.PneumonoCoreModMenu;
 
 public class GravestonesModMenu implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return Configs.hasConfigs(Gravestones.MOD_ID) ? parent -> new ConfigOptionsScreen(parent, Gravestones.MOD_ID) : null;
+        return PneumonoCoreModMenu.getModConfigScreenFactory(Gravestones.MOD_ID);
     }
 }
