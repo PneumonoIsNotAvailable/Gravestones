@@ -11,6 +11,7 @@ import net.minecraft.util.math.RotationAxis;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
+import net.pneumono.gravestones.gravestones.TimeFormatType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,37 +34,44 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
 
         // Name
         GameProfile profile = entity.getGraveOwner();
-        Text text;
-        float scale;
+        Text name;
+        float scale = 0.15f;
+        matrices.scale(scale, scale, scale);
         if (profile != null) {
-            text = Text.literal(profile.getName());
-            scale = 0.1f;
-            matrices.scale(scale, scale, scale);
+            name = Text.literal(profile.getName());
 
-            this.textRenderer.draw(text, (float) (-this.textRenderer.getWidth(text) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
-            matrices.scale(1 / scale, 1 / scale, 1 / scale);
+            this.textRenderer.draw(name, (float) (-this.textRenderer.getWidth(name) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
         }
 
         // Date
         String spawnDateTime = entity.getSpawnDateTime();
+        Text date;
+        Text time;
         try {
             if (spawnDateTime != null) {
                 SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
-                SimpleDateFormat toClient = new SimpleDateFormat(Gravestones.TIME_FORMAT.getValue().getFormat());
-                text = Text.literal(toClient.format(fromServer.parse(spawnDateTime)));
+                TimeFormatType type = Gravestones.TIME_FORMAT.getValue();
+                SimpleDateFormat toClientDate = new SimpleDateFormat(type.getDateFormat());
+                SimpleDateFormat toClientTime = new SimpleDateFormat(type.getTimeFormat());
+
+                date = Text.literal(toClientDate.format(fromServer.parse(spawnDateTime)));
+                time = Text.literal(toClientTime.format(fromServer.parse(spawnDateTime)));
             } else {
-                text = Text.literal("");
+                date = Text.literal("");
+                time = Text.literal("");
             }
         } catch (ParseException e) {
-            text = Text.literal("");
+            date = Text.literal("");
+            time = Text.literal("");
         }
 
-        if (!Objects.equals(text.getString(), "")) {
-            matrices.translate(0, 2, 0);
-            scale = 0.1f;
-            matrices.scale(scale, scale, scale);
+        if (!Objects.equals(date.getString(), "")) {
+            matrices.translate(0, 2 * (1 / scale), 0);
 
-            this.textRenderer.draw(text, (float) (-this.textRenderer.getWidth(text) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
+            this.textRenderer.draw(date, (float) (-this.textRenderer.getWidth(date) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
+
+            matrices.translate(0, 2 * (1 / scale), 0);
+            this.textRenderer.draw(time, (float) (-this.textRenderer.getWidth(time) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
         }
 
         matrices.pop();
