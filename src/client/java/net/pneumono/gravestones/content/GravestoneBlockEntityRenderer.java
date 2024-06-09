@@ -37,7 +37,7 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
         float scale;
         if (profile != null) {
             text = Text.literal(profile.getName());
-            scale = 10F / this.textRenderer.getWidth(text);
+            scale = 0.1f;
             matrices.scale(scale, scale, scale);
 
             this.textRenderer.draw(text, (float) (-this.textRenderer.getWidth(text) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
@@ -59,8 +59,8 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
         }
 
         if (!Objects.equals(text.getString(), "")) {
-            matrices.translate(0, 3, 0);
-            scale = 10F / this.textRenderer.getWidth(text);
+            matrices.translate(0, 2, 0);
+            scale = 0.1f;
             matrices.scale(scale, scale, scale);
 
             this.textRenderer.draw(text, (float) (-this.textRenderer.getWidth(text) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
