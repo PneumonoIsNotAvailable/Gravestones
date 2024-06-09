@@ -39,10 +39,10 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
         matrices.scale(scale, scale, scale);
         if (profile != null) {
             name = Text.literal(profile.getName());
-            this.textRenderer.draw(name, (float) (-this.textRenderer.getWidth(name) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
+            draw(name, matrices, vertexConsumers, light);
         }
 
-        // Date
+        // Date & Time
         String spawnDateTime = entity.getSpawnDateTime();
         Text date = Text.literal("");
         Text time = Text.literal("");
@@ -58,15 +58,20 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
             }
         } catch (ParseException ignored) {}
 
+        matrices.translate(0, 2 * (1 / scale), 0);
         if (!Objects.equals(date.getString(), "")) {
-            matrices.translate(0, 2 * (1 / scale), 0);
+            draw(date, matrices, vertexConsumers, light);
+        }
 
-            this.textRenderer.draw(date, (float) (-this.textRenderer.getWidth(date) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
-
-            matrices.translate(0, 2 * (1 / scale), 0);
-            this.textRenderer.draw(time, (float) (-this.textRenderer.getWidth(time) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
+        matrices.translate(0, 2 * (1 / scale), 0);
+        if (!Objects.equals(time.getString(), "")) {
+            draw(time, matrices, vertexConsumers, light);
         }
 
         matrices.pop();
+    }
+
+    public void draw(Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        this.textRenderer.draw(text, (float) (-this.textRenderer.getWidth(text) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
     }
 }
