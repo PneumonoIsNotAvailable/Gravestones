@@ -39,14 +39,13 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
         matrices.scale(scale, scale, scale);
         if (profile != null) {
             name = Text.literal(profile.getName());
-
             this.textRenderer.draw(name, (float) (-this.textRenderer.getWidth(name) / 2), 0.0F, 0x000000, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
         }
 
         // Date
         String spawnDateTime = entity.getSpawnDateTime();
-        Text date;
-        Text time;
+        Text date = Text.literal("");
+        Text time = Text.literal("");
         try {
             if (spawnDateTime != null) {
                 SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
@@ -56,14 +55,8 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
 
                 date = Text.literal(toClientDate.format(fromServer.parse(spawnDateTime)));
                 time = Text.literal(toClientTime.format(fromServer.parse(spawnDateTime)));
-            } else {
-                date = Text.literal("");
-                time = Text.literal("");
             }
-        } catch (ParseException e) {
-            date = Text.literal("");
-            time = Text.literal("");
-        }
+        } catch (ParseException ignored) {}
 
         if (!Objects.equals(date.getString(), "")) {
             matrices.translate(0, 2 * (1 / scale), 0);
