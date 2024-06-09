@@ -18,6 +18,7 @@ import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.DecayTimeType;
 import net.pneumono.gravestones.gravestones.GravestoneData;
 import net.pneumono.gravestones.gravestones.GravestonePosition;
+import net.pneumono.gravestones.gravestones.TimeFormatType;
 import net.pneumono.pneumonocore.config.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration BROADCAST_COLLECT_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_collect_in_chat", ConfigEnv.SERVER, false));
 	public static final BooleanConfiguration BROADCAST_COORDINATES_IN_CHAT = Configs.register(new BooleanConfiguration(MOD_ID, "broadcast_coordinates_in_chat", ConfigEnv.SERVER, false));
 	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "console_info", ConfigEnv.CLIENT, false));
-	public static final StringConfiguration TIME_FORMAT = Configs.register(new StringConfiguration(MOD_ID, "time_format", ConfigEnv.CLIENT, "MM/dd/yyyy HH:mm:ss"));
+	public static final EnumConfiguration<TimeFormatType> TIME_FORMAT = Configs.register(new EnumConfiguration<>(MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormatType.MMDDYYYY));
 
 	@Override
 	public void onInitialize() {
