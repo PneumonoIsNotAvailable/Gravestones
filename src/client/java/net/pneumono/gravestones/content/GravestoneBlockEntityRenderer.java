@@ -35,7 +35,7 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Graves
         // Name
         GameProfile profile = entity.getGraveOwner();
         Text name;
-        float scale = 0.15f;
+        float scale = 1f / 7f;
         matrices.scale(scale, scale, scale);
         if (profile != null) {
             name = Text.literal(profile.getName());
