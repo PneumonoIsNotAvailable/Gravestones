@@ -22,6 +22,7 @@ import net.minecraft.stat.StatFormatter;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.pneumonocore.migration.Migration;
 
@@ -35,12 +36,11 @@ public class GravestonesRegistry {
     public static final Block GRAVESTONE_DAMAGED = registerAestheticGravestone("gravestone_damaged",
             new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
 
-    public static final TagKey<Block> TAG_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, new Identifier(Gravestones.MOD_ID, "gravestone_irreplaceable"));
-
-    public static final Identifier GRAVESTONES_COLLECTED = new Identifier(Gravestones.MOD_ID, "gravestones_collected");
-
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "technical_gravestone"), FabricBlockEntityTypeBuilder.create(TechnicalGravestoneBlockEntity::new, GravestonesRegistry.GRAVESTONE_TECHNICAL).build()
+            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "technical_gravestone"), FabricBlockEntityTypeBuilder.create(TechnicalGravestoneBlockEntity::new, GRAVESTONE_TECHNICAL).build()
+    );
+    public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
+            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(AestheticGravestoneBlockEntity::new, GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
@@ -51,6 +51,10 @@ public class GravestonesRegistry {
                     .trackRangeBlocks(8)
                     .build()
     );
+
+    public static final TagKey<Block> TAG_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, new Identifier(Gravestones.MOD_ID, "gravestone_irreplaceable"));
+
+    public static final Identifier GRAVESTONES_COLLECTED = new Identifier(Gravestones.MOD_ID, "gravestones_collected");
 
     private static Block registerTechnicalGravestone(Block block) {
         return Registry.register(Registries.BLOCK, new Identifier(Gravestones.MOD_ID, "gravestone_technical"), block);

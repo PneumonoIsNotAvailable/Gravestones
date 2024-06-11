@@ -9,6 +9,7 @@
     "gravestones.player_collected_grave": "%s has found their grave!",
     "gravestones.player_collected_grave_at_coords": "%1$s has found their grave at %2$s!",
     "gravestones.grave_spawned": "%1$s's grave is at %2$s",
+    "gravestones.edit_text": "Edit Gravestone Message",
 
     "entity.gravestones.gravestone_skeleton": "Gravestone Skeleton",
 

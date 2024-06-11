@@ -15,14 +15,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
@@ -30,14 +28,16 @@ import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.gravestones.DecayTimeType;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
-import org.jetbrains.annotations.Nullable;
+import net.pneumono.gravestones.gravestones.TimeFormatType;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class TechnicalGravestoneBlockEntity extends BlockEntity implements ImplementedInventory {
+public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
     private int experience;
     private NbtList modData;
@@ -73,19 +73,19 @@ public class TechnicalGravestoneBlockEntity extends BlockEntity implements Imple
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         Inventories.readNbt(nbt, this.inventory);
-        if (nbt.contains("experience")) {
+        if (nbt.contains("experience", NbtElement.INT_TYPE)) {
             this.experience = nbt.getInt("experience");
         }
-        if (nbt.contains("owner")) {
+        if (nbt.contains("owner", NbtElement.COMPOUND_TYPE)) {
             this.graveOwner = NbtHelper.toGameProfile(nbt.getCompound("owner"));
         }
-        if (nbt.contains("spawnDateTime")) {
+        if (nbt.contains("spawnDateTime", NbtElement.STRING_TYPE)) {
             this.spawnDateTime = nbt.getString("spawnDateTime");
         }
-        if (nbt.contains("spawnDateTicks")) {
+        if (nbt.contains("spawnDateTicks", NbtElement.LONG_TYPE)) {
             this.spawnDateTicks = nbt.getLong("spawnDateTicks");
         }
-        if (nbt.contains("modData")) {
+        if (nbt.contains("modData", NbtElement.LIST_TYPE)) {
             this.modData = nbt.getList("modData", NbtElement.COMPOUND_TYPE);
         }
     }
@@ -232,17 +232,6 @@ public class TechnicalGravestoneBlockEntity extends BlockEntity implements Imple
         return entityCount;
     }
 
-    @Nullable
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
-    }
-
     public void setGraveOwner(GameProfile graveOwner) {
         this.graveOwner = graveOwner;
         this.markDirty();
@@ -324,5 +313,35 @@ public class TechnicalGravestoneBlockEntity extends BlockEntity implements Imple
     @Override
     public DefaultedList<ItemStack> getItems() {
         return this.inventory;
+    }
+
+    @Override
+    public Direction getGravestoneDirection() {
+        return Direction.NORTH;
+    }
+
+    @Override
+    public String getGravestoneTextLine(int line) {
+        return switch (line) {
+            case 0 -> getGraveOwner().getName();
+            case 1 -> getGravestoneTimeLines(true);
+            case 2 -> getGravestoneTimeLines(false);
+            default -> "";
+        };
+    }
+
+    private String getGravestoneTimeLines(boolean line1) {
+        String spawnDateTime = getSpawnDateTime();
+        String text = "";
+        if (spawnDateTime != null) {
+            try {
+                SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
+                TimeFormatType type = Gravestones.TIME_FORMAT.getValue();
+
+                SimpleDateFormat toClient = new SimpleDateFormat(line1 ? type.getDateFormat() : type.getTimeFormat());
+                text = toClient.format(fromServer.parse(spawnDateTime));
+            } catch (ParseException ignored) {}
+        }
+        return text;
     }
 }

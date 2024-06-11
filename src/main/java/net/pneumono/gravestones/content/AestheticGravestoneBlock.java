@@ -1,6 +1,7 @@
 package net.pneumono.gravestones.content;
 
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -10,9 +11,12 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Hand;
 import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -21,12 +25,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class AestheticGravestoneBlock extends Block implements Waterloggable {
+public class AestheticGravestoneBlock extends BlockWithEntity implements Waterloggable {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
@@ -106,9 +111,15 @@ public class AestheticGravestoneBlock extends Block implements Waterloggable {
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
 
     @Override
-    @SuppressWarnings("deprecation")
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        // In the future, this will open a text editing screen
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
     @Override
@@ -130,5 +141,11 @@ public class AestheticGravestoneBlock extends Block implements Waterloggable {
     @Override
     public boolean isEnabled(FeatureSet enabledFeatures) {
         return Gravestones.AESTHETIC_GRAVESTONES.getValue() && super.isEnabled(enabledFeatures);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new AestheticGravestoneBlockEntity(pos, state);
     }
 }
