@@ -6,14 +6,17 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.Waterloggable;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -253,6 +256,11 @@ public class GravestoneCreation {
 
     private static void placeGravestoneAtPos(World world, BlockPos blockPos) {
         BlockState gravestoneBlock = GravestonesRegistry.GRAVESTONE_TECHNICAL.getDefaultState();
+        BlockState replacedBlock = world.getBlockState(blockPos);
+        if (replacedBlock.getFluidState().isIn(FluidTags.WATER) || (replacedBlock.getBlock() instanceof Waterloggable && replacedBlock.get(Properties.WATERLOGGED))) {
+            gravestoneBlock = gravestoneBlock.with(Properties.WATERLOGGED, true);
+        }
+
         world.breakBlock(blockPos, true);
         world.setBlockState(blockPos, gravestoneBlock);
     }
