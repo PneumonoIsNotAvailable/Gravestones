@@ -5,7 +5,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -25,7 +24,6 @@ import net.pneumono.gravestones.Gravestones;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.Random;
 import java.util.stream.Stream;
 
 public class AestheticGravestoneBlock extends Block implements Waterloggable {
@@ -80,14 +78,6 @@ public class AestheticGravestoneBlock extends Block implements Waterloggable {
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         super.onBreak(world, pos, state, player);
-        createSoulParticles(world, pos);
-    }
-
-    private void createSoulParticles(World world, BlockPos pos) {
-        Random random = new Random();
-        for(int i = 0; i < 8; ++i) {
-            world.addParticle(ParticleTypes.SOUL, pos.getX() + (random.nextFloat() * 0.6) + 0.2, pos.getY() + (random.nextFloat() / 10) + 0.1, pos.getZ() + (random.nextFloat() * 0.6) + 0.2, ((double) random.nextFloat() - 0.5) * 0.08, ((double) random.nextFloat() - 0.5) * 0.08, ((double) random.nextFloat() - 0.5) * 0.08);
-        }
     }
 
     private static final VoxelShape SHAPE_N = Stream.of(
