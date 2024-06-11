@@ -27,7 +27,7 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
-import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
+import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,7 +104,7 @@ public class GravestoneCreation {
                 server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)).formatted(Formatting.AQUA), false);
             }
 
-            if (world.getBlockEntity(gravestonePos) instanceof GravestoneBlockEntity gravestone) {
+            if (world.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone) {
                 gravestone.setGraveOwner(playerProfile);
                 gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
                 insertPlayerItemsAndExperience(gravestone, player);
@@ -159,7 +159,7 @@ public class GravestoneCreation {
         logger("----- ----- Ending Gravestone Work ----- -----");
     }
 
-    public static void insertPlayerItemsAndExperience(GravestoneBlockEntity gravestone, PlayerEntity player) {
+    public static void insertPlayerItemsAndExperience(TechnicalGravestoneBlockEntity gravestone, PlayerEntity player) {
         logger("Inserting Inventory items and experience into grave...");
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
@@ -184,7 +184,7 @@ public class GravestoneCreation {
         }
     }
 
-    public static void insertModData(PlayerEntity entity, GravestoneBlockEntity gravestone) {
+    public static void insertModData(PlayerEntity entity, TechnicalGravestoneBlockEntity gravestone) {
         logger("Inserting additional mod data into grave...");
 
         for (ModSupport support : GravestonesApi.getModSupports()) {

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class GravestoneBlockEntity extends BlockEntity implements ImplementedInventory {
+public class TechnicalGravestoneBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
     private int experience;
     private NbtList modData;
@@ -45,7 +45,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     private String spawnDateTime;
     private long spawnDateTicks;
 
-    public GravestoneBlockEntity(BlockPos pos, BlockState state) {
+    public TechnicalGravestoneBlockEntity(BlockPos pos, BlockState state) {
         super(GravestonesRegistry.GRAVESTONE_ENTITY, pos, state);
         this.modData = new NbtList();
     }
@@ -90,7 +90,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         }
     }
 
-    public static void tick(World world, BlockPos blockPos, BlockState state, GravestoneBlockEntity entity) {
+    public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
         if (world.getTime() % 20 == 0) {
             if (!world.isClient()) {
                 if (Gravestones.DECAY_WITH_TIME.getValue() && entity.graveOwner != null) {
@@ -204,7 +204,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
 
         boolean ownerNearby = false;
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
-        if (blockEntity instanceof GravestoneBlockEntity gravestone) {
+        if (blockEntity instanceof TechnicalGravestoneBlockEntity gravestone) {
             Box box = new Box(blockPos.down(5).south(5).west(5), blockPos.up(5).north(5).east(5));
             List<Entity> entities = world.getOtherEntities(null, box);
             for (Entity tempEntity : entities) {

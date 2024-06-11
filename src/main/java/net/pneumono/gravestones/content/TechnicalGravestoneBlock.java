@@ -39,7 +39,7 @@ import net.minecraft.world.WorldAccess;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
-import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
+import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneCreation;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,7 +102,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         super.onStacksDropped(state, world, pos, tool, dropExperience);
         BlockEntity entity = world.getBlockEntity(pos);
 
-        if (entity instanceof GravestoneBlockEntity gravestone) {
+        if (entity instanceof TechnicalGravestoneBlockEntity gravestone) {
             ExperienceOrbEntity.spawn(world, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
             for (ModSupport support : GravestonesApi.getModSupports()) {
                 support.onBreak(gravestone);
@@ -155,8 +155,8 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof GravestoneBlockEntity) {
-                ItemScatterer.spawn(world, pos, (GravestoneBlockEntity)blockEntity);
+            if (blockEntity instanceof TechnicalGravestoneBlockEntity) {
+                ItemScatterer.spawn(world, pos, (TechnicalGravestoneBlockEntity)blockEntity);
                 world.updateComparators(pos, this);
             }
             super.onStateReplaced(state, world, pos, newState, moved);
@@ -166,7 +166,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Override
     @SuppressWarnings("deprecation")
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!world.isClient() && hand == Hand.MAIN_HAND && world.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestone) {
+        if (!world.isClient() && hand == Hand.MAIN_HAND && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
             GameProfile graveOwner = gravestone.getGraveOwner();
             if (Objects.equals(graveOwner, player.getGameProfile()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
                 String uuid = "";
@@ -223,12 +223,12 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new GravestoneBlockEntity(pos, state);
+        return new TechnicalGravestoneBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, GravestonesRegistry.GRAVESTONE_ENTITY, GravestoneBlockEntity::tick);
+        return checkType(type, GravestonesRegistry.GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
     }
 }

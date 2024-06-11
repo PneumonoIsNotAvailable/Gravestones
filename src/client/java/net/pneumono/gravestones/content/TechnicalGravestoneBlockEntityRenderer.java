@@ -9,7 +9,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
 import net.pneumono.gravestones.Gravestones;
-import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
+import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
 import net.pneumono.gravestones.gravestones.TimeFormatType;
 
@@ -17,15 +17,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 
-public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<GravestoneBlockEntity> {
+public class TechnicalGravestoneBlockEntityRenderer implements BlockEntityRenderer<TechnicalGravestoneBlockEntity> {
     private final TextRenderer textRenderer;
 
-    public GravestoneBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+    public TechnicalGravestoneBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
     }
 
     @Override
-    public void render(GravestoneBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(TechnicalGravestoneBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
 
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));

@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
-import net.pneumono.gravestones.content.entity.GravestoneBlockEntity;
+import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneCreation;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class TrinketsSupport {
     protected static void register() {
         GravestonesApi.registerModSupport(new ModSupport() {
             @Override
-            public void insertData(PlayerEntity player, GravestoneBlockEntity entity) {
+            public void insertData(PlayerEntity player, TechnicalGravestoneBlockEntity entity) {
                 TrinketComponent trinketComponent = TrinketsApi.getTrinketComponent(player).orElse(null);
                 if (trinketComponent == null) {
                     GravestoneCreation.logger("Player does not have trinkets, so no trinkets were inserted");
@@ -53,7 +53,7 @@ public class TrinketsSupport {
             }
 
             @Override
-            public void onBreak(GravestoneBlockEntity entity) {
+            public void onBreak(TechnicalGravestoneBlockEntity entity) {
                 World world = entity.getWorld();
                 if (world != null && !world.isClient()) {
                     List<Pair<SlotReferencePrimitive, ItemStack>> gravestoneTrinkets = deserializeSlotData(entity.getModData("trinkets"));
@@ -67,7 +67,7 @@ public class TrinketsSupport {
             }
 
             @Override
-            public void onCollect(PlayerEntity player, GravestoneBlockEntity entity) {
+            public void onCollect(PlayerEntity player, TechnicalGravestoneBlockEntity entity) {
                 GravestoneCreation.logger("Returning trinkets...");
 
                 World world = player.getWorld();
