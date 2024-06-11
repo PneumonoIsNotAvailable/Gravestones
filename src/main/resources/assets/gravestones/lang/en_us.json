@@ -40,7 +40,7 @@
     "configs.gravestones.broadcast_coordinates_in_chat" : "Broadcast coordinates",
     "configs.gravestones.broadcast_coordinates_in_chat.tooltip" : "Whether or not the coordinates of placed graves are broadcasted in chat",
     "configs.gravestones.console_info" : "Console info",
-    "configs.gravestones.console_info.tooltip" : "Whether or not detailed information about graves is recorded in console",
+    "configs.gravestones.console_info.tooltip" : "Whether or not highly detailed information about graves is recorded in console. This is mostly just for debugging!",
     "configs.gravestones.time_format" : "Time format",
     "configs.gravestones.time_format.ddmmyyyy": "DD/MM/YYYY",
     "configs.gravestones.time_format.mmddyyyy": "MM/DD/YYYY",
