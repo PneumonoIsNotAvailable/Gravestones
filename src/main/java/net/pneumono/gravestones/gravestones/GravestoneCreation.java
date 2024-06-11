@@ -92,7 +92,11 @@ public class GravestoneCreation {
         if (gravestonePos == null) {
             logger("Gravestone was not placed successfully! The items have been dropped on the floor", LoggerInfoType.ERROR);
         } else {
-            logger("Placed " + playerName + "'s (" + playerProfile.getId() + ") Gravestone at " + posToString(gravestonePos));
+            String uuid = "";
+            if (Gravestones.CONSOLE_INFO.getValue()) {
+                uuid = " (" + playerProfile.getId() + ")";
+            }
+            Gravestones.LOGGER.info("Placed " + playerName + "'s" + uuid + " Gravestone at " + posToString(gravestonePos));
 
             MinecraftServer server = world.getServer();
             if (server != null && Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
