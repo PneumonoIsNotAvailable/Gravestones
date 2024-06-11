@@ -46,7 +46,7 @@ public class TechnicalGravestoneBlockEntity extends BlockEntity implements Imple
     private long spawnDateTicks;
 
     public TechnicalGravestoneBlockEntity(BlockPos pos, BlockState state) {
-        super(GravestonesRegistry.GRAVESTONE_ENTITY, pos, state);
+        super(GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, pos, state);
         this.modData = new NbtList();
     }
 

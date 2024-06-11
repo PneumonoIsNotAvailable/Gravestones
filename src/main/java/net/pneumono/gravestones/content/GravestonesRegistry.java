@@ -39,8 +39,8 @@ public class GravestonesRegistry {
 
     public static final Identifier GRAVESTONES_COLLECTED = new Identifier(Gravestones.MOD_ID, "gravestones_collected");
 
-    public static BlockEntityType<TechnicalGravestoneBlockEntity> GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "gravestone"), FabricBlockEntityTypeBuilder.create(TechnicalGravestoneBlockEntity::new, GravestonesRegistry.GRAVESTONE_TECHNICAL).build()
+    public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
+            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "technical_gravestone"), FabricBlockEntityTypeBuilder.create(TechnicalGravestoneBlockEntity::new, GravestonesRegistry.GRAVESTONE_TECHNICAL).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
@@ -83,6 +83,7 @@ public class GravestonesRegistry {
 
         Migration.registerItemMigration(new Identifier(Gravestones.MOD_ID, "gravestone_default"), GRAVESTONE.asItem());
         Migration.registerBlockMigration(new Identifier(Gravestones.MOD_ID, "gravestone_default"), GRAVESTONE);
-        Migration.registerBlockEntityMigration(new Identifier("gravestone"), GRAVESTONE_ENTITY);
+        Migration.registerBlockEntityMigration(new Identifier("gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
+        Migration.registerBlockEntityMigration(new Identifier(Gravestones.MOD_ID, "gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
     }
 }
