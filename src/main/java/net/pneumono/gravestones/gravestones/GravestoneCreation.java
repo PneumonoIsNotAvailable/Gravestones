@@ -75,7 +75,7 @@ public class GravestoneCreation {
     public static void handleGravestones(PlayerEntity player) {
         logger("----- ----- Beginning Gravestone Work ----- -----");
         logger("This mostly exists for debugging purposes, but might be useful for server owners. " +
-                "If you don't want to see all this every time someone dies, disable 'gravestoneInfoInConsole' in the config!");
+                "If you don't want to see all this every time someone dies, disable 'console_info' in the config!");
 
         World world = player.getWorld();
         BlockPos playerPos = player.getBlockPos();
@@ -84,6 +84,7 @@ public class GravestoneCreation {
 
         if (world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             logger("Nevermind, keepInventory is on!");
+            logger("----- ----- Ending Gravestone Work ----- -----");
             return;
         }
 
