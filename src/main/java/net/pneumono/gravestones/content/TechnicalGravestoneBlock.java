@@ -209,12 +209,12 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                     }
                 }
                 world.breakBlock(pos, true);
-                createSoulParticles(world, pos);
             } else if (graveOwner != null) {
                 player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.getName()), true);
             } else {
                 player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
             }
+            createSoulParticles(world, pos);
         }
 
         return ActionResult.SUCCESS;
