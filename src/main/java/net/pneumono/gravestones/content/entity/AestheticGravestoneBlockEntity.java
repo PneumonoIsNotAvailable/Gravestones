@@ -3,6 +3,7 @@ package net.pneumono.gravestones.content.entity;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -17,8 +18,8 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     private final String[] lines = new String[]{"", "", "", ""};
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
         nbt.putString("line_0", lines[0]);
         nbt.putString("line_1", lines[1]);
         nbt.putString("line_2", lines[2]);
@@ -26,8 +27,8 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
         if (nbt.contains("line_0", NbtElement.STRING_TYPE)) {
             lines[0] = nbt.getString("line_0");
         }
@@ -54,7 +55,6 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return Direction.NORTH;
     }
 
-    @Override
     public String getGravestoneTextLine(int line) {
         return lines[line];
     }

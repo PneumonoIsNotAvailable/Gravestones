@@ -1,17 +1,14 @@
 package net.pneumono.gravestones.content;
 
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
@@ -28,41 +25,41 @@ import net.pneumono.pneumonocore.migration.Migration;
 
 public class GravestonesRegistry {
     public static final Block GRAVESTONE_TECHNICAL = registerTechnicalGravestone(
-            new TechnicalGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(-1.0F, 3600000.0F).nonOpaque()));
+            new TechnicalGravestoneBlock(AbstractBlock.Settings.copy(Blocks.STONE).strength(-1.0F, 3600000.0F).nonOpaque()));
     public static final Block GRAVESTONE = registerAestheticGravestone("gravestone",
-            new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
+            new AestheticGravestoneBlock(AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
     public static final Block GRAVESTONE_CHIPPED = registerAestheticGravestone("gravestone_chipped",
-            new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
+            new AestheticGravestoneBlock(AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
     public static final Block GRAVESTONE_DAMAGED = registerAestheticGravestone("gravestone_damaged",
-            new AestheticGravestoneBlock(FabricBlockSettings.copyOf(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
+            new AestheticGravestoneBlock(AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
 
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "technical_gravestone"), FabricBlockEntityTypeBuilder.create(TechnicalGravestoneBlockEntity::new, GRAVESTONE_TECHNICAL).build()
+            Registries.BLOCK_ENTITY_TYPE, Identifier.of(Gravestones.MOD_ID, "technical_gravestone"), BlockEntityType.Builder.create(TechnicalGravestoneBlockEntity::new, GRAVESTONE_TECHNICAL).build()
     );
     public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, new Identifier(Gravestones.MOD_ID, "aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(AestheticGravestoneBlockEntity::new, GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED).build()
+            Registries.BLOCK_ENTITY_TYPE, Identifier.of(Gravestones.MOD_ID, "aesthetic_gravestone"), BlockEntityType.Builder.create(AestheticGravestoneBlockEntity::new, GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier(Gravestones.MOD_ID, "gravestone_skeleton"),
-            FabricEntityTypeBuilder.<GravestoneSkeletonEntity>create(SpawnGroup.MISC, GravestoneSkeletonEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.6F, 1.99F))
-                    .trackRangeBlocks(8)
+            Identifier.of(Gravestones.MOD_ID, "gravestone_skeleton"),
+            EntityType.Builder.<GravestoneSkeletonEntity>create(GravestoneSkeletonEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.6F, 1.99F)
+                    .maxTrackingRange(8)
                     .build()
     );
 
-    public static final TagKey<Block> TAG_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, new Identifier(Gravestones.MOD_ID, "gravestone_irreplaceable"));
+    public static final TagKey<Block> TAG_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, Identifier.of(Gravestones.MOD_ID, "gravestone_irreplaceable"));
 
-    public static final Identifier GRAVESTONES_COLLECTED = new Identifier(Gravestones.MOD_ID, "gravestones_collected");
+    public static final Identifier GRAVESTONES_COLLECTED = Identifier.of(Gravestones.MOD_ID, "gravestones_collected");
 
     private static Block registerTechnicalGravestone(Block block) {
-        return Registry.register(Registries.BLOCK, new Identifier(Gravestones.MOD_ID, "gravestone_technical"), block);
+        return Registry.register(Registries.BLOCK, Identifier.of(Gravestones.MOD_ID, "gravestone_technical"), block);
     }
 
     private static Block registerAestheticGravestone(String name, Block block) {
-        Registry.register(Registries.ITEM, new Identifier(Gravestones.MOD_ID, name), new AestheticGravestoneBlockItem(block, new FabricItemSettings()));
-        return Registry.register(Registries.BLOCK, new Identifier(Gravestones.MOD_ID, name), block);
+        Registry.register(Registries.ITEM, Identifier.of(Gravestones.MOD_ID, name), new AestheticGravestoneBlockItem(block, new Item.Settings()));
+        return Registry.register(Registries.BLOCK, Identifier.of(Gravestones.MOD_ID, name), block);
     }
 
     private static void addToFunctionalGroup(ItemConvertible... items) {
@@ -85,9 +82,9 @@ public class GravestonesRegistry {
         Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
         Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
 
-        Migration.registerItemMigration(new Identifier(Gravestones.MOD_ID, "gravestone_default"), GRAVESTONE.asItem());
-        Migration.registerBlockMigration(new Identifier(Gravestones.MOD_ID, "gravestone_default"), GRAVESTONE);
-        Migration.registerBlockEntityMigration(new Identifier("gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
-        Migration.registerBlockEntityMigration(new Identifier(Gravestones.MOD_ID, "gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
+        Migration.registerItemMigration(Identifier.of(Gravestones.MOD_ID, "gravestone_default"), GRAVESTONE.asItem());
+        Migration.registerBlockMigration(Identifier.of(Gravestones.MOD_ID, "gravestone_default"), GRAVESTONE);
+        Migration.registerBlockEntityMigration(Identifier.of("gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
+        Migration.registerBlockEntityMigration(Identifier.of(Gravestones.MOD_ID, "gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
     }
 }

@@ -1,14 +1,14 @@
 package net.pneumono.gravestones.gravestones;
 
-
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.RegistryKey;
@@ -65,12 +65,6 @@ public class GravestoneCreation {
         }
     }
 
-    private enum LoggerInfoType {
-        INFO,
-        WARN,
-        ERROR
-    }
-
     public static String posToString(BlockPos pos) {
         return "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")";
     }
@@ -100,7 +94,7 @@ public class GravestoneCreation {
             if (Gravestones.CONSOLE_INFO.getValue()) {
                 uuid = " (" + playerProfile.getId() + ")";
             }
-            Gravestones.LOGGER.info("Placed " + playerName + "'s" + uuid + " Gravestone at " + posToString(gravestonePos));
+            Gravestones.LOGGER.info("Placed {}'s{} Gravestone at {}", playerName, uuid, posToString(gravestonePos));
 
             MinecraftServer server = world.getServer();
             if (server != null && Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
@@ -108,7 +102,7 @@ public class GravestoneCreation {
             }
 
             if (world.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone) {
-                gravestone.setGraveOwner(playerProfile);
+                gravestone.setGraveOwner(new ProfileComponent(playerProfile));
                 gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
                 insertPlayerItemsAndExperience(gravestone, player);
                 insertModData(player, gravestone);
@@ -166,7 +160,7 @@ public class GravestoneCreation {
         logger("Inserting Inventory items and experience into grave...");
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
-            if (EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, inventory.getStack(i)) == 0) {
+            if (!EnchantmentHelper.hasAnyEnchantmentsWith(inventory.getStack(i), EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
                 gravestone.setStack(i, inventory.removeStack(i));
             } else {
                 inventory.removeStack(i);
@@ -175,8 +169,8 @@ public class GravestoneCreation {
 
         logger("Items inserted!");
 
-        if (Gravestones.STORE_EXPERIENCE.getValue()) {
-            gravestone.setExperience(player.getXpToDrop());
+        if (Gravestones.STORE_EXPERIENCE.getValue() && player.getWorld() instanceof ServerWorld world) {
+            gravestone.setExperience(player.getXpToDrop(world, player.getAttacker()));
             player.experienceProgress = 0;
             player.experienceLevel = 0;
             player.totalExperience = 0;
@@ -266,10 +260,10 @@ public class GravestoneCreation {
     }
 
     private static BlockPos placeGravestone(World world, BlockPos blockPos) {
-        if (blockPos.getY() > 0 || (blockPos.getY() > -64 && world.getDimensionKey() == DimensionTypes.OVERWORLD)) {
+        if (blockPos.getY() > 0 || (blockPos.getY() > -64 && world.getDimensionEntry() == DimensionTypes.OVERWORLD)) {
             return placeGravestoneAtValidPos(world, blockPos);
 
-        } else if (world.getDimensionKey() == DimensionTypes.THE_END) {
+        } else if (world.getDimensionEntry() == DimensionTypes.THE_END) {
             BlockPos islandCenter = placeGravestoneAtValidPos(world, blockPos.withY(70));
             if (!(islandCenter == null)) {
                 createGravestoneIsland(world, islandCenter, Blocks.END_STONE.getDefaultState());
@@ -278,7 +272,7 @@ public class GravestoneCreation {
                 return null;
             }
 
-        } else if (world.getDimensionKey() == DimensionTypes.THE_NETHER) {
+        } else if (world.getDimensionEntry() == DimensionTypes.THE_NETHER) {
             BlockPos islandCenter = placeGravestoneAtValidPos(world, blockPos.withY(2));
             if (!(islandCenter == null)) {
                 createGravestoneIsland(world, islandCenter, Blocks.NETHERRACK.getDefaultState());
@@ -287,8 +281,8 @@ public class GravestoneCreation {
                 return null;
             }
 
-        } else if (world.getDimensionKey() == DimensionTypes.OVERWORLD) {
-            BlockPos islandCenter = placeGravestoneAtValidPos(world, blockPos.withY(-62));
+        } else if (world.getDimensionEntry() == DimensionTypes.OVERWORLD) {
+            BlockPos islandCenter = placeGravestoneAtValidPos(world, blockPos.withY(-60));
             if (!(islandCenter == null)) {
                 createGravestoneIsland(world, islandCenter, Blocks.DEEPSLATE.getDefaultState());
                 return islandCenter;
@@ -381,5 +375,11 @@ public class GravestoneCreation {
         } else {
             return null;
         }
+    }
+
+    public enum LoggerInfoType {
+        INFO,
+        WARN,
+        ERROR
     }
 }

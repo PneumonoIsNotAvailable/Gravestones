@@ -1,8 +1,8 @@
 package net.pneumono.gravestones.content.entity;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -11,11 +11,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -28,20 +26,14 @@ import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.gravestones.DecayTimeType;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
-import net.pneumono.gravestones.gravestones.TimeFormatType;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
     private int experience;
     private NbtList modData;
-    private GameProfile graveOwner;
+    private ProfileComponent graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
 
@@ -51,12 +43,12 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        Inventories.writeNbt(nbt, this.inventory);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        Inventories.writeNbt(nbt, this.inventory, registryLookup);
         nbt.putInt("experience", this.experience);
         if (this.graveOwner != null) {
-            nbt.put("owner", NbtHelper.writeGameProfile(new NbtCompound(), this.graveOwner));
+            nbt.put("owner", ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.graveOwner).getOrThrow());
         }
         if (this.spawnDateTime != null) {
             nbt.putString("spawnDateTime", this.spawnDateTime);
@@ -70,14 +62,14 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        Inventories.readNbt(nbt, this.inventory);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        Inventories.readNbt(nbt, this.inventory, registryLookup);
         if (nbt.contains("experience", NbtElement.INT_TYPE)) {
             this.experience = nbt.getInt("experience");
         }
-        if (nbt.contains("owner", NbtElement.COMPOUND_TYPE)) {
-            this.graveOwner = NbtHelper.toGameProfile(nbt.getCompound("owner"));
+        if (nbt.contains("owner")) {
+            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("owner")).resultOrPartial(string -> Gravestones.LOGGER.error("Failed to load profile from gravestone: {}", string)).ifPresent(this::setGraveOwner);
         }
         if (nbt.contains("spawnDateTime", NbtElement.STRING_TYPE)) {
             this.spawnDateTime = nbt.getString("spawnDateTime");
@@ -93,7 +85,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
         if (world.getTime() % 20 == 0) {
             if (!world.isClient()) {
-                if (Gravestones.DECAY_WITH_TIME.getValue() && entity.graveOwner != null) {
+                if (Gravestones.DECAY_WITH_TIME.getValue() && entity.getGraveOwner() != null) {
                     long difference;
 
                     if (Gravestones.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
@@ -134,10 +126,13 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             if (Gravestones.SPAWN_GRAVESTONE_SKELETONS.getValue()) {
                 boolean ownerNearby = false;
 
-                Box box = new Box(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
-                for (Entity nearbyEntity : world.getOtherEntities(null, box)) {
-                    if (nearbyEntity instanceof PlayerEntity player && player.getGameProfile() == entity.graveOwner) {
-                        ownerNearby = true;
+                ProfileComponent profileComponent = entity.getGraveOwner();
+                if (profileComponent != null) {
+                    Box box = Box.enclosing(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
+                    for (Entity nearbyEntity : world.getOtherEntities(null, box)) {
+                        if (nearbyEntity instanceof PlayerEntity player && player.getGameProfile().getId() == profileComponent.gameProfile().getId()) {
+                            ownerNearby = true;
+                        }
                     }
                 }
 
@@ -205,11 +200,14 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         boolean ownerNearby = false;
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof TechnicalGravestoneBlockEntity gravestone) {
-            Box box = new Box(blockPos.down(5).south(5).west(5), blockPos.up(5).north(5).east(5));
-            List<Entity> entities = world.getOtherEntities(null, box);
-            for (Entity tempEntity : entities) {
-                if (tempEntity instanceof PlayerEntity player && player.getGameProfile() == gravestone.getGraveOwner()) {
-                    ownerNearby = true;
+            ProfileComponent profileComponent = gravestone.getGraveOwner();
+            if (profileComponent != null) {
+                Box box = Box.enclosing(blockPos.down(5).south(5).west(5), blockPos.up(5).north(5).east(5));
+                List<Entity> entities = world.getOtherEntities(null, box);
+                for (Entity tempEntity : entities) {
+                    if (tempEntity instanceof PlayerEntity player && player.getGameProfile().getId() == gravestone.getGraveOwner().gameProfile().getId()) {
+                        ownerNearby = true;
+                    }
                 }
             }
         }
@@ -221,7 +219,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     private int countEntities(World world) {
-        Box box = new Box(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
+        Box box = Box.enclosing(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
         List<Entity> entities = world.getOtherEntities(null, box);
         int entityCount = 0;
         for (Entity nearbyEntity : entities) {
@@ -232,12 +230,12 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return entityCount;
     }
 
-    public void setGraveOwner(GameProfile graveOwner) {
+    public void setGraveOwner(ProfileComponent graveOwner) {
         this.graveOwner = graveOwner;
         this.markDirty();
     }
 
-    public GameProfile getGraveOwner() {
+    public ProfileComponent getGraveOwner() {
         return this.graveOwner;
     }
 
@@ -318,30 +316,5 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     public Direction getGravestoneDirection() {
         return Direction.NORTH;
-    }
-
-    @Override
-    public String getGravestoneTextLine(int line) {
-        return switch (line) {
-            case 0 -> getGraveOwner().getName();
-            case 1 -> getGravestoneTimeLines(true);
-            case 2 -> getGravestoneTimeLines(false);
-            default -> "";
-        };
-    }
-
-    private String getGravestoneTimeLines(boolean line1) {
-        String spawnDateTime = getSpawnDateTime();
-        String text = "";
-        if (spawnDateTime != null) {
-            try {
-                SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
-                TimeFormatType type = Gravestones.TIME_FORMAT.getValue();
-
-                SimpleDateFormat toClient = new SimpleDateFormat(line1 ? type.getDateFormat() : type.getTimeFormat());
-                text = toClient.format(fromServer.parse(spawnDateTime));
-            } catch (ParseException ignored) {}
-        }
-        return text;
     }
 }

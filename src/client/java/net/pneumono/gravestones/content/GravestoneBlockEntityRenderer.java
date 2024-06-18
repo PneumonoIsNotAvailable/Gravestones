@@ -5,10 +5,18 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
+import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.AbstractGravestoneBlockEntity;
+import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
+import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.gravestones.GravestoneTime;
+import net.pneumono.gravestones.gravestones.TimeFormatType;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<AbstractGravestoneBlockEntity> {
@@ -40,7 +48,24 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
         for (int i = 0; i < 4; ++i) {
             matrices.translate(0, 2 * (1 / scale), 0);
 
-            String text = entity.getGravestoneTextLine(i);
+            String text = "";
+            if (entity instanceof TechnicalGravestoneBlockEntity blockEntity) {
+                text = switch (i) {
+                    case 0 -> {
+                        ProfileComponent profileComponent = blockEntity.getGraveOwner();
+                        if (profileComponent != null) {
+                            yield profileComponent.name().orElse("???");
+                        }
+                        yield "???";
+                    }
+                    case 1 -> getGravestoneTimeLines(blockEntity,true);
+                    case 2 -> getGravestoneTimeLines(blockEntity,false);
+                    default -> "";
+                };
+            } else if (entity instanceof AestheticGravestoneBlockEntity blockEntity) {
+                text = blockEntity.getGravestoneTextLine(i);
+            }
+
             if (!Objects.equals(text, "")) {
                 drawText(Text.literal(text), matrices, vertexConsumers, light);
             }
@@ -51,5 +76,20 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
 
     public void drawText(Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         this.textRenderer.draw(text, (float) (-this.textRenderer.getWidth(text) / 2), 0.0F, 0, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.POLYGON_OFFSET, 0, light);
+    }
+
+    private String getGravestoneTimeLines(TechnicalGravestoneBlockEntity entity, boolean line) {
+        String spawnDateTime = entity.getSpawnDateTime();
+        String text = "";
+        if (spawnDateTime != null) {
+            try {
+                SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
+                TimeFormatType type = Gravestones.TIME_FORMAT.getValue();
+
+                SimpleDateFormat toClient = new SimpleDateFormat(line ? type.getDateFormat() : type.getTimeFormat());
+                text = toClient.format(fromServer.parse(spawnDateTime));
+            } catch (ParseException ignored) {}
+        }
+        return text;
     }
 }

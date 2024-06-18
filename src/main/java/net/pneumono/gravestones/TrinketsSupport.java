@@ -1,32 +1,17 @@
 package net.pneumono.gravestones;
 
+/*
 import dev.emi.trinkets.api.SlotType;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.api.ModSupport;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
-import net.pneumono.gravestones.gravestones.GravestoneCreation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+ */
 
 public class TrinketsSupport {
     // Most of this code is provided courtesy of wouter173, thank you!
+    // Commented out for the time being until Trinkets updates to 1.21
+
+    /*
     protected static void register() {
         GravestonesApi.registerModSupport(new ModSupport() {
             @Override
@@ -160,4 +145,5 @@ public class TrinketsSupport {
     }
 
     private record SlotReferencePrimitive(String groupName, String slotName) { }
+     */
 }

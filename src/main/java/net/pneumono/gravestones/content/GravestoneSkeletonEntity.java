@@ -3,6 +3,7 @@ package net.pneumono.gravestones.content;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public class GravestoneSkeletonEntity extends SkeletonEntity {
@@ -20,12 +21,7 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     }
 
     @Override
-    protected boolean shouldAlwaysDropXp() {
-        return false;
-    }
-
-    @Override
-    protected void drop(DamageSource source) {}
+    protected void drop(ServerWorld world, DamageSource damageSource) {}
 
     @Override
     public void tick() {

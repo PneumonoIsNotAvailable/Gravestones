@@ -1,18 +1,20 @@
 package net.pneumono.gravestones;
 
 import com.google.gson.GsonBuilder;
-import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditionType;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.DecayTimeType;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -50,6 +53,11 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "console_info", ConfigEnv.CLIENT, false));
 	public static final EnumConfiguration<TimeFormatType> TIME_FORMAT = Configs.register(new EnumConfiguration<>(MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormatType.MMDDYYYY));
 
+	public static final ResourceConditionType<ConfigResourceCondition> RESOURCE_CONDITION_CONFIGURATIONS = ResourceConditionType.create(
+			Identifier.of(MOD_ID, "configurations"),
+			ConfigResourceCondition.CODEC
+	);
+
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing Gravestones");
@@ -58,9 +66,14 @@ public class Gravestones implements ModInitializer {
 		GravestonesRegistry.registerModContent();
 		registerCommands();
 
+		ResourceConditions.register(RESOURCE_CONDITION_CONFIGURATIONS);
+
+		// Commented out until Trinkets updates to 1.21
+		/*
 		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
 			TrinketsSupport.register();
 		}
+		 */
 	}
 
 	private void registerCommands() {
@@ -71,15 +84,15 @@ public class Gravestones implements ModInitializer {
 					.then(literal("gravestone")
 						.then(argument("position", BlockPosArgumentType.blockPos())
 							.executes(context -> {
-								World world = context.getSource().getWorld();
+								ServerWorld world = context.getSource().getWorld();
 								BlockPos pos = BlockPosArgumentType.getBlockPos(context, "position");
 
 								if (!(world.getBlockState(pos).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL))) {
 									context.getSource().sendMessage(Text.literal("No gravestone at that position!").formatted(Formatting.RED));
 								} else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
-									GameProfile owner = entity.getGraveOwner();
+									ProfileComponent owner = entity.getGraveOwner();
 									if (owner != null) {
-										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.getName() + ", " + owner.getId().toString()).formatted(Formatting.GREEN));
+										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.name() + ", " + owner.id()).formatted(Formatting.GREEN));
 									} else {
 										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " but no graveOwner!").formatted(Formatting.RED));
 									}
@@ -108,12 +121,12 @@ public class Gravestones implements ModInitializer {
 										GravestoneData data = new GsonBuilder().serializeNulls().setPrettyPrinting().create().fromJson(reader, GravestoneData.class);
 										reader.close();
 
-										List<GravestonePosition> positions = data.getPlayerGravePositions(EntityArgumentType.getPlayer(context, "player").getUuid());
+										List<GravestonePosition> positions = data.getPlayerGravePositions(EntityArgumentType.getPlayer(context, "player").getGameProfile().getId());
 										StringBuilder posList = new StringBuilder();
 										for (GravestonePosition pos : positions) {
 											posList.append("(").append(pos.posX).append(",").append(pos.posY).append(",").append(pos.posZ).append(") in ").append(pos.dimension.toString()).append(", ");
 										}
-										context.getSource().sendMessage(Text.literal("" + EntityArgumentType.getPlayer(context, "player").getDisplayName().getString() + " has graves at the following locations: " + posList));
+										context.getSource().sendMessage(Text.literal(Objects.requireNonNull(EntityArgumentType.getPlayer(context, "player").getDisplayName()).getString() + " has graves at the following locations: " + posList));
 									} else {
 										LOGGER.error("Could not find gravestone data file.");
 										context.getSource().sendMessage(Text.literal("Could not find gravestone data file.").formatted(Formatting.RED));

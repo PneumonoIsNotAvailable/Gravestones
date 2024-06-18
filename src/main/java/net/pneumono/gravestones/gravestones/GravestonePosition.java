@@ -17,7 +17,7 @@ public class GravestonePosition {
     }
 
     public GravestonePosition() {
-        this.dimension = new Identifier("minecraft", "overworld");
+        this.dimension = Identifier.ofVanilla("overworld");
         this.posX = 0;
         this.posY = 0;
         this.posZ = 0;

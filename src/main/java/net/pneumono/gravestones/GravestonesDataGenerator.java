@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Blocks;
-import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.RecipeProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Items;
@@ -17,14 +17,11 @@ import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.pneumono.gravestones.content.GravestonesRegistry;
-import net.pneumono.pneumonocore.datagen.ConfigCondition;
-import net.pneumono.pneumonocore.datagen.PneumonoDatagenHelper;
-import net.pneumono.pneumonocore.datagen.enums.Operator;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
+@SuppressWarnings("unused")
 public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
@@ -52,12 +49,12 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
     }
 
     private static class RecipesGenerator extends FabricRecipeProvider {
-        public RecipesGenerator(FabricDataOutput output) {
-            super(output);
+        public RecipesGenerator(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+            super(output, registriesFuture);
         }
 
         @Override
-        public void generate(Consumer<RecipeJsonProvider> exporter) {
+        public void generate(RecipeExporter exporter) {
             ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE)
                     .pattern(" S ")
                     .pattern("S#S")
@@ -68,9 +65,9 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
                     .input('D', Items.COARSE_DIRT)
                     .criterion(FabricRecipeProvider.hasItem(Items.LEATHER), FabricRecipeProvider.conditionsFromItem(Items.LEATHER))
                     .criterion(FabricRecipeProvider.hasItem(Items.STICK), FabricRecipeProvider.conditionsFromItem(Items.STICK))
-                    .offerTo(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))));
+                    .offerTo(withConditions(exporter, new ConfigResourceCondition()));
 
-            RecipeProvider.offerSmelting(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))),
+            RecipeProvider.offerSmelting(withConditions(exporter, new ConfigResourceCondition()),
                     List.of(GravestonesRegistry.GRAVESTONE),
                     RecipeCategory.DECORATIONS,
                     GravestonesRegistry.GRAVESTONE_CHIPPED,
@@ -79,7 +76,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
                     "gravestone_cracking"
             );
 
-            RecipeProvider.offerSmelting(withConditions(exporter, PneumonoDatagenHelper.configValues(new ConfigCondition(Gravestones.AESTHETIC_GRAVESTONES.getID(), Operator.EQUAL, true))),
+            RecipeProvider.offerSmelting(withConditions(exporter, new ConfigResourceCondition()),
                     List.of(GravestonesRegistry.GRAVESTONE_CHIPPED),
                     RecipeCategory.DECORATIONS,
                     GravestonesRegistry.GRAVESTONE_DAMAGED,
@@ -91,8 +88,8 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
     }
 
     private static class GravestoneLootTables extends FabricBlockLootTableProvider {
-        public GravestoneLootTables(FabricDataOutput dataOutput) {
-            super(dataOutput);
+        public GravestoneLootTables(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+            super(dataOutput, registryLookup);
         }
 
         @Override
