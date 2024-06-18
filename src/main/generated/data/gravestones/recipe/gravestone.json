@@ -1,0 +1,32 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "gravestones:configurations"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:soul_sand"
+    },
+    "D": {
+      "item": "minecraft:coarse_dirt"
+    },
+    "S": {
+      "item": "minecraft:stone"
+    },
+    "s": {
+      "item": "minecraft:stone_slab"
+    }
+  },
+  "pattern": [
+    " S ",
+    "S#S",
+    "sDs"
+  ],
+  "result": {
+    "count": 1,
+    "id": "gravestones:gravestone"
+  }
+}

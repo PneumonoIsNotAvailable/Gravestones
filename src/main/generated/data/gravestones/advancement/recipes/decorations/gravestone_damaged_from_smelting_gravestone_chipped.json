@@ -1,0 +1,37 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "gravestones:configurations"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_gravestone_chipped": {
+      "conditions": {
+        "items": [
+          {
+            "items": "gravestones:gravestone_chipped"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:gravestone_damaged_from_smelting_gravestone_chipped"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_gravestone_chipped"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:gravestone_damaged_from_smelting_gravestone_chipped"
+    ]
+  }
+}
