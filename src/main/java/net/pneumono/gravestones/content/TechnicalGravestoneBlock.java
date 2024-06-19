@@ -36,6 +36,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.explosion.Explosion;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
@@ -44,6 +45,7 @@ import net.pneumono.gravestones.gravestones.GravestoneCreation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterloggable {
@@ -159,6 +161,10 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
             }
             super.onStateReplaced(state, world, pos, newState, moved);
         }
+    }
+
+    @Override
+    protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
     }
 
     @Override
