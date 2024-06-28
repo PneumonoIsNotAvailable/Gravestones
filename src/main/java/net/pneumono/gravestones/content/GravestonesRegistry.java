@@ -49,8 +49,6 @@ public class GravestonesRegistry {
                     .build()
     );
 
-    public static final TagKey<Block> TAG_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, Identifier.of(Gravestones.MOD_ID, "gravestone_irreplaceable"));
-
     public static final Identifier GRAVESTONES_COLLECTED = Identifier.of(Gravestones.MOD_ID, "gravestones_collected");
 
     private static Block registerTechnicalGravestone(Block block) {

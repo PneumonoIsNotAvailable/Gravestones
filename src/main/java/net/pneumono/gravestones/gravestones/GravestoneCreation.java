@@ -2,10 +2,7 @@ package net.pneumono.gravestones.gravestones;
 
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.Waterloggable;
+import net.minecraft.block.*;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -245,7 +242,8 @@ public class GravestoneCreation {
     }
 
     private static boolean hasNoIrreplaceableBlocks(World world, BlockPos blockPos) {
-        return !world.getBlockState(blockPos).isIn(GravestonesRegistry.TAG_GRAVESTONE_IRREPLACEABLE);
+        Block block = world.getBlockState(blockPos).getBlock();
+        return !(block.getHardness() < 0 || block.getBlastResistance() >= 3600000);
     }
 
     private static void placeGravestoneAtPos(World world, BlockPos blockPos) {
@@ -318,7 +316,7 @@ public class GravestoneCreation {
     }
 
     private static void removeIslandBlock(World world, BlockPos blockPos) {
-        if (!world.getBlockState(blockPos).isIn(GravestonesRegistry.TAG_GRAVESTONE_IRREPLACEABLE)) {
+        if (hasNoIrreplaceableBlocks(world, blockPos)) {
             world.breakBlock(blockPos, true);
         }
     }
