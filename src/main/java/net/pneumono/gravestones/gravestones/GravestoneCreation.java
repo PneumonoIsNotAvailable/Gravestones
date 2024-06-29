@@ -10,10 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -21,7 +19,6 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionTypes;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
@@ -82,7 +79,7 @@ public class GravestoneCreation {
             return;
         }
 
-        BlockPos gravestonePos = placeGravestone(world, playerPos);
+        BlockPos gravestonePos = GravestonePlacement.placeGravestone(world, playerPos);
 
         if (gravestonePos == null) {
             logger("Gravestone was not placed successfully! The items have been dropped on the floor", LoggerInfoType.ERROR);
@@ -239,140 +236,6 @@ public class GravestoneCreation {
         }
 
         return posList;
-    }
-
-    private static boolean hasNoIrreplaceableBlocks(World world, BlockPos blockPos) {
-        Block block = world.getBlockState(blockPos).getBlock();
-        return !(block.getHardness() < 0 || block.getBlastResistance() >= 3600000);
-    }
-
-    private static void placeGravestoneAtPos(World world, BlockPos blockPos) {
-        BlockState gravestoneBlock = GravestonesRegistry.GRAVESTONE_TECHNICAL.getDefaultState();
-        BlockState replacedBlock = world.getBlockState(blockPos);
-        if (replacedBlock.getFluidState().isIn(FluidTags.WATER) || (replacedBlock.getBlock() instanceof Waterloggable && replacedBlock.get(Properties.WATERLOGGED))) {
-            gravestoneBlock = gravestoneBlock.with(Properties.WATERLOGGED, true);
-        }
-
-        world.breakBlock(blockPos, true);
-        world.setBlockState(blockPos, gravestoneBlock);
-    }
-
-    private static BlockPos placeGravestone(World world, BlockPos blockPos) {
-        if (blockPos.getY() > 0 || (blockPos.getY() > -64 && world.getDimensionEntry() == DimensionTypes.OVERWORLD)) {
-            return placeGravestoneAtValidPos(world, blockPos);
-
-        } else if (world.getDimensionEntry() == DimensionTypes.THE_END) {
-            BlockPos islandCenter = placeGravestoneAtValidPos(world, blockPos.withY(70));
-            if (!(islandCenter == null)) {
-                createGravestoneIsland(world, islandCenter, Blocks.END_STONE.getDefaultState());
-                return islandCenter;
-            } else {
-                return null;
-            }
-
-        } else if (world.getDimensionEntry() == DimensionTypes.THE_NETHER) {
-            BlockPos islandCenter = placeGravestoneAtValidPos(world, blockPos.withY(2));
-            if (!(islandCenter == null)) {
-                createGravestoneIsland(world, islandCenter, Blocks.NETHERRACK.getDefaultState());
-                return islandCenter;
-            } else {
-                return null;
-            }
-
-        } else if (world.getDimensionEntry() == DimensionTypes.OVERWORLD) {
-            BlockPos islandCenter = placeGravestoneAtValidPos(world, blockPos.withY(-60));
-            if (!(islandCenter == null)) {
-                createGravestoneIsland(world, islandCenter, Blocks.DEEPSLATE.getDefaultState());
-                return islandCenter;
-            } else {
-                return null;
-            }
-
-        } else {
-            return null;
-        }
-    }
-
-    private static void createGravestoneIsland(World world, BlockPos gravestonePos, BlockState state) {
-        BlockPos islandCorner = gravestonePos.down().south().west();
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                createIslandBlock(world, state, islandCorner.north(i).east(j));
-            }
-        }
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                for (int k = 0; k < 2; ++k) {
-                    removeIslandBlock(world, islandCorner.north(i).east(j).up(k + 1));
-                }
-            }
-        }
-    }
-
-    private static void createIslandBlock(World world, BlockState state, BlockPos blockPos) {
-        if (world.getBlockState(blockPos).isAir()) {
-            world.setBlockState(blockPos, state);
-        }
-    }
-
-    private static void removeIslandBlock(World world, BlockPos blockPos) {
-        if (hasNoIrreplaceableBlocks(world, blockPos)) {
-            world.breakBlock(blockPos, true);
-        }
-    }
-
-    private static BlockPos placeGravestoneAtValidPos(World world, BlockPos blockPos) {
-        if (hasNoIrreplaceableBlocks(world, blockPos)) {
-            placeGravestoneAtPos(world, blockPos);
-            return blockPos;
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.up())) {
-            placeGravestoneAtPos(world, blockPos.up());
-            return blockPos.up();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.up(2))) {
-            placeGravestoneAtPos(world, blockPos.up(2));
-            return blockPos.up(2);
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.north())) {
-            placeGravestoneAtPos(world, blockPos.north());
-            return blockPos.north();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.north().up())) {
-            placeGravestoneAtPos(world, blockPos.north().up());
-            return blockPos.north().up();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.east())) {
-            placeGravestoneAtPos(world, blockPos.east());
-            return blockPos.east();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.east().up())) {
-            placeGravestoneAtPos(world, blockPos.east().up());
-            return blockPos.east().up();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.south())) {
-            placeGravestoneAtPos(world, blockPos.south());
-            return blockPos.south();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.south().up())) {
-            placeGravestoneAtPos(world, blockPos.south().up());
-            return blockPos.south().up();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.west())) {
-            placeGravestoneAtPos(world, blockPos.west());
-            return blockPos.west();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.west().up())) {
-            placeGravestoneAtPos(world, blockPos.west().up());
-            return blockPos.west().up();
-
-        } else if (hasNoIrreplaceableBlocks(world, blockPos.down())) {
-            placeGravestoneAtPos(world, blockPos.down());
-            return blockPos.down();
-
-        } else {
-            return null;
-        }
     }
 
     public enum LoggerInfoType {
