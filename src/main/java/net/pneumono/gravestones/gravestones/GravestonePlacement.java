@@ -27,14 +27,13 @@ public class GravestonePlacement {
             return placeGravestoneAtPos(world, blockPos);
         }
 
-        for (int radius = 1; radius < 5; ++radius) {
-            for (int x = -radius; x <= radius; ++x) {
-                for (int y = -radius; y <= radius; ++y) {
-                    for (int z = -radius; z <= radius; ++z) {
-                        BlockPos newPos = blockPos.add(x, y, z);
-                        if (hasNoIrreplaceableBlocks(world, newPos)) {
-                            return placeGravestoneAtPos(world, newPos);
-                        }
+        int[] positionOrder = new int[]{0, 1, -1};
+        for (int x : positionOrder) {
+            for (int z : positionOrder) {
+                for (int y : positionOrder) {
+                    BlockPos newPos = blockPos.add(x, y, z);
+                    if (hasNoIrreplaceableBlocks(world, newPos)) {
+                        return placeGravestoneAtPos(world, newPos);
                     }
                 }
             }
