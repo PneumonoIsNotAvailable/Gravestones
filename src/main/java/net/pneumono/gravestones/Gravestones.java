@@ -91,19 +91,25 @@ public class Gravestones implements ModInitializer {
 								} else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
 									ProfileComponent owner = entity.getGraveOwner();
 									if (owner != null) {
-										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.name() + ", " + owner.id()).formatted(Formatting.GREEN));
+										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.name().orElse("???") + " (" + owner.id().orElse(null) + ")").formatted(Formatting.GREEN));
 									} else {
 										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " but no graveOwner!").formatted(Formatting.RED));
 									}
 
 									StringBuilder itemMessage = new StringBuilder();
+									boolean notFirst = false;
 									for (ItemStack item : entity.getItems()) {
-										itemMessage.append(", ").append(item.toString());
+										if (notFirst) {
+											itemMessage.append(", ");
+										} else {
+											notFirst = true;
+										}
+										itemMessage.append(item.toString());
 									}
 
-									context.getSource().sendMessage(Text.literal("Gravestone has the following items" + itemMessage).formatted(Formatting.GOLD));
+									context.getSource().sendMessage(Text.literal("Gravestone has the following items " + itemMessage).formatted(Formatting.GOLD));
 									context.getSource().sendMessage(Text.literal("Gravestone has " + entity.getExperience() + " experience points").formatted(Formatting.GOLD));
-									context.getSource().sendMessage(Text.literal("Gravestone has the following mod data" + entity.getAllModData().toString()).formatted(Formatting.GOLD));
+									context.getSource().sendMessage(Text.literal("Gravestone has the following mod data " + entity.getAllModData().toString()).formatted(Formatting.GOLD));
 								}
 								return 1;
 							})
@@ -122,8 +128,14 @@ public class Gravestones implements ModInitializer {
 
 										List<GravestonePosition> positions = data.getPlayerGravePositions(EntityArgumentType.getPlayer(context, "player").getGameProfile().getId());
 										StringBuilder posList = new StringBuilder();
+										boolean notFirst = false;
 										for (GravestonePosition pos : positions) {
-											posList.append("(").append(pos.posX).append(",").append(pos.posY).append(",").append(pos.posZ).append(") in ").append(pos.dimension).append(", ");
+											if (notFirst) {
+												posList.append(", ");
+											} else {
+												notFirst = true;
+											}
+											posList.append("(").append(pos.posX).append(",").append(pos.posY).append(",").append(pos.posZ).append(") in ").append(pos.dimension);
 										}
 										context.getSource().sendMessage(Text.literal(Objects.requireNonNull(EntityArgumentType.getPlayer(context, "player").getDisplayName()).getString() + " has graves at the following locations: " + posList));
 									} else {
