@@ -123,7 +123,7 @@ public class Gravestones implements ModInitializer {
 										List<GravestonePosition> positions = data.getPlayerGravePositions(EntityArgumentType.getPlayer(context, "player").getGameProfile().getId());
 										StringBuilder posList = new StringBuilder();
 										for (GravestonePosition pos : positions) {
-											posList.append("(").append(pos.posX).append(",").append(pos.posY).append(",").append(pos.posZ).append(") in ").append(pos.dimension.toString()).append(", ");
+											posList.append("(").append(pos.posX).append(",").append(pos.posY).append(",").append(pos.posZ).append(") in ").append(pos.dimension).append(", ");
 										}
 										context.getSource().sendMessage(Text.literal(Objects.requireNonNull(EntityArgumentType.getPlayer(context, "player").getDisplayName()).getString() + " has graves at the following locations: " + posList));
 									} else {
