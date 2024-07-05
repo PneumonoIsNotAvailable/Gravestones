@@ -163,8 +163,13 @@ public class GravestoneCreation {
 
         logger("Items inserted!");
 
-        if (Gravestones.STORE_EXPERIENCE.getValue() && player.getWorld() instanceof ServerWorld world) {
-            gravestone.setExperience(player.getXpToDrop(world, player.getAttacker()));
+        if (Gravestones.STORE_EXPERIENCE.getValue()) {
+            int experience = Gravestones.EXPERIENCE_KEPT.getValue().calculateExperienceKept(player);
+            if (Gravestones.EXPERIENCE_CAP.getValue() && experience > 100) {
+                experience = 100;
+            }
+
+            gravestone.setExperience(experience);
             player.experienceProgress = 0;
             player.experienceLevel = 0;
             player.totalExperience = 0;
