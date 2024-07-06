@@ -3,6 +3,8 @@ package net.pneumono.gravestones.gravestones;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Objects;
+
 public class GravestonePosition {
     public final Identifier dimension;
     public final int posX;
@@ -32,5 +34,21 @@ public class GravestonePosition {
 
     public BlockPos asBlockPos() {
         return new BlockPos(posX, posY, posZ);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof GravestonePosition pos) {
+            return dimension.equals(pos.dimension) && posX == pos.posX && posY == pos.posY && posZ == pos.posZ;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dimension, posX, posY, posZ);
     }
 }

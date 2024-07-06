@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -117,7 +118,14 @@ public class GravestoneCreation {
                 if (oldGravePositions == null) {
                     logger("No graves to damage!");
                 } else {
+                    List<GravestonePosition> usedPositions = new ArrayList<>();
+                    usedPositions.add(new GravestonePosition(serverWorld.getRegistryKey().getValue(), gravestonePos));
                     for (GravestonePosition oldPos : oldGravePositions) {
+                        if (usedPositions.contains(oldPos)) {
+                            logger("Gravestone at " + posToString(oldPos.asBlockPos()) + " in dimension " + oldPos.dimension.toString() + " has already been damaged, skipping");
+                            continue;
+                        }
+
                         ServerWorld graveWorld = serverWorld.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, oldPos.dimension));
 
                         if (graveWorld == null) {
@@ -143,6 +151,7 @@ public class GravestoneCreation {
                                 logger("Gravestone (" + graveData + ") " + damageType + " at the position " + posToString(oldPos.asBlockPos()) + " in dimension " + oldPos.dimension.toString());
                             }
                         }
+                        usedPositions.add(oldPos);
                     }
                 }
             }

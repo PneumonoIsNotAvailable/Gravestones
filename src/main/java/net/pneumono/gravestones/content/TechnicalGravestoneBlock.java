@@ -44,7 +44,6 @@ import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneCreation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
