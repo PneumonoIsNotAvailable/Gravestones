@@ -44,6 +44,7 @@ import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneCreation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -171,7 +172,8 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!world.isClient() && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
             ProfileComponent graveOwner = gravestone.getGraveOwner();
-            if (graveOwner != null && (graveOwner.gameProfile().getId() == player.getGameProfile().getId() || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue())) {
+            // I know toString() here is probably bad, but like, it works, womp womp
+            if (graveOwner != null && (Objects.equals(graveOwner.gameProfile().getId().toString(), player.getGameProfile().getId().toString()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue())) {
                 String uuid = "";
                 if (Gravestones.CONSOLE_INFO.getValue()) {
                     uuid = " (" + player.getGameProfile().getId() + ")";
