@@ -172,8 +172,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!world.isClient() && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
             ProfileComponent graveOwner = gravestone.getGraveOwner();
-            // I know toString() here is probably bad, but like, it works, womp womp
-            if (graveOwner != null && (Objects.equals(graveOwner.gameProfile().getId().toString(), player.getGameProfile().getId().toString()) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue())) {
+            if ((graveOwner != null && graveOwner.gameProfile().getId().equals(player.getGameProfile().getId())) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
                 String uuid = "";
                 if (Gravestones.CONSOLE_INFO.getValue()) {
                     uuid = " (" + player.getGameProfile().getId() + ")";
