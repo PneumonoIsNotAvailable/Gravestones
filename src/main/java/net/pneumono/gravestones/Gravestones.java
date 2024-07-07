@@ -53,7 +53,7 @@ public class Gravestones implements ModInitializer {
 	public static final EnumConfiguration<TimeFormatType> TIME_FORMAT = Configs.register(new EnumConfiguration<>(MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormatType.MMDDYYYY));
 
 	public static final ResourceConditionType<ConfigResourceCondition> RESOURCE_CONDITION_CONFIGURATIONS = ResourceConditionType.create(
-			Identifier.of(MOD_ID, "configurations"),
+			identifier("configurations"),
 			ConfigResourceCondition.CODEC
 	);
 
@@ -73,6 +73,10 @@ public class Gravestones implements ModInitializer {
 			TrinketsSupport.register();
 		}
 		 */
+	}
+
+	public static Identifier identifier(String path) {
+		return Identifier.of(MOD_ID, path);
 	}
 
 	private void registerCommands() {
