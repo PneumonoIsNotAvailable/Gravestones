@@ -50,6 +50,6 @@ public class GravestoneData {
     }
 
     public boolean hasData() {
-        return data.size() > 0;
+        return !data.isEmpty();
     }
 }
