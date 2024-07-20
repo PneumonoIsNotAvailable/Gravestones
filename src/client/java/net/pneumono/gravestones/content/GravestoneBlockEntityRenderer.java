@@ -17,7 +17,6 @@ import net.pneumono.gravestones.gravestones.TimeFormatType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Objects;
 
 public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<AbstractGravestoneBlockEntity> {
     private final TextRenderer textRenderer;
@@ -48,9 +47,9 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
         for (int i = 0; i < 4; ++i) {
             matrices.translate(0, 2 * (1 / scale), 0);
 
-            String text = "";
+            Text text = Text.literal("");
             if (entity instanceof TechnicalGravestoneBlockEntity blockEntity) {
-                text = switch (i) {
+                text = Text.literal(switch (i) {
                     case 0 -> {
                         ProfileComponent profileComponent = blockEntity.getGraveOwner();
                         if (profileComponent != null) {
@@ -61,14 +60,12 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
                     case 1 -> getGravestoneTimeLines(blockEntity,true);
                     case 2 -> getGravestoneTimeLines(blockEntity,false);
                     default -> "";
-                };
+                });
             } else if (entity instanceof AestheticGravestoneBlockEntity blockEntity) {
-                text = blockEntity.getGravestoneTextLine(i);
+                text = blockEntity.getText().getMessage(i, false);
             }
 
-            if (!Objects.equals(text, "")) {
-                drawText(Text.literal(text), matrices, vertexConsumers, light);
-            }
+            drawText(text, matrices, vertexConsumers, light);
         }
 
         matrices.pop();

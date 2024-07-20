@@ -1,46 +1,102 @@
 package net.pneumono.gravestones.content.entity;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.SignText;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.command.CommandOutput;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.GravestonesRegistry;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
+    private SignText text = createText();
+    private boolean waxed;
+
     public AestheticGravestoneBlockEntity(BlockPos pos, BlockState state) {
         super(GravestonesRegistry.AESTHETIC_GRAVESTONE_ENTITY, pos, state);
     }
 
-    private final String[] lines = new String[]{"", "", "", ""};
+    protected SignText createText() {
+        return new SignText();
+    }
 
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        nbt.putString("line_0", lines[0]);
-        nbt.putString("line_1", lines[1]);
-        nbt.putString("line_2", lines[2]);
-        nbt.putString("line_3", lines[3]);
+        RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
+        SignText.CODEC.encodeStart(dynamicOps, this.text).resultOrPartial(Gravestones.LOGGER::error).ifPresent(frontText -> nbt.put("text", frontText));
+        nbt.putBoolean("is_waxed", this.waxed);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        if (nbt.contains("line_0", NbtElement.STRING_TYPE)) {
-            lines[0] = nbt.getString("line_0");
+        RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
+        if (nbt.contains("text")) {
+            SignText.CODEC.parse(dynamicOps, nbt.getCompound("text")).resultOrPartial(Gravestones.LOGGER::error).ifPresent(signText -> this.text = this.parseLines(signText));
         }
-        if (nbt.contains("line_1", NbtElement.STRING_TYPE)) {
-            lines[1] = nbt.getString("line_1");
+        this.waxed = nbt.getBoolean("is_waxed");
+    }
+
+    private SignText parseLines(SignText signText) {
+        for (int i = 0; i < 4; ++i) {
+            Text text = this.parseLine(signText.getMessage(i, false));
+            Text text2 = this.parseLine(signText.getMessage(i, true));
+            signText = signText.withMessage(i, text, text2);
         }
-        if (nbt.contains("line_2", NbtElement.STRING_TYPE)) {
-            lines[2] = nbt.getString("line_2");
+        return signText;
+    }
+
+    private Text parseLine(Text text) {
+        World world = this.world;
+        if (world instanceof ServerWorld serverWorld) {
+            try {
+                return Texts.parse(AestheticGravestoneBlockEntity.createCommandSource(null, serverWorld, this.pos), text, null, 0);
+            } catch (CommandSyntaxException ignored) {}
         }
-        if (nbt.contains("line_3", NbtElement.STRING_TYPE)) {
-            lines[3] = nbt.getString("line_3");
+        return text;
+    }
+
+    public boolean canRunCommandClickEvent(PlayerEntity player) {
+        return this.isWaxed() && this.getText().hasRunCommandClickEvent(player);
+    }
+
+    public boolean runCommandClickEvent(PlayerEntity player, World world, BlockPos pos) {
+        boolean bl = false;
+        for (Text text : this.getText().getMessages(player.shouldFilterText())) {
+            Style style = text.getStyle();
+            ClickEvent clickEvent = style.getClickEvent();
+            if (clickEvent == null || clickEvent.getAction() != ClickEvent.Action.RUN_COMMAND) continue;
+            Objects.requireNonNull(player.getServer()).getCommandManager().executeWithPrefix(AestheticGravestoneBlockEntity.createCommandSource(player, world, pos), clickEvent.getValue());
+            bl = true;
         }
+        return bl;
+    }
+
+    private static ServerCommandSource createCommandSource(@Nullable PlayerEntity player, World world, BlockPos pos) {
+        String string = player == null ? "Sign" : player.getName().getString();
+        Text text = player == null ? Text.literal("Sign") : player.getDisplayName();
+        return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ofCenter(pos), Vec2f.ZERO, (ServerWorld)world, 2, string, text, world.getServer(), player);
     }
 
     @Override
@@ -55,7 +111,11 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return Direction.NORTH;
     }
 
-    public String getGravestoneTextLine(int line) {
-        return lines[line];
+    public SignText getText() {
+        return this.text;
+    }
+
+    public boolean isWaxed() {
+        return this.waxed;
     }
 }
