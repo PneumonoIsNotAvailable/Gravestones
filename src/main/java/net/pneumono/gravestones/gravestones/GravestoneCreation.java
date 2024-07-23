@@ -3,8 +3,6 @@ package net.pneumono.gravestones.gravestones;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -97,7 +95,7 @@ public class GravestoneCreation {
             }
 
             if (world.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone) {
-                gravestone.setGraveOwner(new ProfileComponent(playerProfile));
+                gravestone.setGraveOwner(playerProfile);
                 gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
                 insertPlayerItemsAndExperience(gravestone, player);
                 insertModData(player, gravestone);
@@ -163,7 +161,7 @@ public class GravestoneCreation {
         logger("Inserting Inventory items and experience into grave...");
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
-            if (!EnchantmentHelper.hasAnyEnchantmentsWith(inventory.getStack(i), EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
+            if (!EnchantmentHelper.hasVanishingCurse(inventory.getStack(i))) {
                 gravestone.setStack(i, inventory.removeStack(i));
             } else {
                 inventory.removeStack(i);

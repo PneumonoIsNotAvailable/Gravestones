@@ -1,11 +1,14 @@
 package net.pneumono.gravestones.content;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
@@ -32,18 +35,18 @@ public class GravestonesRegistry {
             new AestheticGravestoneBlock(AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool()));
 
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("technical_gravestone"), BlockEntityType.Builder.create(TechnicalGravestoneBlockEntity::new, GRAVESTONE_TECHNICAL).build()
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("technical_gravestone"), FabricBlockEntityTypeBuilder.create(TechnicalGravestoneBlockEntity::new, GRAVESTONE_TECHNICAL).build()
     );
     public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("aesthetic_gravestone"), BlockEntityType.Builder.create(AestheticGravestoneBlockEntity::new, GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED).build()
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(AestheticGravestoneBlockEntity::new, GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
             Registries.ENTITY_TYPE,
             Gravestones.identifier("gravestone_skeleton"),
-            EntityType.Builder.<GravestoneSkeletonEntity>create(GravestoneSkeletonEntity::new, SpawnGroup.MISC)
-                    .dimensions(0.6F, 1.99F)
-                    .maxTrackingRange(8)
+            FabricEntityTypeBuilder.<GravestoneSkeletonEntity>create(SpawnGroup.MISC, GravestoneSkeletonEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6F, 1.99F))
+                    .trackRangeChunks(8)
                     .build()
     );
 
@@ -80,7 +83,6 @@ public class GravestonesRegistry {
 
         Migration.registerItemMigration(Gravestones.identifier("gravestone_default"), GRAVESTONE.asItem());
         Migration.registerBlockMigration(Gravestones.identifier("gravestone_default"), GRAVESTONE);
-        Migration.registerBlockEntityMigration(Identifier.of("gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
         Migration.registerBlockEntityMigration(Gravestones.identifier("gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
     }
 }

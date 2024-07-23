@@ -1,13 +1,13 @@
 package net.pneumono.gravestones;
 
 import com.google.gson.GsonBuilder;
+import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditionType;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -52,10 +52,7 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration CONSOLE_INFO = Configs.register(new BooleanConfiguration(MOD_ID, "console_info", ConfigEnv.CLIENT, false));
 	public static final EnumConfiguration<TimeFormatType> TIME_FORMAT = Configs.register(new EnumConfiguration<>(MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormatType.MMDDYYYY));
 
-	public static final ResourceConditionType<ConfigResourceCondition> RESOURCE_CONDITION_CONFIGURATIONS = ResourceConditionType.create(
-			identifier("configurations"),
-			ConfigResourceCondition.CODEC
-	);
+	public static final Identifier RESOURCE_CONDITION_CONFIGURATIONS = identifier("configurations");
 
 	@Override
 	public void onInitialize() {
@@ -65,14 +62,11 @@ public class Gravestones implements ModInitializer {
 		GravestonesRegistry.registerModContent();
 		registerCommands();
 
-		ResourceConditions.register(RESOURCE_CONDITION_CONFIGURATIONS);
+		ResourceConditions.register(RESOURCE_CONDITION_CONFIGURATIONS, jsonObject -> AESTHETIC_GRAVESTONES.getValue());
 
-		// Commented out until Trinkets updates to 1.21
-		/*
 		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
 			TrinketsSupport.register();
 		}
-		 */
 	}
 
 	public static Identifier identifier(String path) {
@@ -93,9 +87,9 @@ public class Gravestones implements ModInitializer {
 								if (!(world.getBlockState(pos).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL))) {
 									context.getSource().sendMessage(Text.literal("No gravestone at that position!").formatted(Formatting.RED));
 								} else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
-									ProfileComponent owner = entity.getGraveOwner();
+									GameProfile owner = entity.getGraveOwner();
 									if (owner != null) {
-										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.name().orElse("???") + " (" + owner.id().orElse(null) + ")").formatted(Formatting.GREEN));
+										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.getName() + " (" + owner.getId() + ")").formatted(Formatting.GREEN));
 									} else {
 										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " but no graveOwner!").formatted(Formatting.RED));
 									}

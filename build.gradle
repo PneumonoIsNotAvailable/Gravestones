@@ -62,7 +62,7 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
 	// Trinkets - Removed - Not updated to 1.21
-	// modImplementation "dev.emi:trinkets:${project.trinkets_version}"
+	modImplementation "dev.emi:trinkets:${project.trinkets_version}"
 
 	// Uncomment the following line to enable the deprecated Fabric API modules. 
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
@@ -79,7 +79,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
+	it.options.release = 17
 }
 
 java {
@@ -88,8 +88,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {

@@ -1,8 +1,8 @@
 package net.pneumono.gravestones.content.entity;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -33,7 +32,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
     private int experience;
     private NbtList modData;
-    private ProfileComponent graveOwner;
+    private GameProfile graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
 
@@ -43,12 +42,14 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        Inventories.writeNbt(nbt, this.inventory, registryLookup);
+    protected void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        Inventories.writeNbt(nbt, this.inventory);
         nbt.putInt("experience", this.experience);
         if (this.graveOwner != null) {
-            nbt.put("owner", ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.graveOwner).getOrThrow());
+            NbtCompound compound = new NbtCompound();
+            NbtHelper.writeGameProfile(compound, this.graveOwner);
+            nbt.put("owner", compound);
         }
         if (this.spawnDateTime != null) {
             nbt.putString("spawnDateTime", this.spawnDateTime);
@@ -62,14 +63,14 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        Inventories.readNbt(nbt, this.inventory, registryLookup);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        Inventories.readNbt(nbt, this.inventory);
         if (nbt.contains("experience", NbtElement.INT_TYPE)) {
             this.experience = nbt.getInt("experience");
         }
-        if (nbt.contains("owner")) {
-            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("owner")).resultOrPartial(string -> Gravestones.LOGGER.error("Failed to load profile from gravestone: {}", string)).ifPresent(this::setGraveOwner);
+        if (nbt.contains("owner", NbtElement.COMPOUND_TYPE)) {
+            NbtHelper.toGameProfile(nbt.getCompound("owner"));
         }
         if (nbt.contains("spawnDateTime", NbtElement.STRING_TYPE)) {
             this.spawnDateTime = nbt.getString("spawnDateTime");
@@ -126,11 +127,11 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             if (Gravestones.SPAWN_GRAVESTONE_SKELETONS.getValue()) {
                 boolean ownerNearby = false;
 
-                ProfileComponent profileComponent = entity.getGraveOwner();
-                if (profileComponent != null) {
-                    Box box = Box.enclosing(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
+                GameProfile profile = entity.getGraveOwner();
+                if (profile != null) {
+                    Box box = new Box(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
                     for (Entity nearbyEntity : world.getOtherEntities(null, box)) {
-                        if (nearbyEntity instanceof PlayerEntity player && player.getGameProfile().getId() == profileComponent.gameProfile().getId()) {
+                        if (nearbyEntity instanceof PlayerEntity player && player.getGameProfile().getId() == profile.getId()) {
                             ownerNearby = true;
                         }
                     }
@@ -200,12 +201,12 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         boolean ownerNearby = false;
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof TechnicalGravestoneBlockEntity gravestone) {
-            ProfileComponent profileComponent = gravestone.getGraveOwner();
-            if (profileComponent != null) {
-                Box box = Box.enclosing(blockPos.down(5).south(5).west(5), blockPos.up(5).north(5).east(5));
+            GameProfile profile = gravestone.getGraveOwner();
+            if (profile != null) {
+                Box box = new Box(blockPos.down(5).south(5).west(5), blockPos.up(5).north(5).east(5));
                 List<Entity> entities = world.getOtherEntities(null, box);
                 for (Entity tempEntity : entities) {
-                    if (tempEntity instanceof PlayerEntity player && player.getGameProfile().getId() == gravestone.getGraveOwner().gameProfile().getId()) {
+                    if (tempEntity instanceof PlayerEntity player && player.getGameProfile().getId() == profile.getId()) {
                         ownerNearby = true;
                     }
                 }
@@ -219,7 +220,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     private int countEntities(World world) {
-        Box box = Box.enclosing(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
+        Box box = new Box(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
         List<Entity> entities = world.getOtherEntities(null, box);
         int entityCount = 0;
         for (Entity nearbyEntity : entities) {
@@ -230,12 +231,12 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return entityCount;
     }
 
-    public void setGraveOwner(ProfileComponent graveOwner) {
+    public void setGraveOwner(GameProfile graveOwner) {
         this.graveOwner = graveOwner;
         this.markDirty();
     }
 
-    public ProfileComponent getGraveOwner() {
+    public GameProfile getGraveOwner() {
         return this.graveOwner;
     }
 

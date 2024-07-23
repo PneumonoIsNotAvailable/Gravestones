@@ -5,10 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SignText;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryOps;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -22,7 +18,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,20 +36,22 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
-        SignText.CODEC.encodeStart(dynamicOps, this.text).resultOrPartial(Gravestones.LOGGER::error).ifPresent(frontText -> nbt.put("text", frontText));
+    protected void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        // Will re-implement later, womp womp it was unused anyway
+        //RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
+        //SignText.CODEC.encodeStart(dynamicOps, this.text).resultOrPartial(Gravestones.LOGGER::error).ifPresent(frontText -> nbt.put("text", frontText));
         nbt.putBoolean("is_waxed", this.waxed);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
-        if (nbt.contains("text")) {
-            SignText.CODEC.parse(dynamicOps, nbt.getCompound("text")).resultOrPartial(Gravestones.LOGGER::error).ifPresent(signText -> this.text = this.parseLines(signText));
-        }
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        // Will re-implement later, womp womp it was unused anyway
+        //RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
+        //if (nbt.contains("text")) {
+        //    SignText.CODEC.parse(dynamicOps, nbt.getCompound("text")).resultOrPartial(Gravestones.LOGGER::error).ifPresent(signText -> this.text = this.parseLines(signText));
+        //}
         this.waxed = nbt.getBoolean("is_waxed");
     }
 

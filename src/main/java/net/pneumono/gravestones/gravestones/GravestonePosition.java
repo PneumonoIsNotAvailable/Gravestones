@@ -13,7 +13,7 @@ public class GravestonePosition {
 
     public GravestonePosition(Identifier dimension, BlockPos pos) {
         if (dimension == null || pos == null) {
-            this.dimension = Identifier.ofVanilla("overworld");
+            this.dimension = new Identifier("overworld");
             this.posX = 0;
             this.posY = 0;
             this.posZ = 0;
@@ -26,7 +26,7 @@ public class GravestonePosition {
     }
 
     public GravestonePosition() {
-        this.dimension = Identifier.ofVanilla("overworld");
+        this.dimension = new Identifier("overworld");
         this.posX = 0;
         this.posY = 0;
         this.posZ = 0;

@@ -1,20 +1,22 @@
 package net.pneumono.gravestones;
 
+import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.data.server.recipe.RecipeExporter;
+import net.fabricmc.fabric.api.resource.conditions.v1.ConditionJsonProvider;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.RecipeProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
@@ -26,12 +28,24 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
     }
 
     private static class RecipesGenerator extends FabricRecipeProvider {
-        public RecipesGenerator(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
-            super(output, registriesFuture);
+        public RecipesGenerator(FabricDataOutput output) {
+            super(output);
         }
 
         @Override
-        public void generate(RecipeExporter exporter) {
+        public void generate(Consumer<RecipeJsonProvider> exporter) {
+            ConditionJsonProvider provider = new ConditionJsonProvider() {
+                @Override
+                public Identifier getConditionId() {
+                    return Gravestones.identifier("configurations");
+                }
+
+                @Override
+                public void writeParameters(JsonObject object) {
+
+                }
+            };
+
             ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE)
                     .pattern(" S ")
                     .pattern("S#S")
@@ -42,9 +56,9 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
                     .input('D', Items.COARSE_DIRT)
                     .criterion(FabricRecipeProvider.hasItem(Items.LEATHER), FabricRecipeProvider.conditionsFromItem(Items.LEATHER))
                     .criterion(FabricRecipeProvider.hasItem(Items.STICK), FabricRecipeProvider.conditionsFromItem(Items.STICK))
-                    .offerTo(withConditions(exporter, new ConfigResourceCondition()));
+                    .offerTo(withConditions(exporter, provider));
 
-            RecipeProvider.offerSmelting(withConditions(exporter, new ConfigResourceCondition()),
+            RecipeProvider.offerSmelting(withConditions(exporter, provider),
                     List.of(GravestonesRegistry.GRAVESTONE),
                     RecipeCategory.DECORATIONS,
                     GravestonesRegistry.GRAVESTONE_CHIPPED,
@@ -53,7 +67,7 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
                     "gravestone_cracking"
             );
 
-            RecipeProvider.offerSmelting(withConditions(exporter, new ConfigResourceCondition()),
+            RecipeProvider.offerSmelting(withConditions(exporter, provider),
                     List.of(GravestonesRegistry.GRAVESTONE_CHIPPED),
                     RecipeCategory.DECORATIONS,
                     GravestonesRegistry.GRAVESTONE_DAMAGED,
@@ -65,8 +79,8 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
     }
 
     private static class GravestoneLootTables extends FabricBlockLootTableProvider {
-        public GravestoneLootTables(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
-            super(dataOutput, registryLookup);
+        public GravestoneLootTables(FabricDataOutput dataOutput) {
+            super(dataOutput);
         }
 
         @Override

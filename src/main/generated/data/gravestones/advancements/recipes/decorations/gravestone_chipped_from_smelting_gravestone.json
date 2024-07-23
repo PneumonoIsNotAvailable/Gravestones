@@ -10,7 +10,9 @@
       "conditions": {
         "items": [
           {
-            "items": "gravestones:gravestone"
+            "items": [
+              "gravestones:gravestone"
+            ]
           }
         ]
       },
@@ -25,13 +27,14 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_gravestone"
+      "has_gravestone",
+      "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
       "minecraft:gravestone_chipped_from_smelting_gravestone"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

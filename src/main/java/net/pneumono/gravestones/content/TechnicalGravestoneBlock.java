@@ -1,11 +1,10 @@
 package net.pneumono.gravestones.content;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,6 +24,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -36,7 +36,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.explosion.Explosion;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
@@ -45,11 +44,9 @@ import net.pneumono.gravestones.gravestones.GravestoneCreation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
-import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterloggable {
-    public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public static final IntProperty DAMAGE = IntProperty.of("damage", 0, 2);
     public static final IntProperty AGE_DAMAGE = IntProperty.of("age_damage", 0, 2);
@@ -63,11 +60,6 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
-    }
-
-    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(DAMAGE);
         builder.add(AGE_DAMAGE);
@@ -76,16 +68,19 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public FluidState getFluidState(BlockState state) {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED)) {
             world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
@@ -95,12 +90,13 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         createSoulParticles(world, pos);
-        return super.onBreak(world, pos, state, player);
+        super.onBreak(world, pos, state, player);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
         super.onStacksDropped(state, world, pos, tool, dropExperience);
         BlockEntity entity = world.getBlockEntity(pos);
@@ -123,11 +119,13 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
@@ -152,6 +150,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -164,14 +163,11 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-    }
-
-    @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    @SuppressWarnings("deprecation")
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient() && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
-            ProfileComponent graveOwner = gravestone.getGraveOwner();
-            if ((graveOwner != null && graveOwner.gameProfile().getId().equals(player.getGameProfile().getId())) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
+            GameProfile graveOwner = gravestone.getGraveOwner();
+            if ((graveOwner != null && graveOwner.getId().equals(player.getGameProfile().getId())) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
                 String uuid = "";
                 if (Gravestones.CONSOLE_INFO.getValue()) {
                     uuid = " (" + player.getGameProfile().getId() + ")";
@@ -213,7 +209,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                 }
                 world.breakBlock(pos, true);
             } else if (graveOwner != null) {
-                player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.name().orElse("???")), true);
+                player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.getName()), true);
             } else {
                 player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
             }
@@ -232,6 +228,6 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return TechnicalGravestoneBlock.validateTicker(type, GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
+        return TechnicalGravestoneBlock.checkType(type, GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
     }
 }

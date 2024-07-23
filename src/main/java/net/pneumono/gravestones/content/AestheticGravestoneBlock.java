@@ -1,6 +1,5 @@
 package net.pneumono.gravestones.content;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +14,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Hand;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class AestheticGravestoneBlock extends BlockWithEntity implements Waterloggable {
-    public static final MapCodec<AestheticGravestoneBlock> CODEC = AestheticGravestoneBlock.createCodec(AestheticGravestoneBlock::new);
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
@@ -44,11 +43,6 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
         );
     }
 
-    @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
-    }
-
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
@@ -58,11 +52,13 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
@@ -74,6 +70,7 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public VoxelShape getOutlineShape(BlockState state,BlockView view, BlockPos pos, ShapeContext context) {
         return switch (state.get(FACING)) {
             case EAST -> SHAPE_E;
@@ -114,17 +111,20 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    @SuppressWarnings("deprecation")
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         // In the future, this will open a text editing screen
-        return super.onUse(state, world, pos, player, hit);
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public FluidState getFluidState(BlockState state) {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED)) {
             world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));

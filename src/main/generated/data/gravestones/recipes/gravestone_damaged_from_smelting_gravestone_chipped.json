@@ -12,7 +12,5 @@
   "ingredient": {
     "item": "gravestones:gravestone_chipped"
   },
-  "result": {
-    "id": "gravestones:gravestone_damaged"
-  }
+  "result": "gravestones:gravestone_damaged"
 }

@@ -1,11 +1,11 @@
 package net.pneumono.gravestones.content;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
 import net.pneumono.gravestones.Gravestones;
@@ -51,9 +51,9 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
             if (entity instanceof TechnicalGravestoneBlockEntity blockEntity) {
                 text = Text.literal(switch (i) {
                     case 0 -> {
-                        ProfileComponent profileComponent = blockEntity.getGraveOwner();
+                        GameProfile profileComponent = blockEntity.getGraveOwner();
                         if (profileComponent != null) {
-                            yield profileComponent.name().orElse("???");
+                            yield profileComponent.getName();
                         }
                         yield "???";
                     }
