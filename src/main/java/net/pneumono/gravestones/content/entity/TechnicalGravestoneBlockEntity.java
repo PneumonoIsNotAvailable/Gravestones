@@ -70,7 +70,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             this.experience = nbt.getInt("experience");
         }
         if (nbt.contains("owner", NbtElement.COMPOUND_TYPE)) {
-            NbtHelper.toGameProfile(nbt.getCompound("owner"));
+            this.graveOwner = NbtHelper.toGameProfile(nbt.getCompound("owner"));
         }
         if (nbt.contains("spawnDateTime", NbtElement.STRING_TYPE)) {
             this.spawnDateTime = nbt.getString("spawnDateTime");
