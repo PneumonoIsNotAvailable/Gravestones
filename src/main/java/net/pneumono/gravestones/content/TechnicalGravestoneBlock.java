@@ -1,6 +1,7 @@
 package net.pneumono.gravestones.content;
 
 import com.mojang.serialization.MapCodec;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -169,7 +170,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!world.isClient() && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
+        if (!world.isClient() && !(player instanceof FakePlayer) && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
             ProfileComponent graveOwner = gravestone.getGraveOwner();
             if ((graveOwner != null && graveOwner.gameProfile().getId().equals(player.getGameProfile().getId())) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
                 String uuid = "";
