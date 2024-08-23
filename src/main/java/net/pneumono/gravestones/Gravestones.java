@@ -40,7 +40,7 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration DECAY_WITH_TIME = Configs.register(new BooleanConfiguration(MOD_ID, "decay_with_time", ConfigEnv.SERVER, true));
 	public static final BooleanConfiguration DECAY_WITH_DEATHS = Configs.register(new BooleanConfiguration(MOD_ID, "decay_with_deaths", ConfigEnv.SERVER, true));
 	public static final TimeConfiguration DECAY_TIME = Configs.register(new TimeConfiguration(MOD_ID, "decay_time", ConfigEnv.SERVER, 8L * TimeUnit.HOURS.getDivision()));
-	public static final EnumConfiguration<DecayTimeType> GRAVESTONE_DECAY_TIME_TYPE = Configs.register(new EnumConfiguration<>(MOD_ID, "decay_time_type", ConfigEnv.SERVER, DecayTimeType.REAL_TIME));
+	public static final EnumConfiguration<DecayTimeType> GRAVESTONE_DECAY_TIME_TYPE = Configs.register(new EnumConfiguration<>(MOD_ID, "decay_time_type", ConfigEnv.SERVER, DecayTimeType.TICKS));
 	public static final BooleanConfiguration STORE_EXPERIENCE = Configs.register(new BooleanConfiguration(MOD_ID, "store_experience", ConfigEnv.SERVER, true));
 	public static final BooleanConfiguration EXPERIENCE_CAP = Configs.register(new BooleanConfiguration(MOD_ID, "experience_cap", ConfigEnv.SERVER, true));
 	public static final EnumConfiguration<ExperienceKeptCalculation> EXPERIENCE_KEPT = Configs.register(new EnumConfiguration<>(MOD_ID, "experience_kept", ConfigEnv.SERVER, ExperienceKeptCalculation.VANILLA));
