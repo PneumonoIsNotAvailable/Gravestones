@@ -105,7 +105,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         if (entity instanceof TechnicalGravestoneBlockEntity gravestone) {
             ExperienceOrbEntity.spawn(world, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
             for (ModSupport support : GravestonesApi.getModSupports()) {
-                support.onBreak(gravestone);
+                support.onGravestoneBreak(gravestone);
             }
         }
     }
@@ -196,7 +196,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                 }
 
                 for (ModSupport support : GravestonesApi.getModSupports()) {
-                    support.onCollect(player, gravestone);
+                    support.onGravestoneCollect(player, gravestone);
                 }
 
                 player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);

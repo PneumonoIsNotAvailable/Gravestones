@@ -191,7 +191,7 @@ public class GravestoneCreation {
         logger("Inserting additional mod data into grave...");
 
         for (ModSupport support : GravestonesApi.getModSupports()) {
-            support.insertData(entity, gravestone);
+            support.insertGravestoneData(entity, gravestone);
         }
 
         logger("Data inserted!");

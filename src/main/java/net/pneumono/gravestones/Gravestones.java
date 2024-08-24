@@ -15,6 +15,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
+import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.*;
@@ -65,7 +66,7 @@ public class Gravestones implements ModInitializer {
 		ResourceConditions.register(RESOURCE_CONDITION_CONFIGURATIONS, jsonObject -> AESTHETIC_GRAVESTONES.getValue());
 
 		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
-			TrinketsSupport.register();
+			GravestonesApi.registerModSupport(new TrinketsSupport());
 		}
 	}
 
