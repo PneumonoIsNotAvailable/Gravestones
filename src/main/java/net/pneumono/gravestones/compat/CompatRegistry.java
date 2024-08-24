@@ -5,8 +5,12 @@ import net.pneumono.gravestones.api.GravestonesApi;
 
 public class CompatRegistry {
     public static void registerCompat() {
-        if (FabricLoader.getInstance().isModLoaded("trinkets")) {
+        FabricLoader loader = FabricLoader.getInstance();
+        if (loader.isModLoaded("trinkets")) {
             GravestonesApi.registerModSupport(new TrinketsSupport());
+        }
+        if (loader.isModLoaded("spelunkery")) {
+            GravestonesApi.registerModSupport(new SpelunkerySupport());
         }
     }
 }
