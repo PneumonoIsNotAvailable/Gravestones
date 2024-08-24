@@ -1,4 +1,4 @@
-package net.pneumono.gravestones;
+package net.pneumono.gravestones.compat;
 
 import dev.emi.trinkets.api.SlotType;
 import dev.emi.trinkets.api.TrinketComponent;
