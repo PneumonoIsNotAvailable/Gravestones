@@ -15,6 +15,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneCreation;
@@ -37,7 +38,7 @@ public class TrinketsSupport extends ModSupport {
         List<Pair<SlotReferencePrimitive, ItemStack>> filteredTrinkets = trinketComponent
                 .getAllEquipped()
                 .stream()
-                .filter(pair -> EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, pair.getRight()) == 0)
+                .filter(pair -> EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, pair.getRight()) == 0 && GravestonesApi.shouldSkipItem(player, pair.getRight()))
                 .map(pair -> {
                     SlotType slotType = pair.getLeft().inventory().getSlotType();
                     SlotReferencePrimitive slotReferencePrimitive = new SlotReferencePrimitive(slotType.getGroup(), slotType.getName());
