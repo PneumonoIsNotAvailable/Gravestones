@@ -38,7 +38,7 @@ public class TrinketsSupport extends ModSupport {
         List<Pair<SlotReferencePrimitive, ItemStack>> filteredTrinkets = trinketComponent
                 .getAllEquipped()
                 .stream()
-                .filter(pair -> EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, pair.getRight()) == 0 && GravestonesApi.shouldSkipItem(player, pair.getRight()))
+                .filter(pair -> EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, pair.getRight()) == 0 && !GravestonesApi.shouldSkipItem(player, pair.getRight()))
                 .map(pair -> {
                     SlotType slotType = pair.getLeft().inventory().getSlotType();
                     SlotReferencePrimitive slotReferencePrimitive = new SlotReferencePrimitive(slotType.getGroup(), slotType.getName());
