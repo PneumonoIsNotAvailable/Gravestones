@@ -4,6 +4,10 @@
     "block.gravestones.gravestone_damaged": "Damaged Gravestone",
     "block.gravestones.gravestone_technical": "Gravestone",
 
+    "item.gravestones.gravestone": "Gravestone",
+    "item.gravestones.gravestone_chipped": "Chipped Gravestone",
+    "item.gravestones.gravestone_damaged": "Damaged Gravestone",
+
     "gravestones.cannot_open_wrong_player": "This gravestone can only be interacted with by it's owner, %s!",
     "gravestones.cannot_open_no_owner": "This gravestone has no owner!",
     "gravestones.player_collected_grave": "%s has found their grave!",
@@ -57,5 +61,8 @@
     "configs.gravestones.time_format.ddmmyyyy": "DD/MM/YYYY",
     "configs.gravestones.time_format.mmddyyyy": "MM/DD/YYYY",
     "configs.gravestones.time_format.yyyymmdd": "YYYY/MM/DD",
-    "configs.gravestones.time_format.tooltip" : "The format of the death time shown on gravestones"
+    "configs.gravestones.time_format.tooltip" : "The format of the death time shown on gravestones",
+    "configs.category.gravestones.decay": "Gravestone Decay",
+    "configs.category.gravestones.experience": "Experience Storage",
+    "configs.category.gravestones.multiplayer": "Multiplayer"
 }

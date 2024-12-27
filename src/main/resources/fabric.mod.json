@@ -40,10 +40,10 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",
-		"minecraft": "~1.21",
+		"minecraft": "~1.21.4",
 		"java": ">=21",
 		"fabric-api": "*",
-		"pneumonocore": ">=1.1.6"
+		"pneumonocore": ">=1.1.8"
 	},
 	"suggests": {}
 }

@@ -3,7 +3,7 @@ package net.pneumono.gravestones;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceCondition;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditionType;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryOps;
 import org.jetbrains.annotations.Nullable;
 
 // sucks and is terrible but works for now
@@ -17,7 +17,7 @@ public class ConfigResourceCondition implements ResourceCondition {
     }
 
     @Override
-    public boolean test(@Nullable RegistryWrapper.WrapperLookup registryLookup) {
+    public boolean test(@Nullable RegistryOps.RegistryInfoGetter registryInfoGetter) {
         return Gravestones.AESTHETIC_GRAVESTONES.getValue();
     }
 }

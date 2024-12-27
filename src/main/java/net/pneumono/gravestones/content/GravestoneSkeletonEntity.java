@@ -16,7 +16,7 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     }
 
     @Override
-    public boolean shouldDropXp() {
+    public boolean shouldDropExperience() {
         return false;
     }
 
@@ -26,8 +26,8 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     @Override
     public void tick() {
         super.tick();
-        if (isAlive() && age > 1200 && age % 20 == 0) {
-            damage(getDamageSources().starve(), 2);
+        if (this.getWorld() instanceof ServerWorld world && isAlive() && age > 1200 && age % 20 == 0) {
+            damage(world, getDamageSources().starve(), 2);
         }
     }
 }
