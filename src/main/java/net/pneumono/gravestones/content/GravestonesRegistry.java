@@ -1,6 +1,5 @@
 package net.pneumono.gravestones.content;
 
-import net.fabricmc.fabric.api.event.registry.FabricRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -20,7 +19,6 @@ import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
-import net.pneumono.pneumonocore.migration.Migration;
 
 import java.util.function.Function;
 
