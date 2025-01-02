@@ -142,10 +142,9 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     private static final VoxelShape SHAPE = Stream.of(
-            Block.createCuboidShape(4, 14, 13, 12, 16, 15),
-            Block.createCuboidShape(2, 2, 13, 14, 14, 15),
-            Block.createCuboidShape(0, 0, 0, 16, 2, 16),
-            Block.createCuboidShape(1, 2, 1, 15, 3, 14)
+            Block.createCuboidShape(1, 0, 10, 15, 2, 16),
+            Block.createCuboidShape(2, 2, 12, 14, 14, 14),
+            Block.createCuboidShape(4, 14, 12, 12, 16, 14)
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
 
     @Override

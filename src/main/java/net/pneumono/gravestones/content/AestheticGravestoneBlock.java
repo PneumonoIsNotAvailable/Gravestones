@@ -85,28 +85,24 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     private static final VoxelShape SHAPE_N = Stream.of(
-            Block.createCuboidShape(4, 14, 13, 12, 16, 15),
-            Block.createCuboidShape(2, 2, 13, 14, 14, 15),
-            Block.createCuboidShape(0, 0, 0, 16, 2, 16),
-            Block.createCuboidShape(1, 2, 1, 15, 3, 14)
+            Block.createCuboidShape(1, 0, 10, 15, 2, 16),
+            Block.createCuboidShape(2, 2, 12, 14, 14, 14),
+            Block.createCuboidShape(4, 14, 12, 12, 16, 14)
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
     private static final VoxelShape SHAPE_E = Stream.of(
-            Block.createCuboidShape(1, 14, 4, 3, 16, 12),
-            Block.createCuboidShape(1, 2, 2, 3, 14, 14),
-            Block.createCuboidShape(0, 0, 0, 16, 2, 16),
-            Block.createCuboidShape(2, 2, 1, 15, 3, 15)
+            Block.createCuboidShape(0, 0, 1, 6, 2, 15),
+            Block.createCuboidShape(2, 2, 2, 4, 14, 14),
+            Block.createCuboidShape(2, 14, 4, 4, 16, 12)
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
     private static final VoxelShape SHAPE_S = Stream.of(
-            Block.createCuboidShape(4, 14, 1, 12, 16, 3),
-            Block.createCuboidShape(2, 2, 1, 14, 14, 3),
-            Block.createCuboidShape(0, 0, 0, 16, 2, 16),
-            Block.createCuboidShape(1, 2, 2, 15, 3, 15)
+            Block.createCuboidShape(1, 0, 0, 15, 2, 6),
+            Block.createCuboidShape(2, 2, 2, 14, 14, 4),
+            Block.createCuboidShape(4, 14, 2, 12, 16, 4)
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
     private static final VoxelShape SHAPE_W = Stream.of(
-            Block.createCuboidShape(13, 14, 4, 15, 16, 12),
-            Block.createCuboidShape(13, 2, 2, 15, 14, 14),
-            Block.createCuboidShape(0, 0, 0, 16, 2, 16),
-            Block.createCuboidShape(1, 2, 1, 14, 3, 15)
+            Block.createCuboidShape(10, 0, 1, 16, 2, 15),
+            Block.createCuboidShape(12, 2, 2, 14, 14, 14),
+            Block.createCuboidShape(12, 14, 4, 14, 16, 12)
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
 
     @Override
