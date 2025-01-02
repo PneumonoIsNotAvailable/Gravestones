@@ -43,7 +43,7 @@
 		"minecraft": "~1.21.4",
 		"java": ">=21",
 		"fabric-api": "*",
-		"pneumonocore": ">=1.1.8"
+		"pneumonocore": ">=1.1.9"
 	},
 	"suggests": {}
 }
