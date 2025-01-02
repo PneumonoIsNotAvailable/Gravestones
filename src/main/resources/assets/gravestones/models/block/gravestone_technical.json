@@ -1,8 +1,0 @@
-{
-	"parent": "gravestones:block/gravestone_template",
-	"variants": {
-		"damage=0": {"model": "gravestones:block/gravestone"},
-		"damage=1": {"model": "gravestones:block/gravestone_chipped"},
-		"damage=2": {"model": "gravestones:block/gravestone_damaged"}
-	}
-}
