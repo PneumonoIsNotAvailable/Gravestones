@@ -1,5 +1,6 @@
 package net.pneumono.gravestones.content;
 
+import net.fabricmc.fabric.api.event.registry.FabricRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -12,10 +13,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroups;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.*;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
@@ -84,9 +82,9 @@ public class GravestonesRegistry {
         Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
         Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
 
-        Migration.registerItemMigration(Gravestones.identifier("gravestone_default"), GRAVESTONE.asItem());
-        Migration.registerBlockMigration(Gravestones.identifier("gravestone_default"), GRAVESTONE);
-        Migration.registerBlockEntityMigration(Identifier.of("gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
-        Migration.registerBlockEntityMigration(Gravestones.identifier("gravestone"), TECHNICAL_GRAVESTONE_ENTITY);
+        Registries.ITEM.addAlias(Gravestones.identifier("gravestone_default"), Gravestones.identifier("gravestone"));
+        Registries.BLOCK.addAlias(Gravestones.identifier("gravestone_default"), Gravestones.identifier("gravestone"));
+        Registries.BLOCK_ENTITY_TYPE.addAlias(Identifier.of("gravestone"), Gravestones.identifier("technical_gravestone"));
+        Registries.BLOCK_ENTITY_TYPE.addAlias(Gravestones.identifier("gravestone"), Gravestones.identifier("technical_gravestone"));
     }
 }
