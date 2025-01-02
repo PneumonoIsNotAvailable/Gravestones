@@ -1,7 +1,6 @@
 package net.pneumono.gravestones.content.entity;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -12,9 +11,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -195,26 +192,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
                     }
                 }
             }
-        }
-
-        boolean ownerNearby = false;
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
-        if (blockEntity instanceof TechnicalGravestoneBlockEntity gravestone) {
-            ProfileComponent profileComponent = gravestone.getGraveOwner();
-            if (profileComponent != null) {
-                Box box = Box.enclosing(blockPos.down(5).south(5).west(5), blockPos.up(5).north(5).east(5));
-                List<Entity> entities = world.getOtherEntities(null, box);
-                for (Entity tempEntity : entities) {
-                    if (tempEntity instanceof PlayerEntity player && player.getGameProfile().getId() == gravestone.getGraveOwner().gameProfile().getId()) {
-                        ownerNearby = true;
-                    }
-                }
-            }
-        }
-
-        if (ownerNearby && !world.isClient() && world instanceof ServerWorld serverWorld) {
-            Random random = new Random();
-            serverWorld.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, blockPos.getX() + (random.nextFloat() * 0.6) + 0.2, blockPos.getY() + (random.nextFloat() / 10) + 0.25, blockPos.getZ() + (random.nextFloat() * 0.6) + 0.2, 1, ((double) random.nextFloat() - 0.5) * 0.08, ((double) random.nextFloat() - 0.5) * 0.08, ((double) random.nextFloat() - 0.5) * 0.08, 0.1);
         }
     }
 
