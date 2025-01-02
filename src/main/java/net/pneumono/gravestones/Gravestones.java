@@ -50,7 +50,7 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration BROADCAST_COLLECT_IN_CHAT = new BooleanConfiguration(MOD_ID, "broadcast_collect_in_chat", ConfigEnv.SERVER, false);
 	public static final BooleanConfiguration BROADCAST_COORDINATES_IN_CHAT = new BooleanConfiguration(MOD_ID, "broadcast_coordinates_in_chat", ConfigEnv.SERVER, false);
 	public static final BooleanConfiguration CONSOLE_INFO = new BooleanConfiguration(MOD_ID, "console_info", ConfigEnv.CLIENT, false);
-	public static final EnumConfiguration<TimeFormatType> TIME_FORMAT = new EnumConfiguration<>(MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormatType.MMDDYYYY);
+	public static final EnumConfiguration<TimeFormat> TIME_FORMAT = new EnumConfiguration<>(MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormat.MMDDYYYY);
 
 	public static final ResourceConditionType<ConfigResourceCondition> RESOURCE_CONDITION_CONFIGURATIONS = ResourceConditionType.create(
 			identifier("configurations"),

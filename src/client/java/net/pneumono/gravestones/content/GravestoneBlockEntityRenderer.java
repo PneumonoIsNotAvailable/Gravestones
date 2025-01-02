@@ -13,7 +13,7 @@ import net.pneumono.gravestones.content.entity.AbstractGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
-import net.pneumono.gravestones.gravestones.TimeFormatType;
+import net.pneumono.gravestones.gravestones.TimeFormat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -81,7 +81,7 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
         if (spawnDateTime != null) {
             try {
                 SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
-                TimeFormatType type = Gravestones.TIME_FORMAT.getValue();
+                TimeFormat type = Gravestones.TIME_FORMAT.getValue();
 
                 SimpleDateFormat toClient = new SimpleDateFormat(line ? type.getDateFormat() : type.getTimeFormat());
                 text = toClient.format(fromServer.parse(spawnDateTime));
