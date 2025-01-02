@@ -40,4 +40,5 @@ replay_*.log
 *.jfr
 
 # datagen output
+
 src/main/generated/.cache/
