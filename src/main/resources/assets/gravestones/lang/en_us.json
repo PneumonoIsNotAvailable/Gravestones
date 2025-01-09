@@ -8,7 +8,7 @@
     "item.gravestones.gravestone_chipped": "Chipped Gravestone",
     "item.gravestones.gravestone_damaged": "Damaged Gravestone",
 
-    "gravestones.cannot_open_wrong_player": "This gravestone can only be interacted with by it's owner, %s!",
+    "gravestones.cannot_open_wrong_player": "This gravestone can only be interacted with by its owner, %s!",
     "gravestones.cannot_open_no_owner": "This gravestone has no owner!",
     "gravestones.player_collected_grave": "%s has found their grave!",
     "gravestones.player_collected_grave_at_coords": "%1$s has found their grave at %2$s!",
