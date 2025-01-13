@@ -4,6 +4,10 @@
     "block.gravestones.gravestone_damaged": "損壞的墓碑",
     "block.gravestones.gravestone_technical": "技術性墓碑",
 
+    "item.gravestones.gravestone": "墓碑",
+    "item.gravestones.gravestone_chipped": "微損的墓碑",
+    "item.gravestones.gravestone_damaged": "損壞的墓碑",
+
     "gravestones.cannot_open_wrong_player": "此墓碑僅供其擁有者 %s 使用！",
     "gravestones.cannot_open_no_owner": "此墓碑沒有擁有者！",
     "gravestones.player_collected_grave": "%s 找到了他們的墓碑！",
@@ -57,5 +61,8 @@
     "configs.gravestones.time_format.ddmmyyyy": "DD/MM/YYYY",
     "configs.gravestones.time_format.mmddyyyy": "MM/DD/YYYY",
     "configs.gravestones.time_format.yyyymmdd": "YYYY/MM/DD",
-    "configs.gravestones.time_format.tooltip" : "顯示在墓碑上的死亡時間格式"
+    "configs.gravestones.time_format.tooltip" : "顯示在墓碑上的死亡時間格式",
+    "configs.category.gravestones.decay": "墓碑衰變",
+    "configs.category.gravestones.experience": "經驗儲存",
+    "configs.category.gravestones.multiplayer": "多人遊戲"
 }
