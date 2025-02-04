@@ -4,7 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 
-public interface ModSupport {
+public abstract class ModSupport {
     /**
      * Called when a new grave is created.<p>
      * Use {@link TechnicalGravestoneBlockEntity#addOrReplaceModData(String, NbtCompound)} to add new data.
@@ -12,7 +12,9 @@ public interface ModSupport {
      * @param player The player who has died.
      * @param entity The gravestone block entity that data can be inserted into.
      */
-    void insertData(PlayerEntity player, TechnicalGravestoneBlockEntity entity);
+    public void insertData(PlayerEntity player, TechnicalGravestoneBlockEntity entity) {
+
+    }
 
     /**
      * Called when a gravestone is broken. This happens when gravestones are collected, but also when a Creative Mode player breaks a gravestone, and if other mods create new ways of breaking gravestones.<p>
@@ -22,7 +24,9 @@ public interface ModSupport {
      *
      * @param entity The gravestone block entity that has been broken.
      */
-    void onBreak(TechnicalGravestoneBlockEntity entity);
+    public void onBreak(TechnicalGravestoneBlockEntity entity) {
+
+    }
 
     /**
      * Called when a player collects a gravestone. If owner-only access is disabled in the configs, this may be a player other than the grave's owner.<p>
@@ -33,5 +37,9 @@ public interface ModSupport {
      * @param player The player collecting the gravestone.
      * @param entity The gravestone block entity that is being collected.
      */
-    void onCollect(PlayerEntity player, TechnicalGravestoneBlockEntity entity);
+    public void onCollect(PlayerEntity player, TechnicalGravestoneBlockEntity entity) {
+
+    }
+
+
 }
