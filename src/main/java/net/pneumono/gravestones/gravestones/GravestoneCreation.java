@@ -167,6 +167,10 @@ public class GravestoneCreation {
         logger("Inserting Inventory items and experience into grave...");
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
+            if (GravestonesApi.shouldSkipItem(player, inventory.getStack(i))) {
+                continue;
+            }
+
             if (!EnchantmentHelper.hasAnyEnchantmentsWith(inventory.getStack(i), EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
                 gravestone.setStack(i, inventory.removeStack(i));
             } else {

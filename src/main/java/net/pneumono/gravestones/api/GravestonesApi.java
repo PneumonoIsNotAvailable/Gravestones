@@ -1,5 +1,8 @@
 package net.pneumono.gravestones.api;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,5 +21,21 @@ public class GravestonesApi {
     @SuppressWarnings("unused")
     public static void registerModSupport(ModSupport support) {
         modSupports.add(support);
+    }
+
+    /**
+     * Checks against all {@link ModSupport}s to see whether an item stack should be inserted into the gravestone or not.
+     *
+     * @param player The player who has died.
+     * @param stack The stack being checked.
+     * @return Whether the item should be inserted.
+     */
+    public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
+        for (ModSupport support : GravestonesApi.getModSupports()) {
+            if (!support.shouldPutItemInGravestone(player, stack)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
