@@ -33,9 +33,9 @@ public class GravestonesApi {
     public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
         for (ModSupport support : GravestonesApi.getModSupports()) {
             if (!support.shouldPutItemInGravestone(player, stack)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }
