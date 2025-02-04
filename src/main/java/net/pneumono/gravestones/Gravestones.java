@@ -131,7 +131,7 @@ public class Gravestones implements ModInitializer {
 									if (owner != null) {
 										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.name().orElse("???") + " (" + owner.id().orElse(null) + ")").formatted(Formatting.GREEN));
 									} else {
-										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " but no graveOwner!").formatted(Formatting.RED));
+										context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and no graveOwner!").formatted(Formatting.RED));
 									}
 
 									StringBuilder itemMessage = new StringBuilder();
