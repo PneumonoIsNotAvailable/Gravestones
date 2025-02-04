@@ -17,7 +17,8 @@ public interface ModSupport {
     /**
      * Called when a gravestone is broken. This happens when gravestones are collected, but also when a Creative Mode player breaks a gravestone, and if other mods create new ways of breaking gravestones.<p>
      * Exists so that if graves are broken through other means, items can still be dropped on the ground.<p>
-     * {@link TechnicalGravestoneBlockEntity#getModData(String)} can be used to get previously added data.
+     * {@link TechnicalGravestoneBlockEntity#getModData(String)} can be used to get previously added data.<p>
+     * Remember to null-check mod data, since it's possible that the mod being supported was added in after a gravestone had already been created.
      *
      * @param entity The gravestone block entity that has been broken.
      */
@@ -26,7 +27,8 @@ public interface ModSupport {
     /**
      * Called when a player collects a gravestone. If owner-only access is disabled in the configs, this may be a player other than the grave's owner.<p>
      * Keep in mind the fact that {@link ModSupport#onBreak(TechnicalGravestoneBlockEntity)} will be called after this, as well anything other mods have added to the dropInventory method, so you may need to remove data to prevent it being duplicated<p>
-     * {@link TechnicalGravestoneBlockEntity#getModData(String)} can be used to get previously added data.
+     * {@link TechnicalGravestoneBlockEntity#getModData(String)} can be used to get previously added data.<p>
+     * Remember to null-check mod data, since it's possible that the mod being supported was added in after a gravestone had already been created.
      *
      * @param player The player collecting the gravestone.
      * @param entity The gravestone block entity that is being collected.
