@@ -136,6 +136,10 @@ public class TrinketsSupport extends ModSupport {
     }
 
     public static List<Pair<SlotReferencePrimitive, ItemStack>> deserializeSlotData(NbtCompound compoundTag) {
+        if (compoundTag == null) {
+            GravestoneCreation.logger("Gravestone does not have trinkets, so no items were dropped");
+            return new ArrayList<>();
+        }
         List<Pair<SlotReferencePrimitive, ItemStack>> slotData = new ArrayList<>();
         NbtList listTag = compoundTag.getList("slotData", NbtElement.COMPOUND_TYPE);
 
