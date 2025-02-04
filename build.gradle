@@ -63,7 +63,7 @@ dependencies {
 	// ModMenu
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
-	// Trinkets - Removed - Not updated to 1.21
+	// Trinkets - Removed - Not updated to 1.21.4
 	// modImplementation "dev.emi:trinkets:${project.trinkets_version}"
 
 	// Uncomment the following line to enable the deprecated Fabric API modules. 

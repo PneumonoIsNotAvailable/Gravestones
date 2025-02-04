@@ -9,7 +9,7 @@ import dev.emi.trinkets.api.TrinketsApi;
 
 public class TrinketsSupport {
     // Most of this code is provided courtesy of wouter173, thank you!
-    // Commented out for the time being until Trinkets updates to 1.21
+    // Commented out for the time being until Trinkets updates to 1.21.4
 
     /*
     protected static void register() {
