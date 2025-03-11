@@ -25,5 +25,8 @@ public class GravestonesBlockTagProvider extends FabricTagProvider.BlockTagProvi
                 GravestonesRegistry.GRAVESTONE_CHIPPED,
                 GravestonesRegistry.GRAVESTONE_DAMAGED
         );
+        getOrCreateTagBuilder(BlockTags.WITHER_IMMUNE).add(GravestonesRegistry.GRAVESTONE_TECHNICAL);
+        getOrCreateTagBuilder(BlockTags.DRAGON_TRANSPARENT).add(GravestonesRegistry.GRAVESTONE_TECHNICAL);
+        getOrCreateTagBuilder(BlockTags.FEATURES_CANNOT_REPLACE).add(GravestonesRegistry.GRAVESTONE_TECHNICAL);
     }
 }
