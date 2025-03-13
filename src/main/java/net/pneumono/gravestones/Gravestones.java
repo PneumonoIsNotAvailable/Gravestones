@@ -3,8 +3,6 @@ package net.pneumono.gravestones;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditionType;
-import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.component.type.ProfileComponent;
