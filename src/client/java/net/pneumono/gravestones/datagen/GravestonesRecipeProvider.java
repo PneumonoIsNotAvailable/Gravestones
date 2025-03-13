@@ -27,13 +27,11 @@ public class GravestonesRecipeProvider extends FabricRecipeProvider {
             @Override
             public void generate() {
                 this.createShaped(RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE)
-                        .pattern(" S ")
-                        .pattern("S#S")
-                        .pattern("sDs")
+                        .pattern(" s ")
+                        .pattern("SSS")
+                        .pattern("sss")
                         .input('S', Items.STONE)
-                        .input('#', Items.SOUL_SAND)
                         .input('s', Items.STONE_SLAB)
-                        .input('D', Items.COARSE_DIRT)
                         .criterion(hasItem(Items.LEATHER), conditionsFromItem(Items.LEATHER))
                         .criterion(hasItem(Items.STICK), conditionsFromItem(Items.STICK))
                         .offerTo(withConditions(exporter, new ConfigResourceCondition()));
