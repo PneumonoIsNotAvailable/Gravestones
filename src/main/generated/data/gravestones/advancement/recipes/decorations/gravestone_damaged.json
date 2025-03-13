@@ -1,7 +1,10 @@
 {
   "fabric:load_conditions": [
     {
-      "condition": "gravestones:configurations"
+      "condition": "pneumonocore:configurations",
+      "configuration": "gravestones:aesthetic_gravestones",
+      "operation": "EQUAL",
+      "value": "true"
     }
   ],
   "parent": "minecraft:recipes/root",

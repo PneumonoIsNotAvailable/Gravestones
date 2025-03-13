@@ -52,11 +52,6 @@ public class Gravestones implements ModInitializer {
 	public static final BooleanConfiguration CONSOLE_INFO = new BooleanConfiguration(MOD_ID, "console_info", ConfigEnv.CLIENT, false);
 	public static final EnumConfiguration<TimeFormat> TIME_FORMAT = new EnumConfiguration<>(MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormat.MMDDYYYY);
 
-	public static final ResourceConditionType<ConfigResourceCondition> RESOURCE_CONDITION_CONFIGURATIONS = ResourceConditionType.create(
-			identifier("configurations"),
-			ConfigResourceCondition.CODEC
-	);
-
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing Gravestones");
@@ -98,8 +93,6 @@ public class Gravestones implements ModInitializer {
 
 		GravestonesRegistry.registerModContent();
 		registerCommands();
-
-		ResourceConditions.register(RESOURCE_CONDITION_CONFIGURATIONS);
 
 		// Commented out until Trinkets updates to 1.21
 		/*
