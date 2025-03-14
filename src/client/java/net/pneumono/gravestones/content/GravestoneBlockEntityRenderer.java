@@ -8,7 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
-import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.entity.AbstractGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
@@ -81,7 +81,7 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
         if (spawnDateTime != null) {
             try {
                 SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
-                TimeFormat type = Gravestones.TIME_FORMAT.getValue();
+                TimeFormat type = GravestonesConfig.TIME_FORMAT.getValue();
 
                 SimpleDateFormat toClient = new SimpleDateFormat(line ? type.getDateFormat() : type.getTimeFormat());
                 text = toClient.format(fromServer.parse(spawnDateTime));

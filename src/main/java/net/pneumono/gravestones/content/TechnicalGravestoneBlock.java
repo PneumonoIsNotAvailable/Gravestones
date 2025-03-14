@@ -40,6 +40,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.tick.ScheduledTickView;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
@@ -172,9 +173,9 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!world.isClient() && !(player instanceof FakePlayer) && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
             ProfileComponent graveOwner = gravestone.getGraveOwner();
-            if ((graveOwner != null && graveOwner.gameProfile().getId().equals(player.getGameProfile().getId())) || !Gravestones.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
+            if ((graveOwner != null && graveOwner.gameProfile().getId().equals(player.getGameProfile().getId())) || !GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
                 String uuid = "";
-                if (Gravestones.CONSOLE_INFO.getValue()) {
+                if (GravestonesConfig.CONSOLE_INFO.getValue()) {
                     uuid = " (" + player.getGameProfile().getId() + ")";
                 }
                 Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, GravestoneCreation.posToString(pos));
@@ -205,8 +206,8 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
 
                 player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
                 MinecraftServer server = world.getServer();
-                if (server != null && Gravestones.BROADCAST_COLLECT_IN_CHAT.getValue()) {
-                    if (Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
+                if (server != null && GravestonesConfig.BROADCAST_COLLECT_IN_CHAT.getValue()) {
+                    if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
                         server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneCreation.posToString(pos)).formatted(Formatting.AQUA), false);
                     } else {
                         server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave", player.getName().getString()).formatted(Formatting.AQUA), false);

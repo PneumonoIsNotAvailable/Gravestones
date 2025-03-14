@@ -3,7 +3,7 @@ package net.pneumono.gravestones.content;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 
 public class AestheticGravestoneBlockItem extends BlockItem {
     public AestheticGravestoneBlockItem(Block block, Settings settings) {
@@ -12,6 +12,6 @@ public class AestheticGravestoneBlockItem extends BlockItem {
 
     @Override
     public boolean isEnabled(FeatureSet enabledFeatures) {
-        return Gravestones.AESTHETIC_GRAVESTONES.getValue() && super.isEnabled(enabledFeatures);
+        return GravestonesConfig.AESTHETIC_GRAVESTONES.getValue() && super.isEnabled(enabledFeatures);
     }
 }

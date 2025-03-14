@@ -18,6 +18,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
@@ -82,10 +83,10 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
         if (world.getTime() % 20 == 0) {
             if (!world.isClient()) {
-                if (Gravestones.DECAY_WITH_TIME.getValue() && entity.getGraveOwner() != null) {
+                if (GravestonesConfig.DECAY_WITH_TIME.getValue() && entity.getGraveOwner() != null) {
                     long difference;
 
-                    if (Gravestones.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
+                    if (GravestonesConfig.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
                         difference = world.getTime() - entity.spawnDateTicks;
                     } else if (entity.spawnDateTime != null) {
                         difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.getCurrentTimeAsString(), entity.spawnDateTime) * 20;
@@ -93,7 +94,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
                         difference = 0;
                     }
 
-                    long timeUnit = Gravestones.DECAY_TIME.getValue();
+                    long timeUnit = GravestonesConfig.DECAY_TIME.getValue();
                     if (difference > (timeUnit * 3)) {
                         world.breakBlock(blockPos, true);
                     } else if (difference > (timeUnit * 2) && !(state.get(TechnicalGravestoneBlock.AGE_DAMAGE) > 1)) {
@@ -120,7 +121,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
                 }
             }
 
-            if (Gravestones.SPAWN_GRAVESTONE_SKELETONS.getValue()) {
+            if (GravestonesConfig.SPAWN_GRAVESTONE_SKELETONS.getValue()) {
                 boolean ownerNearby = false;
 
                 ProfileComponent profileComponent = entity.getGraveOwner();
@@ -232,7 +233,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     public int getExperienceToDrop(BlockState state) {
         int experience = getExperience();
-        if (Gravestones.EXPERIENCE_DECAY.getValue()) {
+        if (GravestonesConfig.EXPERIENCE_DECAY.getValue()) {
             return experience / (state.get(TechnicalGravestoneBlock.DAMAGE) + 1);
         } else {
             return experience;

@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.GravestonesRegistry;
@@ -45,7 +46,7 @@ public class GravestoneCreation {
     }
 
     public static void logger(String string, LoggerInfoType type, Throwable t) {
-        if (Gravestones.CONSOLE_INFO.getValue()) {
+        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
             switch (type) {
                 case INFO -> Gravestones.LOGGER.info(string);
                 case WARN -> Gravestones.LOGGER.warn(string);
@@ -92,13 +93,13 @@ public class GravestoneCreation {
             logger("Gravestone was not placed successfully! The items have been dropped on the floor", LoggerInfoType.ERROR);
         } else {
             String uuid = "";
-            if (Gravestones.CONSOLE_INFO.getValue()) {
+            if (GravestonesConfig.CONSOLE_INFO.getValue()) {
                 uuid = " (" + playerProfile.getId() + ")";
             }
             Gravestones.LOGGER.info("Placed {}'s{} Gravestone at {}", playerName, uuid, posToString(gravestonePos));
 
             MinecraftServer server = world.getServer();
-            if (Gravestones.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
+            if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
                 server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)).formatted(Formatting.AQUA), false);
             }
 
@@ -117,7 +118,7 @@ public class GravestoneCreation {
         }
 
         List<GravestonePosition> oldGravePositions = readAndWriteData(serverWorld, playerProfile, playerName, gravestonePos);
-        if (!Gravestones.DECAY_WITH_DEATHS.getValue()) {
+        if (!GravestonesConfig.DECAY_WITH_DEATHS.getValue()) {
             logger("Gravestone death damage has been disabled in the config, so no graves were damaged");
         } else {
             if (oldGravePositions == null) {
@@ -180,9 +181,9 @@ public class GravestoneCreation {
 
         logger("Items inserted!");
 
-        if (Gravestones.STORE_EXPERIENCE.getValue()) {
-            int experience = Gravestones.EXPERIENCE_KEPT.getValue().calculateExperienceKept(player);
-            if (Gravestones.EXPERIENCE_CAP.getValue() && experience > 100) {
+        if (GravestonesConfig.STORE_EXPERIENCE.getValue()) {
+            int experience = GravestonesConfig.EXPERIENCE_KEPT.getValue().calculateExperienceKept(player);
+            if (GravestonesConfig.EXPERIENCE_CAP.getValue() && experience > 100) {
                 experience = 100;
             }
 

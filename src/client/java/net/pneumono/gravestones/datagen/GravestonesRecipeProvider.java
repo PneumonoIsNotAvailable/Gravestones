@@ -11,7 +11,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.RegistryWrapper;
-import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.pneumonocore.datagen.ConfigResourceCondition;
 
@@ -27,7 +27,7 @@ public class GravestonesRecipeProvider extends FabricRecipeProvider {
         return new RecipeGenerator(wrapperLookup, recipeExporter) {
             @Override
             public void generate() {
-                ConfigResourceCondition condition = new ConfigResourceCondition(Gravestones.AESTHETIC_GRAVESTONES, ConfigResourceCondition.Operator.EQUAL, "true");
+                ConfigResourceCondition condition = new ConfigResourceCondition(GravestonesConfig.AESTHETIC_GRAVESTONES, ConfigResourceCondition.Operator.EQUAL, "true");
 
                 this.createShaped(RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE)
                         .pattern(" s ")

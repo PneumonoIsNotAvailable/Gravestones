@@ -25,7 +25,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.tick.ScheduledTickView;
-import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -132,7 +132,7 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
 
     @Override
     public boolean isEnabled(FeatureSet enabledFeatures) {
-        return Gravestones.AESTHETIC_GRAVESTONES.getValue() && super.isEnabled(enabledFeatures);
+        return GravestonesConfig.AESTHETIC_GRAVESTONES.getValue() && super.isEnabled(enabledFeatures);
     }
 
     @Nullable
