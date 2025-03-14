@@ -13,6 +13,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
+import net.pneumono.gravestones.compat.TrinketsSupport;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.*;
@@ -92,7 +93,7 @@ public class Gravestones implements ModInitializer {
 		GravestonesRegistry.registerModContent();
 		registerCommands();
 
-		// Commented out until Trinkets updates to 1.21
+		// Commented out until Trinkets updates to 1.21.4
 		/*
 		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
 			TrinketsSupport.register();
