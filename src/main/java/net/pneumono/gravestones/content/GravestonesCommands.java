@@ -15,7 +15,6 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneData;
 import net.pneumono.gravestones.gravestones.GravestonePosition;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,7 +99,7 @@ public class GravestonesCommands {
         );
     }
 
-    private static @NotNull StringBuilder getInventoryMessage(TechnicalGravestoneBlockEntity entity) {
+    private static StringBuilder getInventoryMessage(TechnicalGravestoneBlockEntity entity) {
         StringBuilder inventoryMessage = new StringBuilder();
         boolean notFirst = false;
         for (ItemStack item : entity.getItems()) {
