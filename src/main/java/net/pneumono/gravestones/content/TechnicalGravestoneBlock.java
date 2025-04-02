@@ -154,14 +154,14 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (state.getBlock() != newState.getBlock()) {
+    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (state.getBlock() != world.getBlockState(pos).getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof TechnicalGravestoneBlockEntity) {
                 ItemScatterer.spawn(world, pos, (TechnicalGravestoneBlockEntity)blockEntity);
                 world.updateComparators(pos, this);
             }
-            super.onStateReplaced(state, world, pos, newState, moved);
+            super.onStateReplaced(state, world, pos, moved);
         }
     }
 

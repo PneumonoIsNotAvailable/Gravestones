@@ -52,10 +52,8 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
-        if (nbt.contains("text")) {
-            SignText.CODEC.parse(dynamicOps, nbt.getCompound("text")).resultOrPartial(Gravestones.LOGGER::error).ifPresent(signText -> this.text = this.parseLines(signText));
-        }
-        this.waxed = nbt.getBoolean("is_waxed");
+        this.text = nbt.get("text", SignText.CODEC, dynamicOps).map(this::parseLines).orElseGet(SignText::new);
+        this.waxed = nbt.getBoolean("is_waxed", false);
     }
 
     private SignText parseLines(SignText signText) {
@@ -75,22 +73,6 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             } catch (CommandSyntaxException ignored) {}
         }
         return text;
-    }
-
-    public boolean canRunCommandClickEvent(PlayerEntity player) {
-        return this.isWaxed() && this.getText().hasRunCommandClickEvent(player);
-    }
-
-    public boolean runCommandClickEvent(PlayerEntity player, World world, BlockPos pos) {
-        boolean bl = false;
-        for (Text text : this.getText().getMessages(player.shouldFilterText())) {
-            Style style = text.getStyle();
-            ClickEvent clickEvent = style.getClickEvent();
-            if (clickEvent == null || clickEvent.getAction() != ClickEvent.Action.RUN_COMMAND) continue;
-            Objects.requireNonNull(player.getServer()).getCommandManager().executeWithPrefix(AestheticGravestoneBlockEntity.createCommandSource(player, world, pos), clickEvent.getValue());
-            bl = true;
-        }
-        return bl;
     }
 
     private static ServerCommandSource createCommandSource(@Nullable PlayerEntity player, World world, BlockPos pos) {

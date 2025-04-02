@@ -8,6 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.entity.AbstractGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
@@ -26,7 +27,7 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
     }
 
     @Override
-    public void render(AbstractGravestoneBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(AbstractGravestoneBlockEntity entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
         matrices.push();
 
         int rotation = switch (entity.getGravestoneDirection()) {

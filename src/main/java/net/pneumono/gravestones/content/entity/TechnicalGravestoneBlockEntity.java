@@ -63,21 +63,11 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         Inventories.readNbt(nbt, this.inventory, registryLookup);
-        if (nbt.contains("experience", NbtElement.INT_TYPE)) {
-            this.experience = nbt.getInt("experience");
-        }
-        if (nbt.contains("owner")) {
-            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("owner")).resultOrPartial(string -> Gravestones.LOGGER.error("Failed to load profile from gravestone: {}", string)).ifPresent(this::setGraveOwner);
-        }
-        if (nbt.contains("spawnDateTime", NbtElement.STRING_TYPE)) {
-            this.spawnDateTime = nbt.getString("spawnDateTime");
-        }
-        if (nbt.contains("spawnDateTicks", NbtElement.LONG_TYPE)) {
-            this.spawnDateTicks = nbt.getLong("spawnDateTicks");
-        }
-        if (nbt.contains("modData", NbtElement.LIST_TYPE)) {
-            this.modData = nbt.getList("modData", NbtElement.COMPOUND_TYPE);
-        }
+        this.experience = nbt.getInt("experience", 0);
+        ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("owner")).resultOrPartial(string -> Gravestones.LOGGER.error("Failed to load profile from gravestone: {}", string)).ifPresent(this::setGraveOwner);
+        this.spawnDateTime = nbt.getString("spawnDateTime", null);
+        this.spawnDateTicks = nbt.getLong("spawnDateTicks", 0);
+        this.modData = nbt.getListOrEmpty("modData");
     }
 
     public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
@@ -253,7 +243,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     public void addOrReplaceModData(String modID, NbtCompound data) {
         NbtList newData = new NbtList();
         for (NbtElement element : modData) {
-            if (!(element instanceof NbtCompound compound && compound.contains("modID") && Objects.equals(compound.getString("modID"), modID))) {
+            if (!(element instanceof NbtCompound compound && compound.contains("modID") && Objects.equals(compound.getString("modID").orElse(null), modID))) {
                 newData.add(element);
             }
         }
@@ -274,9 +264,9 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
      */
     public NbtCompound getModData(String modID) {
         for (int i = 0; i < modData.size(); ++i) {
-            NbtCompound nbt = modData.getCompound(i);
-            if (nbt != null && nbt.contains("modID") && Objects.equals(nbt.getString("modID"), modID)) {
-                return nbt.getCompound("data");
+            NbtCompound nbt = modData.getCompound(i).orElse(null);
+            if (nbt != null && nbt.contains("modID") && Objects.equals(nbt.getString("modID").orElse(null), modID)) {
+                return nbt.getCompound("data").orElse(nbt);
             }
         }
         return null;
