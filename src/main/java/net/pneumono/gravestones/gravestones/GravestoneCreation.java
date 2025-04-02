@@ -26,6 +26,9 @@ import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.gravestones.data.GravestonePosition;
+import net.pneumono.gravestones.gravestones.data.GravestoneData;
+import net.pneumono.gravestones.gravestones.data.PlayerGravestoneData;
 
 import java.io.File;
 import java.io.IOException;

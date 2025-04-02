@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.gravestones;
+package net.pneumono.gravestones.gravestones.data;
 
 import java.util.ArrayList;
 import java.util.List;

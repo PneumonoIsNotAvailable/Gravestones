@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.gravestones;
+package net.pneumono.gravestones.gravestones.data;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;

@@ -22,7 +22,7 @@ import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
-import net.pneumono.gravestones.gravestones.DecayTimeType;
+import net.pneumono.gravestones.gravestones.enums.DecayTimeType;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
 
 import java.util.*;

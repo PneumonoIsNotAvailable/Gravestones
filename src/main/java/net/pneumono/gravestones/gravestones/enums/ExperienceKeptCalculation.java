@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.gravestones;
+package net.pneumono.gravestones.gravestones.enums;
 
 import net.minecraft.entity.player.PlayerEntity;
 

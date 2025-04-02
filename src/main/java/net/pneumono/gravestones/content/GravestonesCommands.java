@@ -13,8 +13,8 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
-import net.pneumono.gravestones.gravestones.GravestoneData;
-import net.pneumono.gravestones.gravestones.GravestonePosition;
+import net.pneumono.gravestones.gravestones.data.GravestoneData;
+import net.pneumono.gravestones.gravestones.data.GravestonePosition;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,9 +48,9 @@ public class GravestonesCommands {
                                                             context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and no graveOwner!").formatted(Formatting.RED));
                                                         }
 
-                                                        StringBuilder itemMessage = getInventoryMessage(entity);
+                                                        String inventoryMessage = getInventoryMessage(entity);
 
-                                                        context.getSource().sendMessage(Text.literal("Gravestone has the following items " + itemMessage).formatted(Formatting.GOLD));
+                                                        context.getSource().sendMessage(Text.literal("Gravestone has the following items " + inventoryMessage).formatted(Formatting.GOLD));
                                                         context.getSource().sendMessage(Text.literal("Gravestone has " + entity.getExperience() + " experience points").formatted(Formatting.GOLD));
                                                         context.getSource().sendMessage(Text.literal("Gravestone has the following mod data " + entity.getAllModData().toString()).formatted(Formatting.GOLD));
                                                     }
@@ -99,7 +99,7 @@ public class GravestonesCommands {
         );
     }
 
-    private static StringBuilder getInventoryMessage(TechnicalGravestoneBlockEntity entity) {
+    private static String getInventoryMessage(TechnicalGravestoneBlockEntity entity) {
         StringBuilder inventoryMessage = new StringBuilder();
         boolean notFirst = false;
         for (ItemStack item : entity.getItems()) {
@@ -110,6 +110,6 @@ public class GravestonesCommands {
             }
             inventoryMessage.append(item.toString());
         }
-        return inventoryMessage;
+        return inventoryMessage.toString();
     }
 }

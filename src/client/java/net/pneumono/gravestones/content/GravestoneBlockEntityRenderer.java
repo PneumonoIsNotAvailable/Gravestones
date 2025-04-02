@@ -13,7 +13,7 @@ import net.pneumono.gravestones.content.entity.AbstractGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
-import net.pneumono.gravestones.gravestones.TimeFormat;
+import net.pneumono.gravestones.gravestones.enums.TimeFormat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -1,8 +1,8 @@
 package net.pneumono.gravestones;
 
-import net.pneumono.gravestones.gravestones.DecayTimeType;
-import net.pneumono.gravestones.gravestones.ExperienceKeptCalculation;
-import net.pneumono.gravestones.gravestones.TimeFormat;
+import net.pneumono.gravestones.gravestones.enums.DecayTimeType;
+import net.pneumono.gravestones.gravestones.enums.ExperienceKeptCalculation;
+import net.pneumono.gravestones.gravestones.enums.TimeFormat;
 import net.pneumono.pneumonocore.config.*;
 
 public class GravestonesConfig {
