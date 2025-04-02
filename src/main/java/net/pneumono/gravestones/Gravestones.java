@@ -20,7 +20,7 @@ public class Gravestones implements ModInitializer {
 		GravestonesRegistry.registerModContent();
 		GravestonesCommands.registerCommands();
 
-		// Commented out until Trinkets updates to 1.21.4
+		// Commented out until Trinkets updates to 1.21.5
 		/*
 		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
 			TrinketsSupport.register();
