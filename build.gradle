@@ -31,6 +31,8 @@ repositories {
 }
 
 loom {
+	accessWidenerPath = file("src/main/resources/gravestones.accesswidener")
+
 	splitEnvironmentSourceSets()
 
 	mods {

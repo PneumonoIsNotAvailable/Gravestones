@@ -1,6 +1,8 @@
 package net.pneumono.gravestones.content;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.block.AbstractBlock;
@@ -13,14 +15,25 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.*;
+import net.minecraft.server.filter.FilteredMessage;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
+import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GravestonesRegistry {
     public static final Block GRAVESTONE_TECHNICAL = registerGravestone("gravestone_technical",
@@ -48,6 +61,8 @@ public class GravestonesRegistry {
                     .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Gravestones.identifier("gravestone_skeleton")))
     );
 
+    public static final SoundEvent SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL = waxedInteractFailSound();
+
     public static final Identifier GRAVESTONES_COLLECTED = Gravestones.identifier("gravestones_collected");
 
     private static Block registerAestheticGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
@@ -58,6 +73,11 @@ public class GravestonesRegistry {
 
     private static Block registerGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         return Registry.register(Registries.BLOCK, Gravestones.identifier(name), factory.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.identifier(name)))));
+    }
+
+    private static SoundEvent waxedInteractFailSound() {
+        Identifier id = Gravestones.identifier("block.gravestone.waxed_interact_fail");
+        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 
     private static void addToFunctionalGroup(ItemConvertible... items) {
@@ -80,9 +100,31 @@ public class GravestonesRegistry {
         Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
         Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
 
+        PayloadTypeRegistry.playS2C().register(GravestoneEditorOpenS2CPayload.ID, GravestoneEditorOpenS2CPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(UpdateGravestoneC2SPayload.ID, UpdateGravestoneC2SPayload.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(UpdateGravestoneC2SPayload.ID, (payload, context) -> {
+            List<String> list = Stream.of(payload.getText()).map(Formatting::strip).collect(Collectors.toList());
+            context.player().networkHandler.filterTexts(list).thenAcceptAsync(texts -> onSignUpdate(context.player(), payload, texts), context.server());
+        });
+
         Registries.ITEM.addAlias(Gravestones.identifier("gravestone_default"), Gravestones.identifier("gravestone"));
         Registries.BLOCK.addAlias(Gravestones.identifier("gravestone_default"), Gravestones.identifier("gravestone"));
         Registries.BLOCK_ENTITY_TYPE.addAlias(Identifier.of("gravestone"), Gravestones.identifier("technical_gravestone"));
         Registries.BLOCK_ENTITY_TYPE.addAlias(Gravestones.identifier("gravestone"), Gravestones.identifier("technical_gravestone"));
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void onSignUpdate(ServerPlayerEntity player, UpdateGravestoneC2SPayload payload, List<FilteredMessage> signText) {
+        player.updateLastActionTime();
+        ServerWorld serverWorld = player.getServerWorld();
+        BlockPos blockPos = payload.pos();
+        if (serverWorld.isChunkLoaded(blockPos)) {
+            if (!(serverWorld.getBlockEntity(blockPos) instanceof AestheticGravestoneBlockEntity blockEntity)) {
+                return;
+            }
+
+            blockEntity.tryChangeText(player, signText);
+        }
     }
 }

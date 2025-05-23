@@ -1,20 +1,28 @@
 package net.pneumono.gravestones.content;
 
 import com.mojang.serialization.MapCodec;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.SignText;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.PlainTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,9 +35,12 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.tick.ScheduledTickView;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
+import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 public class AestheticGravestoneBlock extends BlockWithEntity implements Waterloggable {
@@ -112,8 +123,46 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        // In the future, this will open a text editing screen
-        return super.onUse(state, world, pos, player, hit);
+        if (world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity gravestoneBlockEntity) {
+            if (world.isClient) {
+                Util.getFatalOrPause(new IllegalStateException("Expected to only call this on server"));
+            }
+
+            boolean ranCommand = gravestoneBlockEntity.runCommandClickEvent(player, world, pos);
+            if (gravestoneBlockEntity.isWaxed()) {
+                world.playSound(null, gravestoneBlockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, SoundCategory.BLOCKS);
+                return ActionResult.SUCCESS_SERVER;
+            } else if (ranCommand) {
+                return ActionResult.SUCCESS_SERVER;
+            } else if (!this.isOtherPlayerEditing(player, gravestoneBlockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, gravestoneBlockEntity)) {
+                this.openEditScreen(player, gravestoneBlockEntity);
+                return ActionResult.SUCCESS_SERVER;
+            } else {
+                return ActionResult.PASS;
+            }
+        } else {
+            return ActionResult.PASS;
+        }
+    }
+
+    public void openEditScreen(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
+        blockEntity.setEditor(player.getUuid());
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            BlockPos pos = blockEntity.getPos();
+            serverPlayer.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverPlayer.getWorld(), pos));
+            ServerPlayNetworking.send(serverPlayer, new GravestoneEditorOpenS2CPayload(pos));
+        }
+    }
+
+    private boolean isOtherPlayerEditing(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
+        UUID uUID = blockEntity.getEditor();
+        return uUID != null && !uUID.equals(player.getUuid());
+    }
+
+    private boolean isTextLiteralOrEmpty(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
+        SignText signText = blockEntity.getText();
+        return Arrays.stream(signText.getMessages(player.shouldFilterText()))
+                .allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof PlainTextContent);
     }
 
     @Override

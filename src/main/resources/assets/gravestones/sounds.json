@@ -1,0 +1,28 @@
+{
+    "block.gravestone.waxed_interact_fail": {
+        "sounds": [
+            "block/sign/waxed_interact_fail1",
+            {
+                "name": "block/sign/waxed_interact_fail1",
+                "pitch": 0.9
+            },
+            {
+                "name": "block/sign/waxed_interact_fail2",
+                "pitch": 0.8
+            },
+            {
+                "name": "block/sign/waxed_interact_fail2",
+                "pitch": 0.9
+            },
+            {
+                "name": "block/sign/waxed_interact_fail3",
+                "pitch": 0.8
+            },
+            {
+                "name": "block/sign/waxed_interact_fail3",
+                "pitch": 0.9
+            }
+        ],
+        "subtitle": "gravestones.subtitles.block.gravestone.waxed_interact_fail"
+    }
+}
