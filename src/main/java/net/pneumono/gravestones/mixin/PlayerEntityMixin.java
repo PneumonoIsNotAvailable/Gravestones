@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @SuppressWarnings("unused")
 public abstract class PlayerEntityMixin extends LivingEntity {
     @Shadow
-    private @Final PlayerInventory inventory;
+    @Final
+    PlayerInventory inventory;
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
