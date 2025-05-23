@@ -38,9 +38,9 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
         };
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
         matrices.scale(0.0625F, -0.0625F, 0.0625F);
-        matrices.translate(-8, -14, -7);
+        matrices.translate(-8, -14, -8);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
-        matrices.translate(0, 0, -4.95);
+        matrices.translate(0, 0, -3.95);
 
         float scale = 1f / 7f;
         matrices.scale(scale, scale, scale);
