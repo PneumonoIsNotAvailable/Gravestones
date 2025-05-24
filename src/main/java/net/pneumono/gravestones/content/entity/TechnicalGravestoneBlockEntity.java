@@ -111,66 +111,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         }
 
         if (GravestonesConfig.SPAWN_GRAVESTONE_SKELETONS.getValue() && world.getTime() % 900 == 0 && isOwnerNearby(world, entity, blockPos)) {
-            int entityCount = entity.countEntities(world);
-
-            if (entityCount >= 5) {
-                return;
-            }
-
-            GravestoneSkeletonEntity spawned = new GravestoneSkeletonEntity(world);
-
-            List<BlockPos> possiblePos = new ArrayList<>();
-            for (int x = -5; x < 6; ++x) {
-                for (int y = -5; y < 6; ++y) {
-                    for (int z = -5; z < 6; ++z) {
-                        possiblePos.add(new BlockPos(entity.getPos().getX() + x, entity.getPos().getY() + y, entity.getPos().getZ() + z));
-                    }
-                }
-            }
-
-            Random random = new Random();
-            BlockPos finalPos = null;
-            while (!possiblePos.isEmpty()) {
-                int randInt = random.nextInt(possiblePos.size());
-                BlockPos possible = possiblePos.get(randInt);
-                possiblePos.remove(randInt);
-
-                boolean tooFar = false;
-                while (world.getBlockState(possible.down()).isAir() && !tooFar) {
-                    if (possible.down().getY() < blockPos.down(5).getY()) {
-                        tooFar = true;
-                    }
-                    possible = possible.down();
-                }
-
-                if (tooFar) {
-                    continue;
-                }
-
-                if (world.getBlockState(possible).isAir() && world.getBlockState(possible.up()).isAir()) {
-                    finalPos = possible;
-                    break;
-                }
-            }
-
-            if (finalPos == null) {
-                finalPos = blockPos;
-            }
-
-            spawned.setPos(finalPos.getX() + 0.5, finalPos.getY() + 0.1, finalPos.getZ() + 0.5);
-            spawned.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, -1));
-            if (random.nextFloat() > 0.5) {
-                spawned.equipStack(EquipmentSlot.MAINHAND, Items.BOW.getDefaultStack());
-                spawned.equipStack(EquipmentSlot.HEAD, Items.LEATHER_HELMET.getDefaultStack());
-            } else {
-                spawned.equipStack(EquipmentSlot.HEAD, Items.IRON_HELMET.getDefaultStack());
-            }
-            spawned.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0);
-            spawned.setEquipmentDropChance(EquipmentSlot.HEAD, 0);
-
-            world.spawnEntity(spawned);
-            TechnicalGravestoneBlock.createSoulParticles(world, finalPos);
-            TechnicalGravestoneBlock.createSoulParticles(world, blockPos);
+            spawnSkeletons(world, entity, blockPos);
         }
     }
 
@@ -188,6 +129,69 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         }
 
         return false;
+    }
+
+    private static void spawnSkeletons(World world, TechnicalGravestoneBlockEntity entity, BlockPos blockPos) {
+        int entityCount = entity.countEntities(world);
+
+        if (entityCount >= 5) {
+            return;
+        }
+
+        GravestoneSkeletonEntity spawned = new GravestoneSkeletonEntity(world);
+
+        List<BlockPos> possiblePos = new ArrayList<>();
+        for (int x = -5; x < 6; ++x) {
+            for (int y = -5; y < 6; ++y) {
+                for (int z = -5; z < 6; ++z) {
+                    possiblePos.add(new BlockPos(entity.getPos().getX() + x, entity.getPos().getY() + y, entity.getPos().getZ() + z));
+                }
+            }
+        }
+
+        Random random = new Random();
+        BlockPos finalPos = null;
+        while (!possiblePos.isEmpty()) {
+            int randInt = random.nextInt(possiblePos.size());
+            BlockPos possible = possiblePos.get(randInt);
+            possiblePos.remove(randInt);
+
+            boolean tooFar = false;
+            while (world.getBlockState(possible.down()).isAir() && !tooFar) {
+                if (possible.down().getY() < blockPos.down(5).getY()) {
+                    tooFar = true;
+                }
+                possible = possible.down();
+            }
+
+            if (tooFar) {
+                continue;
+            }
+
+            if (world.getBlockState(possible).isAir() && world.getBlockState(possible.up()).isAir()) {
+                finalPos = possible;
+                break;
+            }
+        }
+
+        if (finalPos == null) {
+            finalPos = blockPos;
+        }
+
+        spawned.setPos(finalPos.getX() + 0.5, finalPos.getY() + 0.1, finalPos.getZ() + 0.5);
+        spawned.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, -1));
+        if (random.nextFloat() > 0.5) {
+            spawned.equipStack(EquipmentSlot.MAINHAND, Items.BOW.getDefaultStack());
+            spawned.equipStack(EquipmentSlot.HEAD, Items.LEATHER_HELMET.getDefaultStack());
+        } else {
+            spawned.equipStack(EquipmentSlot.HEAD, Items.IRON_HELMET.getDefaultStack());
+        }
+        spawned.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0);
+        spawned.setEquipmentDropChance(EquipmentSlot.HEAD, 0);
+
+        world.spawnEntity(spawned);
+        TechnicalGravestoneBlock.createSoulParticles(world, finalPos);
+        TechnicalGravestoneBlock.createSoulParticles(world, blockPos);
     }
 
     private int countEntities(World world) {
