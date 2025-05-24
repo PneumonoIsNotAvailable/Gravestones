@@ -47,6 +47,8 @@ import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneCreation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -182,16 +184,26 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
 
                 GravestoneCreation.logger("Returning items...");
                 PlayerInventory inventory = player.getInventory();
+
+                List<ItemStack> extraStacks = new ArrayList<>();
                 for (int i = 0; i < gravestone.size(); ++i) {
                     if (gravestone.getStack(i) != null) {
                         if (i < 41 && inventory.getStack(i).isEmpty()) {
-                            inventory.setStack(i, gravestone.getStack(i));
+                            inventory.setStack(i, gravestone.getStack(i).copy());
                         } else {
-                            ItemEntity item = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), gravestone.getStack(i));
-                            world.spawnEntity(item);
+                            extraStacks.add(gravestone.getStack(i).copy());
                         }
 
                         gravestone.removeStack(i);
+                    }
+                }
+                for (ItemStack stack : extraStacks) {
+                    if (!player.giveItemStack(stack)) {
+                        ItemEntity itemEntity = player.dropItem(stack, false);
+                        if (itemEntity != null) {
+                            itemEntity.resetPickupDelay();
+                            itemEntity.setOwner(player.getUuid());
+                        }
                     }
                 }
 
