@@ -118,7 +118,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         }
     }
 
-    private void createSoulParticles(World world, BlockPos pos) {
+    public static void createSoulParticles(World world, BlockPos pos) {
         Random random = new Random();
         if (!world.isClient() && world instanceof ServerWorld serverWorld) {
             for (int i = 0; i < 16; ++i) {

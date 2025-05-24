@@ -180,6 +180,8 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
                         spawned.setEquipmentDropChance(EquipmentSlot.HEAD, 0);
 
                         world.spawnEntity(spawned);
+                        TechnicalGravestoneBlock.createSoulParticles(world, finalPos);
+                        TechnicalGravestoneBlock.createSoulParticles(world, blockPos);
                     }
                 }
             }
