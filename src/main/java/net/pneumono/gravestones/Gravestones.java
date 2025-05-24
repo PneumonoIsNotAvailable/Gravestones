@@ -1,7 +1,10 @@
 package net.pneumono.gravestones;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
+import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.compat.SpelunkerySupport;
 import net.pneumono.gravestones.compat.TrinketsSupport;
 import net.pneumono.gravestones.content.GravestonesCommands;
 import net.pneumono.gravestones.content.GravestonesRegistry;
@@ -26,6 +29,9 @@ public class Gravestones implements ModInitializer {
 			TrinketsSupport.register();
 		}
 		 */
+		if (FabricLoader.getInstance().isModLoaded("spelunkery")) {
+			GravestonesApi.registerModSupport(new SpelunkerySupport());
+		}
 	}
 
 	public static Identifier identifier(String path) {
