@@ -7,6 +7,7 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.pneumono.gravestones.content.GravestonesRegistry;
@@ -14,12 +15,7 @@ import net.pneumono.gravestones.content.GravestonesRegistry;
 public class GravestonePlacement {
     public static BlockPos placeGravestone(World world, BlockPos blockPos) {
         DimensionType dimension = world.getDimension();
-        if (blockPos.getY() > dimension.minY() && blockPos.getY() < dimension.height()) {
-            return placeGravestoneAtValidPos(world, blockPos);
-        } else {
-            int y = blockPos.getY() <= dimension.minY() ? dimension.minY() + 5 : dimension.height() + dimension.minY() - 5;
-            return placeGravestoneAtValidPos(world, blockPos.withY(y));
-        }
+        return placeGravestoneAtValidPos(world, blockPos.withY(MathHelper.clamp(blockPos.getY(), dimension.minY(), dimension.minY() + dimension.height())));
     }
 
     private static BlockPos placeGravestoneAtValidPos(World world, BlockPos blockPos) {
