@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 public class AestheticGravestoneEditScreen extends Screen {
-    private static final int TEXT_WIDTH = 86;
+    public static final int TEXT_WIDTH = 86;
     private static final int TEXT_LINE_HEIGHT = 14;
     protected final AestheticGravestoneBlockEntity blockEntity;
     private SignText text;
