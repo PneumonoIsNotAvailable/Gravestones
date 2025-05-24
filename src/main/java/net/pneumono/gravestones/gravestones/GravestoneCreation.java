@@ -8,6 +8,7 @@ import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
@@ -171,15 +172,12 @@ public class GravestoneCreation {
         logger("Inserting Inventory items and experience into grave...");
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
-            if (GravestonesApi.shouldSkipItem(player, inventory.getStack(i))) {
+            ItemStack stack = inventory.getStack(i);
+            if (shouldSkipItem(player, stack)) {
                 continue;
             }
 
-            if (!EnchantmentHelper.hasAnyEnchantmentsWith(inventory.getStack(i), EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
-                gravestone.setStack(i, inventory.removeStack(i));
-            } else {
-                inventory.removeStack(i);
-            }
+            gravestone.setStack(i, inventory.removeStack(i));
         }
 
         logger("Items inserted!");
@@ -199,6 +197,13 @@ public class GravestoneCreation {
         } else {
             logger("Experience storing is disabled!");
         }
+    }
+
+    public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
+        return GravestonesApi.shouldSkipItem(player, stack) ||
+                stack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
+                EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP) ||
+                EnchantmentHelper.hasAnyEnchantmentsIn(stack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES);
     }
 
     public static void insertModData(PlayerEntity entity, TechnicalGravestoneBlockEntity gravestone) {
