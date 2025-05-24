@@ -8,21 +8,20 @@ import net.minecraft.block.entity.SignText;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.*;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.PlainTextContent;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Util;
+import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +30,9 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.tick.ScheduledTickView;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
@@ -122,6 +123,75 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (!(blockEntity instanceof AestheticGravestoneBlockEntity gravestone)) {
+            return ActionResult.PASS;
+        }
+        Item item = stack.getItem();
+        boolean waxed = gravestone.isWaxed();
+
+        if (!world.isClient()) {
+            if (
+                    item instanceof SignChangingItem signChangingItem &&
+                    player.canModifyBlocks() &&
+                    !waxed &&
+                    noOtherPlayerEditing(player, gravestone) &&
+                    signChangingItem.canUseOnSignText(gravestone.getText(), player) &&
+                    tryTextChange(world, item, gravestone)
+            ) {
+                gravestone.runCommandClickEvent(player, world, pos);
+                player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+                world.emitGameEvent(GameEvent.BLOCK_CHANGE, gravestone.getPos(), GameEvent.Emitter.of(player, gravestone.getCachedState()));
+                stack.decrementUnlessCreative(1, player);
+                return ActionResult.SUCCESS;
+            } else {
+                return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+            }
+        } else {
+            if ((!(item instanceof SignChangingItem) || !player.canModifyBlocks()) && !waxed) {
+                return ActionResult.CONSUME;
+            } else {
+                return ActionResult.SUCCESS;
+            }
+        }
+    }
+
+    private static boolean tryTextChange(World world, Item item, AestheticGravestoneBlockEntity gravestone) {
+        // Hardcoding all of these sucks but what else am I going to do
+        if (item instanceof DyeItem dyeItem) {
+            if (gravestone.changeText(text -> text.withColor(dyeItem.getColor()))) {
+                world.playSound(null, gravestone.getPos(), SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                return true;
+            } else {
+                return false;
+            }
+        } else if (item instanceof GlowInkSacItem) {
+            if (gravestone.changeText(text -> text.withGlowing(true))) {
+                world.playSound(null, gravestone.getPos(), SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                return true;
+            } else {
+                return false;
+            }
+        } else if (item instanceof InkSacItem) {
+            if (gravestone.changeText(text -> text.withGlowing(false))) {
+                world.playSound(null, gravestone.getPos(), SoundEvents.ITEM_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                return true;
+            } else {
+                return false;
+            }
+        } else if (item instanceof HoneycombItem) {
+            if (gravestone.setWaxed(true)) {
+                world.syncWorldEvent(null, WorldEvents.BLOCK_WAXED, gravestone.getPos(), 0);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity gravestoneBlockEntity) {
             if (world.isClient) {
@@ -134,7 +204,7 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
                 return ActionResult.SUCCESS_SERVER;
             } else if (ranCommand) {
                 return ActionResult.SUCCESS_SERVER;
-            } else if (!this.isOtherPlayerEditing(player, gravestoneBlockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, gravestoneBlockEntity)) {
+            } else if (noOtherPlayerEditing(player, gravestoneBlockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, gravestoneBlockEntity)) {
                 this.openEditScreen(player, gravestoneBlockEntity);
                 return ActionResult.SUCCESS_SERVER;
             } else {
@@ -154,9 +224,9 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
         }
     }
 
-    private boolean isOtherPlayerEditing(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
+    private static boolean noOtherPlayerEditing(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
         UUID uUID = blockEntity.getEditor();
-        return uUID != null && !uUID.equals(player.getUuid());
+        return uUID == null || uUID.equals(player.getUuid());
     }
 
     private boolean isTextLiteralOrEmpty(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {

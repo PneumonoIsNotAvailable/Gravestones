@@ -92,8 +92,8 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         }
     }
 
-    public void changeText(UnaryOperator<SignText> textChanger) {
-        this.setText(textChanger.apply(this.getText()));
+    public boolean changeText(UnaryOperator<SignText> textChanger) {
+        return this.setText(textChanger.apply(this.getText()));
     }
 
     private SignText getTextWithMessages(PlayerEntity player, List<FilteredMessage> messages, SignText text) {
@@ -159,15 +159,36 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return this.editor;
     }
 
-    public void setText(SignText text) {
-        this.text = text;
+    public boolean setText(SignText text) {
+        if (this.text != text) {
+            this.text = text;
+            this.updateListeners();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public SignText getText() {
         return this.text;
     }
 
+    public boolean setWaxed(boolean waxed) {
+        if (this.waxed != waxed) {
+            this.waxed = waxed;
+            this.updateListeners();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean isWaxed() {
         return this.waxed;
+    }
+
+    private void updateListeners() {
+        this.markDirty();
+        Objects.requireNonNull(this.world).updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
     }
 }
