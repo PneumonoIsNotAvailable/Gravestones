@@ -21,6 +21,9 @@
 
     "gravestones.subtitles.block.gravestone.waxed_interact_fail": "Gravestone thumps",
 
+    "tag.item.gravestones.skips_gravestones": "Skips Gravestone Processing",
+    "tag.enchantment.gravestones.skips_gravestones": "Skips Gravestone Processing",
+
     "configs.gravestones.screen_title": "Gravestones Configs",
     "configs.gravestones.aesthetic_gravestones" : "Aesthetic Gravestones",
     "configs.gravestones.aesthetic_gravestones.tooltip" : "Whether or not aesthetic gravestones can be crafted for building purposes",
