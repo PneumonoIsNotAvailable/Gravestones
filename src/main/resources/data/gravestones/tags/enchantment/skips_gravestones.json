@@ -1,4 +1,16 @@
 {
     "values": [
+        {
+            "id": "enchantery:soulbound",
+            "required": false
+        },
+        {
+            "id": "soulbound:soulbound",
+            "required": false
+        },
+        {
+            "id": "soulbound_enchantment:soulbound",
+            "required": false
+        }
     ]
 }
