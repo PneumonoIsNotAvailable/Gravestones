@@ -75,10 +75,7 @@ public class GravestoneCreation {
                 "If you don't want to see all this every time someone dies, disable 'console_info' in the config!");
 
         World world = player.getWorld();
-        ServerWorld serverWorld;
-        if (world instanceof ServerWorld) {
-            serverWorld = (ServerWorld)world;
-        } else {
+        if (!(world instanceof ServerWorld serverWorld)) {
             return;
         }
         BlockPos playerPos = player.getBlockPos();
