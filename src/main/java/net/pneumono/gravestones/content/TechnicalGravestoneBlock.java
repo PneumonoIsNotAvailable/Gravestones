@@ -182,7 +182,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                 }
                 Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, GravestoneCreation.posToString(pos));
 
-                GravestoneCreation.logger("Returning items...");
+                GravestoneCreation.info("Returning items...");
                 PlayerInventory inventory = player.getInventory();
 
                 List<ItemStack> extraStacks = new ArrayList<>();
