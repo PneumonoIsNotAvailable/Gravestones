@@ -78,7 +78,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
                 if (GravestonesConfig.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
                     difference = world.getTime() - entity.spawnDateTicks;
                 } else if (entity.spawnDateTime != null) {
-                    difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.getCurrentTimeAsString(), entity.spawnDateTime) * 20;
+                    difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.READABLE.format(new Date()), entity.spawnDateTime) * 20;
                 } else {
                     difference = 0;
                 }

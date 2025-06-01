@@ -36,9 +36,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class GravestoneCreation {
     public static void info(String string) {
@@ -98,7 +96,8 @@ public class GravestoneCreation {
 
             if (world.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone) {
                 gravestone.setGraveOwner(new ProfileComponent(playerProfile));
-                gravestone.setSpawnDate(GravestoneTime.getCurrentTimeAsString(), world.getTime());
+                Date date = new Date();
+                gravestone.setSpawnDate(GravestoneTime.READABLE.format(date), world.getTime());
                 insertPlayerItemsAndExperience(gravestone, player);
                 insertModData(player, gravestone);
 

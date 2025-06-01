@@ -6,18 +6,10 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class GravestoneTime {
-    public static SimpleDateFormat getSimpleDateFormat() {
-        return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    }
-
-    public static String getCurrentTimeAsString() {
-        SimpleDateFormat formatter = getSimpleDateFormat();
-        Date date = new Date();
-        return formatter.format(date);
-    }
+    public static final SimpleDateFormat READABLE = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public static long getDifferenceInSeconds(String aTime, String bTime) {
-        SimpleDateFormat formatter = getSimpleDateFormat();
+        SimpleDateFormat formatter = READABLE;
         try {
             Date aDate = formatter.parse(aTime);
             Date bDate = formatter.parse(bTime);

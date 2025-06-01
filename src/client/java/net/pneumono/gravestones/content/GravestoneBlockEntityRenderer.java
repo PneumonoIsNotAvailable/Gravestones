@@ -142,7 +142,7 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
         String text = "";
         if (spawnDateTime != null) {
             try {
-                SimpleDateFormat fromServer = GravestoneTime.getSimpleDateFormat();
+                SimpleDateFormat fromServer = GravestoneTime.READABLE;
                 TimeFormat type = GravestonesConfig.TIME_FORMAT.getValue();
 
                 SimpleDateFormat toClient = new SimpleDateFormat(line ? type.getDateFormat() : type.getTimeFormat());
