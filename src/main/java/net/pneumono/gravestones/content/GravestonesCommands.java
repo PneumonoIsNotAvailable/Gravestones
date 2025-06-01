@@ -42,20 +42,20 @@ public class GravestonesCommands {
                                                     BlockPos pos = BlockPosArgumentType.getBlockPos(context, "position");
 
                                                     if (!(world.getBlockState(pos).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL))) {
-                                                        context.getSource().sendMessage(Text.literal("No gravestone at that position!").formatted(Formatting.RED));
+                                                        context.getSource().sendFeedback(() -> Text.literal("No gravestone at that position!").formatted(Formatting.RED), false);
                                                     } else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
                                                         ProfileComponent owner = entity.getGraveOwner();
                                                         if (owner != null) {
-                                                            context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.name().orElse("???") + " (" + owner.id().orElse(null) + ")").formatted(Formatting.GREEN));
+                                                            context.getSource().sendFeedback(() -> Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.name().orElse("???") + " (" + owner.id().orElse(null) + ")").formatted(Formatting.GREEN), false);
                                                         } else {
-                                                            context.getSource().sendMessage(Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and no graveOwner!").formatted(Formatting.RED));
+                                                            context.getSource().sendFeedback(() -> Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and no graveOwner!").formatted(Formatting.RED), false);
                                                         }
 
                                                         String inventoryMessage = getInventoryMessage(entity);
 
-                                                        context.getSource().sendMessage(Text.literal("Gravestone has the following items " + inventoryMessage).formatted(Formatting.GOLD));
-                                                        context.getSource().sendMessage(Text.literal("Gravestone has " + entity.getExperience() + " experience points").formatted(Formatting.GOLD));
-                                                        context.getSource().sendMessage(Text.literal("Gravestone has the following mod data " + entity.getAllModData().toString()).formatted(Formatting.GOLD));
+                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following items " + inventoryMessage).formatted(Formatting.GOLD), false);
+                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has " + entity.getExperience() + " experience points").formatted(Formatting.GOLD), false);
+                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following mod data " + entity.getAllModData().toString()).formatted(Formatting.GOLD), false);
                                                     }
                                                     return 1;
                                                 })
@@ -83,14 +83,15 @@ public class GravestonesCommands {
                                                                 }
                                                                 posList.append("(").append(pos.posX).append(",").append(pos.posY).append(",").append(pos.posZ).append(") in ").append(pos.dimension);
                                                             }
-                                                            context.getSource().sendMessage(Text.literal(Objects.requireNonNull(EntityArgumentType.getPlayer(context, "player").getDisplayName()).getString() + " has graves at the following locations: " + posList));
+                                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                                                            context.getSource().sendFeedback(() -> Text.literal(Objects.requireNonNull(player.getDisplayName()).getString() + " has graves at the following locations: " + posList), false);
                                                         } else {
                                                             Gravestones.LOGGER.error("Could not find gravestone data file.");
-                                                            context.getSource().sendMessage(Text.literal("Could not find gravestone data file.").formatted(Formatting.RED));
+                                                            context.getSource().sendFeedback(() -> Text.literal("Could not find gravestone data file.").formatted(Formatting.RED), false);
                                                         }
                                                     } catch (IOException e) {
                                                         Gravestones.LOGGER.error("Could not read gravestone data file!", e);
-                                                        context.getSource().sendMessage(Text.literal("Could not read gravestone data file!").formatted(Formatting.RED));
+                                                        context.getSource().sendFeedback(() -> Text.literal("Could not read gravestone data file!").formatted(Formatting.RED), false);
                                                     }
 
                                                     return 1;
@@ -129,7 +130,7 @@ public class GravestonesCommands {
     }
 
     private static int getUuid(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
-        context.getSource().sendMessage(player.getName().copy().append(" has UUID " + player.getUuidAsString()));
+        context.getSource().sendFeedback(() -> player.getName().copy().append(" has UUID " + player.getUuidAsString()), false);
         return 1;
     }
 }
