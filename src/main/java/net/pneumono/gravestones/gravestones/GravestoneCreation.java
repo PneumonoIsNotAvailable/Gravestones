@@ -45,19 +45,27 @@ import java.util.*;
 
 public class GravestoneCreation {
     public static void info(String string) {
-        Gravestones.LOGGER.info(string);
+        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+            Gravestones.LOGGER.info(string);
+        }
     }
 
     public static void warn(String string) {
-        Gravestones.LOGGER.warn(string);
+        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+            Gravestones.LOGGER.warn(string);
+        }
     }
 
     public static void error(String string) {
-        Gravestones.LOGGER.error(string);
+        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+            Gravestones.LOGGER.error(string);
+        }
     }
 
     public static void error(String string, Throwable t) {
-        Gravestones.LOGGER.error(string, t);
+        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+            Gravestones.LOGGER.error(string, t);
+        }
     }
 
     public static String posToString(BlockPos pos) {
