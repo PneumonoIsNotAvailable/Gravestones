@@ -2,8 +2,6 @@ package net.pneumono.gravestones.api;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 
 public abstract class ModSupport {
     /**
