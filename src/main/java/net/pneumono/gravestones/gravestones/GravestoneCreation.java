@@ -238,7 +238,7 @@ public class GravestoneCreation {
         try {
             NbtIo.writeCompressed(deathData, path);
         } catch (IOException e) {
-            error("Could not save gravestones death data.", e);
+            error("Could not save gravestones death data", e);
         }
     }
 
@@ -255,7 +255,7 @@ public class GravestoneCreation {
                 (new GsonBuilder().serializeNulls().setPrettyPrinting().create()).toJson(new GravestoneData(), writer);
                 writer.close();
             } catch (IOException e) {
-                error("Could not create gravestone data file.", e);
+                error("Could not create gravestone data file", e);
             }
         }
 
@@ -289,7 +289,7 @@ public class GravestoneCreation {
             writer.close();
             info("Attempting to damage previous graves");
         } catch (IOException e) {
-            error("Could not update gravestone data file!", e);
+            error("Could not update gravestone data file", e);
         }
 
         return posList;
