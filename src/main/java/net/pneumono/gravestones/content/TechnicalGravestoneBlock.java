@@ -40,7 +40,6 @@ import net.minecraft.world.tick.ScheduledTickView;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneContents;
 import net.pneumono.gravestones.gravestones.GravestonesManager;
@@ -124,9 +123,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         if (blockEntity instanceof TechnicalGravestoneBlockEntity gravestone) {
             ItemScatterer.spawn(world, pos, gravestone);
             if (world instanceof ServerWorld serverWorld) ExperienceOrbEntity.spawn(serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
-            for (ModSupport support : GravestonesApi.getModSupports()) {
-                support.onBreak(gravestone);
-            }
+            GravestonesApi.onBreak(gravestone);
             world.updateComparators(pos, this);
         }
 

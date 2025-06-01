@@ -1,6 +1,7 @@
 package net.pneumono.gravestones.content.entity;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -12,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -29,6 +31,7 @@ import java.util.*;
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity implements ImplementedInventory {
     private static final int CURRENT_FORMAT_VERSION = 1;
     private int format;
+    private NbtCompound contents;
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
     private int experience;
     private NbtList modData;
@@ -174,6 +177,22 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             }
         }
         return entityCount;
+    }
+
+    public int getDecay() {
+        return Objects.requireNonNull(this.getWorld()).getBlockState(this.getPos()).get(TechnicalGravestoneBlock.DAMAGE);
+    }
+
+    public NbtCompound getContents() {
+        return this.contents;
+    }
+
+    public void setContents(NbtCompound contents) {
+        this.contents = contents;
+    }
+
+    public void addContents(Identifier id, NbtElement nbt) {
+        this.contents.put(id.toString(), nbt);
     }
 
     public void setGraveOwner(ProfileComponent graveOwner) {

@@ -14,7 +14,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 
@@ -63,9 +62,7 @@ public class GravestoneContents extends GravestonesManager {
     public static void insertModData(PlayerEntity entity, TechnicalGravestoneBlockEntity gravestone) {
         info("Inserting additional mod data into grave...");
 
-        for (ModSupport support : GravestonesApi.getModSupports()) {
-            support.insertData(entity, gravestone);
-        }
+        gravestone.setContents(GravestonesApi.getDataToInsert(entity));
 
         info("Data inserted!");
     }
@@ -100,8 +97,6 @@ public class GravestoneContents extends GravestonesManager {
             gravestone.setExperience(0);
         }
 
-        for (ModSupport support : GravestonesApi.getModSupports()) {
-            support.onCollect(player, gravestone);
-        }
+        GravestonesApi.onCollect(player, gravestone.getDecay(), gravestone.getContents());
     }
 }
