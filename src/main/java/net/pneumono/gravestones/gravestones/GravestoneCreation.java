@@ -8,7 +8,11 @@ import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
@@ -36,6 +40,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class GravestoneCreation {
@@ -100,6 +105,8 @@ public class GravestoneCreation {
                 gravestone.setSpawnDate(GravestoneTime.READABLE.format(date), world.getTime());
                 insertPlayerItemsAndExperience(gravestone, player);
                 insertModData(player, gravestone);
+
+                recordDeathData(gravestone, player, date);
 
                 world.updateListeners(gravestonePos, world.getBlockState(gravestonePos), world.getBlockState(gravestonePos), Block.NOTIFY_LISTENERS);
 
@@ -202,6 +209,27 @@ public class GravestoneCreation {
         }
 
         info("Data inserted!");
+    }
+
+    private static void recordDeathData(TechnicalGravestoneBlockEntity gravestone, PlayerEntity player, Date date) {
+        File deathsFile = new File(
+                Objects.requireNonNull(player.getServer()).getSavePath(WorldSavePath.ROOT).toString(),
+                "gravestones/" + player.getUuidAsString()
+        );
+        deathsFile.mkdirs();
+        Path path = deathsFile.toPath().resolve(GravestoneTime.FILE_SAVING.format(date) + ".dat");
+
+        NbtCompound deathData = new NbtCompound();
+        DynamicRegistryManager registries = Objects.requireNonNull(gravestone.getWorld()).getRegistryManager();
+        Inventories.writeNbt(deathData, gravestone.getItems(), registries);
+        deathData.putInt("experience", gravestone.getExperience());
+        deathData.put("modData", gravestone.getAllModData());
+
+        try {
+            NbtIo.writeCompressed(deathData, path);
+        } catch (IOException e) {
+            error("Could not save gravestones death data.", e);
+        }
     }
 
     private static List<GravestonePosition> readAndWriteData(ServerWorld serverWorld, GameProfile playerProfile, String playerName, BlockPos gravestonePos) {
