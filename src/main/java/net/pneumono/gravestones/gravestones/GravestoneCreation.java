@@ -224,7 +224,9 @@ public class GravestoneCreation {
                 Objects.requireNonNull(player.getServer()).getSavePath(WorldSavePath.ROOT).toString(),
                 "gravestones/" + player.getUuidAsString()
         );
-        deathsFile.mkdirs();
+        if (deathsFile.mkdirs()) {
+            info("No gravestone death data file exists for " + player.getUuidAsString() + ", creating one");
+        }
         Path path = deathsFile.toPath().resolve(GravestoneTime.FILE_SAVING.format(date) + ".dat");
 
         NbtCompound deathData = new NbtCompound();
