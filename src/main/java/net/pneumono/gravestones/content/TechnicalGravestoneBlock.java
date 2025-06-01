@@ -8,9 +8,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -44,11 +42,10 @@ import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.ModSupport;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
-import net.pneumono.gravestones.gravestones.GravestoneCreation;
+import net.pneumono.gravestones.gravestones.GravestoneContents;
+import net.pneumono.gravestones.gravestones.GravestonesManager;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -81,6 +78,71 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (!world.isClient() && !(player instanceof FakePlayer) && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
+            ProfileComponent graveOwner = gravestone.getGraveOwner();
+            if ((graveOwner != null && graveOwner.gameProfile().getId().equals(player.getGameProfile().getId())) || !GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
+                String uuid = "";
+                if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+                    uuid = " (" + player.getGameProfile().getId() + ")";
+                }
+                Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, pos.toString());
+
+                GravestonesManager.info("Returning items...");
+                GravestoneContents.returnContentsToPlayer(world, gravestone, player, pos, state);
+
+                player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
+                MinecraftServer server = world.getServer();
+                if (server != null && GravestonesConfig.BROADCAST_COLLECT_IN_CHAT.getValue()) {
+                    if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
+                        server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), pos.toString()).formatted(Formatting.AQUA), false);
+                    } else {
+                        server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave", player.getName().getString()).formatted(Formatting.AQUA), false);
+                    }
+                }
+                world.breakBlock(pos, true);
+            } else if (graveOwner != null) {
+                player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.name().orElse("???")), true);
+            } else {
+                player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
+            }
+            createSoulParticles(world, pos);
+        }
+
+        return ActionResult.SUCCESS;
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (state.getBlock() == world.getBlockState(pos).getBlock()) {
+            return;
+        }
+
+        createSoulParticles(world, pos);
+
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof TechnicalGravestoneBlockEntity gravestone) {
+            ItemScatterer.spawn(world, pos, gravestone);
+            if (world instanceof ServerWorld serverWorld) ExperienceOrbEntity.spawn(serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
+            for (ModSupport support : GravestonesApi.getModSupports()) {
+                support.onBreak(gravestone);
+            }
+            world.updateComparators(pos, this);
+        }
+
+        super.onStateReplaced(state, world, pos, moved);
+    }
+
+    public static void createSoulParticles(World world, BlockPos pos) {
+        Random random = new Random();
+        if (!world.isClient() && world instanceof ServerWorld serverWorld) {
+            for (int i = 0; i < 16; ++i) {
+                serverWorld.spawnParticles(ParticleTypes.SOUL, pos.getX() + (random.nextFloat() * 0.6) + 0.2, pos.getY() + (random.nextFloat() / 10) + 0.25, pos.getZ() + (random.nextFloat() * 0.6) + 0.2, 1, ((double) random.nextFloat() - 0.5) * 0.08, ((double) random.nextFloat() - 0.5) * 0.08, ((double) random.nextFloat() - 0.5) * 0.08, 0.1);
+            }
+        }
+    }
+
+    @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
@@ -97,31 +159,6 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
         }
 
         return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
-    }
-
-    @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        createSoulParticles(world, pos);
-
-        BlockEntity entity = world.getBlockEntity(pos);
-
-        if (entity instanceof TechnicalGravestoneBlockEntity gravestone && world instanceof ServerWorld serverWorld) {
-            ExperienceOrbEntity.spawn(serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
-            for (ModSupport support : GravestonesApi.getModSupports()) {
-                support.onBreak(gravestone);
-            }
-        }
-
-        return super.onBreak(world, pos, state, player);
-    }
-
-    public static void createSoulParticles(World world, BlockPos pos) {
-        Random random = new Random();
-        if (!world.isClient() && world instanceof ServerWorld serverWorld) {
-            for (int i = 0; i < 16; ++i) {
-                serverWorld.spawnParticles(ParticleTypes.SOUL, pos.getX() + (random.nextFloat() * 0.6) + 0.2, pos.getY() + (random.nextFloat() / 10) + 0.25, pos.getZ() + (random.nextFloat() * 0.6) + 0.2, 1, ((double) random.nextFloat() - 0.5) * 0.08, ((double) random.nextFloat() - 0.5) * 0.08, ((double) random.nextFloat() - 0.5) * 0.08, 0.1);
-            }
-        }
     }
 
     @Override
@@ -153,89 +190,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        if (state.getBlock() != world.getBlockState(pos).getBlock()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof TechnicalGravestoneBlockEntity) {
-                ItemScatterer.spawn(world, pos, (TechnicalGravestoneBlockEntity)blockEntity);
-                world.updateComparators(pos, this);
-            }
-            super.onStateReplaced(state, world, pos, moved);
-        }
-    }
-
-    @Override
     protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-    }
-
-    @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!world.isClient() && !(player instanceof FakePlayer) && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
-            ProfileComponent graveOwner = gravestone.getGraveOwner();
-            if ((graveOwner != null && graveOwner.gameProfile().getId().equals(player.getGameProfile().getId())) || !GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
-                String uuid = "";
-                if (GravestonesConfig.CONSOLE_INFO.getValue()) {
-                    uuid = " (" + player.getGameProfile().getId() + ")";
-                }
-                Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, GravestoneCreation.posToString(pos));
-
-                GravestoneCreation.info("Returning items...");
-                returnContentsToPlayer(world, gravestone, player, pos, state);
-
-                player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
-                MinecraftServer server = world.getServer();
-                if (server != null && GravestonesConfig.BROADCAST_COLLECT_IN_CHAT.getValue()) {
-                    if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-                        server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneCreation.posToString(pos)).formatted(Formatting.AQUA), false);
-                    } else {
-                        server.getPlayerManager().broadcast(Text.translatable("gravestones.player_collected_grave", player.getName().getString()).formatted(Formatting.AQUA), false);
-                    }
-                }
-                world.breakBlock(pos, true);
-            } else if (graveOwner != null) {
-                player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.name().orElse("???")), true);
-            } else {
-                player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
-            }
-            createSoulParticles(world, pos);
-        }
-
-        return ActionResult.SUCCESS;
-    }
-
-    public static void returnContentsToPlayer(World world, TechnicalGravestoneBlockEntity gravestone, PlayerEntity player, BlockPos pos, BlockState state) {
-        PlayerInventory inventory = player.getInventory();
-
-        List<ItemStack> extraStacks = new ArrayList<>();
-        for (int i = 0; i < gravestone.size(); ++i) {
-            if (gravestone.getStack(i) != null) {
-                if (i < 41 && inventory.getStack(i).isEmpty()) {
-                    inventory.setStack(i, gravestone.getStack(i).copy());
-                } else {
-                    extraStacks.add(gravestone.getStack(i).copy());
-                }
-
-                gravestone.removeStack(i);
-            }
-        }
-        for (ItemStack stack : extraStacks) {
-            if (!player.giveItemStack(stack)) {
-                ItemEntity itemEntity = player.dropItem(stack, false);
-                if (itemEntity != null) {
-                    itemEntity.resetPickupDelay();
-                    itemEntity.setOwner(player.getUuid());
-                }
-            }
-        }
-
-        if (world instanceof ServerWorld serverWorld) {
-            ExperienceOrbEntity.spawn(serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
-            gravestone.setExperience(0);
-        }
-
-        for (ModSupport support : GravestonesApi.getModSupports()) {
-            support.onCollect(player, gravestone);
-        }
     }
 
     @Nullable

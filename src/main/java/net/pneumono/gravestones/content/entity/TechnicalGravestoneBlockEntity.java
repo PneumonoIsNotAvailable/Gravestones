@@ -22,8 +22,7 @@ import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
-import net.pneumono.gravestones.gravestones.enums.DecayTimeType;
-import net.pneumono.gravestones.gravestones.GravestoneTime;
+import net.pneumono.gravestones.gravestones.GravestoneDecay;
 
 import java.util.*;
 
@@ -75,44 +74,11 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
-        if (!world.isClient() && world.getTime() % 20 == 0) {
-            if (GravestonesConfig.DECAY_WITH_TIME.getValue() && entity.getGraveOwner() != null) {
-                long difference;
-
-                if (GravestonesConfig.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
-                    difference = world.getTime() - entity.spawnDateTicks;
-                } else if (entity.spawnDateTime != null) {
-                    difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.READABLE.format(new Date()), entity.spawnDateTime) * 20;
-                } else {
-                    difference = 0;
-                }
-
-                long timeUnit = GravestonesConfig.DECAY_TIME.getValue();
-                if (difference > (timeUnit * 3)) {
-                    world.breakBlock(blockPos, true);
-                } else if (difference > (timeUnit * 2) && !(state.get(TechnicalGravestoneBlock.AGE_DAMAGE) > 1)) {
-                    world.setBlockState(blockPos, state.with(TechnicalGravestoneBlock.AGE_DAMAGE, 2));
-                } else if (difference > (timeUnit) && !(state.get(TechnicalGravestoneBlock.AGE_DAMAGE) > 0)) {
-                    world.setBlockState(blockPos, state.with(TechnicalGravestoneBlock.AGE_DAMAGE, 1));
-                }
-
-                markDirty(world, blockPos, state);
-            }
-
-            if (state.get(TechnicalGravestoneBlock.DAMAGE) != state.get(TechnicalGravestoneBlock.AGE_DAMAGE) + state.get(TechnicalGravestoneBlock.DEATH_DAMAGE)) {
-                if (state.get(TechnicalGravestoneBlock.AGE_DAMAGE) + state.get(TechnicalGravestoneBlock.DEATH_DAMAGE) > 2) {
-                    world.breakBlock(blockPos, true);
-                } else {
-                    world.setBlockState(blockPos, state.with(TechnicalGravestoneBlock.DAMAGE, state.get(TechnicalGravestoneBlock.AGE_DAMAGE) + state.get(TechnicalGravestoneBlock.DEATH_DAMAGE)));
-                }
-                markDirty(world, blockPos, state);
-            }
-
-            if (state.get(TechnicalGravestoneBlock.DAMAGE) >= 3) {
-                world.breakBlock(blockPos, true);
-                markDirty(world, blockPos, state);
-            }
+        if (world.isClient() || world.getTime() % 20 != 0) {
+            return;
         }
+
+        GravestoneDecay.timeDecayGravestone(world, blockPos, state);
 
         if (GravestonesConfig.SPAWN_GRAVESTONE_SKELETONS.getValue() && world.getTime() % 900 == 0 && isOwnerNearby(world, entity, blockPos)) {
             spawnSkeletons(world, entity, blockPos);
@@ -227,6 +193,10 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     public String getSpawnDateTime() {
         return this.spawnDateTime;
+    }
+
+    public long getSpawnDateTicks() {
+        return this.spawnDateTicks;
     }
 
     public int getExperience() {

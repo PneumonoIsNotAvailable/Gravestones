@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 
-public class GravestonePlacement {
+public class GravestonePlacement extends GravestonesManager {
     public static BlockPos placeGravestone(World world, BlockPos blockPos) {
         DimensionType dimension = world.getDimension();
         return placeGravestoneAtValidPos(world, blockPos.withY(MathHelper.clamp(blockPos.getY(), dimension.minY(), dimension.minY() + dimension.height())));
