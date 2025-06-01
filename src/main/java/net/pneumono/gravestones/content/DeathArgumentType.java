@@ -16,8 +16,8 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.collection.DefaultedList;
+import net.pneumono.gravestones.Gravestones;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class DeathArgumentType implements ArgumentType<String> {
             return Suggestions.empty();
         }
 
-        File rootFile = new File(serverCommandSource.getServer().getSavePath(WorldSavePath.ROOT).toString(), "gravestones/");
+        File rootFile = Gravestones.GRAVESTONES_ROOT.apply(serverCommandSource.getServer());
 
         File[] playerFiles = rootFile.listFiles();
         String[] playerFileStrings = rootFile.list();
@@ -79,7 +79,7 @@ public class DeathArgumentType implements ArgumentType<String> {
     }
 
     public static Death getDeath(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        File deathsFile = new File(context.getSource().getServer().getSavePath(WorldSavePath.ROOT).toString(), "gravestones");
+        File deathsFile = Gravestones.GRAVESTONES_ROOT.apply(context.getSource().getServer());
         String file = context.getArgument(name, String.class);
         File deathFile = new File(deathsFile, file);
 

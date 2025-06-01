@@ -93,8 +93,7 @@ public class GravestoneCreation extends GravestonesManager {
 
     private static void recordDeathData(TechnicalGravestoneBlockEntity gravestone, PlayerEntity player, Date date) {
         File deathsFile = new File(
-                Objects.requireNonNull(player.getServer()).getSavePath(WorldSavePath.ROOT).toString(),
-                "gravestones/" + player.getUuidAsString()
+                Gravestones.GRAVESTONES_ROOT.apply(Objects.requireNonNull(player.getServer())), player.getUuidAsString()
         );
         if (deathsFile.mkdirs()) {
             info("No gravestone death data file exists for " + player.getUuidAsString() + ", creating one");
