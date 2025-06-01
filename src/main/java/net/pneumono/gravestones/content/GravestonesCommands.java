@@ -101,16 +101,6 @@ public class GravestonesCommands {
                                 )
                         )
                         .then(literal("deaths")
-                                .then(literal("getuuid")
-                                        .then(argument("player", EntityArgumentType.player())
-                                                .executes(
-                                                        context -> getUuid(context, EntityArgumentType.getPlayer(context, "player"))
-                                                )
-                                        )
-                                        .executes(
-                                                context -> getUuid(context, context.getSource().getPlayerOrThrow())
-                                        )
-                                )
                                 .then(literal("view")
                                         .then(argument("death", DeathArgumentType.death())
                                                 .executes(context -> {
@@ -125,6 +115,16 @@ public class GravestonesCommands {
                                                     return 1;
                                                 })
                                         )
+                                )
+                        )
+                        .then(literal("getuuid")
+                                .then(argument("player", EntityArgumentType.player())
+                                        .executes(
+                                                context -> getUuid(context, EntityArgumentType.getPlayer(context, "player"))
+                                        )
+                                )
+                                .executes(
+                                        context -> getUuid(context, context.getSource().getPlayerOrThrow())
                                 )
                         )
                 )
