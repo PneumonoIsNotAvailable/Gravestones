@@ -228,6 +228,11 @@ public class GravestoneCreation {
             info("No gravestone death data file exists for " + player.getUuidAsString() + ", creating one");
         }
         Path path = deathsFile.toPath().resolve(GravestoneTime.FILE_SAVING.format(date) + ".dat");
+        int count = 1;
+        while (path.toFile().exists()) {
+            count++;
+            path = deathsFile.toPath().resolve(GravestoneTime.FILE_SAVING.format(date) + "_" + count + ".dat");
+        }
 
         NbtCompound deathData = new NbtCompound();
         DynamicRegistryManager registries = Objects.requireNonNull(gravestone.getWorld()).getRegistryManager();
