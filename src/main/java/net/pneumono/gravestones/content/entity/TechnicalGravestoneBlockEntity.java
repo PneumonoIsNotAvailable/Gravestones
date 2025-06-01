@@ -28,6 +28,8 @@ import net.pneumono.gravestones.gravestones.GravestoneTime;
 import java.util.*;
 
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity implements ImplementedInventory {
+    private static final int CURRENT_FORMAT_VERSION = 1;
+    private int format;
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
     private int experience;
     private NbtList modData;
@@ -43,6 +45,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
+        nbt.putInt("format", this.format);
         Inventories.writeNbt(nbt, this.inventory, registryLookup);
         nbt.putInt("experience", this.experience);
         if (this.graveOwner != null) {
@@ -62,6 +65,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
+        this.format = nbt.getInt("format", 1);
         Inventories.readNbt(nbt, this.inventory, registryLookup);
         this.experience = nbt.getInt("experience", 0);
         ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("owner")).resultOrPartial(string -> Gravestones.LOGGER.error("Failed to load profile from gravestone: {}", string)).ifPresent(this::setGraveOwner);
