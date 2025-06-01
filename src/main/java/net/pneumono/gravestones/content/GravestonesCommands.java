@@ -52,7 +52,7 @@ public class GravestonesCommands {
                                                             context.getSource().sendFeedback(() -> Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and no graveOwner!").formatted(Formatting.RED), false);
                                                         }
 
-                                                        String inventoryMessage = getInventoryMessage(entity);
+                                                        String inventoryMessage = getInventoryMessage(entity.getItems());
 
                                                         context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following items " + inventoryMessage).formatted(Formatting.GOLD), false);
                                                         context.getSource().sendFeedback(() -> Text.literal("Gravestone has " + entity.getExperience() + " experience points").formatted(Formatting.GOLD), false);
@@ -119,7 +119,7 @@ public class GravestonesCommands {
                                                     DeathArgumentType.Death death = DeathArgumentType.getDeath(context, "death");
                                                     if (death == null) throw DeathArgumentType.COULD_NOT_READ.create("");
 
-                                                    source.sendFeedback(() -> Text.literal("Inventory: " + getInventoryMessageWithoutAir(death.inventory())), false);
+                                                    source.sendFeedback(() -> Text.literal("Inventory: " + getInventoryMessage(death.inventory())), false);
                                                     source.sendFeedback(() -> Text.literal("XP: " + death.experience()), false);
                                                     source.sendFeedback(() -> Text.literal("Mod Data: " + death.modData().toString()), false);
                                                     return 1;
@@ -131,21 +131,7 @@ public class GravestonesCommands {
         );
     }
 
-    private static String getInventoryMessage(TechnicalGravestoneBlockEntity entity) {
-        StringBuilder inventoryMessage = new StringBuilder();
-        boolean notFirst = false;
-        for (ItemStack item : entity.getItems()) {
-            if (notFirst) {
-                inventoryMessage.append(", ");
-            } else {
-                notFirst = true;
-            }
-            inventoryMessage.append(item.toString());
-        }
-        return inventoryMessage.toString();
-    }
-
-    private static String getInventoryMessageWithoutAir(DefaultedList<ItemStack> inventory) {
+    private static String getInventoryMessage(DefaultedList<ItemStack> inventory) {
         List<ItemStack> nonAirStacks = inventory.stream().filter(stack -> !stack.isEmpty()).toList();
 
         StringBuilder inventoryMessage = new StringBuilder();
