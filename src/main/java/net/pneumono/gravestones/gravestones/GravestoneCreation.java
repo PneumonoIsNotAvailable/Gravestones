@@ -66,7 +66,7 @@ public class GravestoneCreation extends GravestonesManager {
 
             MinecraftServer server = world.getServer();
             if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-                server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, gravestonePos.toString()).formatted(Formatting.AQUA), false);
+                server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)).formatted(Formatting.AQUA), false);
             }
 
             if (world.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone) {
@@ -158,7 +158,7 @@ public class GravestoneCreation extends GravestonesManager {
                 info("Player does not have existing gravestone data, and so new data was created");
             }
             data.setPlayerData(playerData, uuid, new GravestonePosition(dimension, gravestonePos));
-            info("Data added, " + playerName + " (" + uuid + ") has a new gravestone at " + playerData.firstGrave.asBlockPos().toString() + " in dimension " + playerData.firstGrave.dimension.toString());
+            info("Data added, " + playerName + " (" + uuid + ") has a new gravestone at " + posToString(playerData.firstGrave.asBlockPos()) + " in dimension " + playerData.firstGrave.dimension.toString());
 
             info("Writing updated data back to file");
             Writer writer = Files.newBufferedWriter(gravestoneFile.toPath());

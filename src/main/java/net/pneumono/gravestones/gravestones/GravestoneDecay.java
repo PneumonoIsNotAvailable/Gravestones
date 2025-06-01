@@ -63,7 +63,7 @@ public class GravestoneDecay extends GravestonesManager {
         usedPositions.add(new GravestonePosition(serverWorld.getRegistryKey().getValue(), gravestonePos));
         for (GravestonePosition oldPos : oldGravePositions) {
             if (usedPositions.contains(oldPos)) {
-                info("Gravestone at " + oldPos.asBlockPos().toString() + " in dimension " + oldPos.dimension.toString() + " has already been damaged, skipping");
+                info("Gravestone at " + posToString(oldPos.asBlockPos()) + " in dimension " + oldPos.dimension.toString() + " has already been damaged, skipping");
                 continue;
             }
 
@@ -79,7 +79,7 @@ public class GravestoneDecay extends GravestonesManager {
             error("GravePosition's dimension (" + pos.dimension.toString() + ") does not exist!");
         } else {
             if (!graveWorld.getBlockState(pos.asBlockPos()).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL)) {
-                info("No gravestone was found at the position " + pos.asBlockPos().toString() + " in dimension " + pos.dimension.toString()
+                info("No gravestone was found at the position " + posToString(pos.asBlockPos()) + " in dimension " + pos.dimension.toString()
                         + ". Most likely this is because the grave has already been collected, or was decayed");
             } else {
 
@@ -95,7 +95,7 @@ public class GravestoneDecay extends GravestonesManager {
                     damageType = "damaged";
                     graveWorld.setBlockState(pos.asBlockPos(), graveWorld.getBlockState(pos.asBlockPos()).with(TechnicalGravestoneBlock.DEATH_DAMAGE, deathDamage + 1));
                 }
-                info("Gravestone (" + graveData + ") " + damageType + " at the position " + pos.asBlockPos().toString() + " in dimension " + pos.dimension.toString());
+                info("Gravestone (" + graveData + ") " + damageType + " at the position " + posToString(pos.asBlockPos()) + " in dimension " + pos.dimension.toString());
             }
         }
     }

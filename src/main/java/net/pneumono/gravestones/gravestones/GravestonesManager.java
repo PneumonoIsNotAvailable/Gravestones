@@ -1,5 +1,6 @@
 package net.pneumono.gravestones.gravestones;
 
+import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 
@@ -26,5 +27,9 @@ public abstract class GravestonesManager {
         if (GravestonesConfig.CONSOLE_INFO.getValue()) {
             Gravestones.LOGGER.error(string, t);
         }
+    }
+
+    public static String posToString(BlockPos pos) {
+        return "(" + pos.toShortString() + ")";
     }
 }
