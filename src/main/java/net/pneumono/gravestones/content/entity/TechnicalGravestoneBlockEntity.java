@@ -1,7 +1,6 @@
 package net.pneumono.gravestones.content.entity;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.component.ComponentMap;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -13,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -191,10 +189,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         this.contents = contents;
     }
 
-    public void addContents(Identifier id, NbtElement nbt) {
-        this.contents.put(id.toString(), nbt);
-    }
-
     public void setGraveOwner(ProfileComponent graveOwner) {
         this.graveOwner = graveOwner;
         this.markDirty();
@@ -233,44 +227,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     public void setExperience(int experience) {
         this.experience = experience;
-    }
-
-    /**
-     * Adds data from other mods to the gravestone. If the mod ID is already in use, replaces the data.
-     *
-     * @param modID The mod ID of the mod adding data.
-     * @param data The data being added.
-     */
-    public void addOrReplaceModData(String modID, NbtCompound data) {
-        NbtList newData = new NbtList();
-        for (NbtElement element : modData) {
-            if (!(element instanceof NbtCompound compound && compound.contains("modID") && Objects.equals(compound.getString("modID").orElse(null), modID))) {
-                newData.add(element);
-            }
-        }
-
-        NbtCompound compound = new NbtCompound();
-        compound.putString("modID", modID);
-        compound.put("data", data);
-
-        newData.add(compound);
-        modData = newData;
-    }
-
-    /**
-     * Gets data added from other mods from the gravestone.
-     *
-     * @param modID The mod ID of the mod that added the data.
-     * @return The data previously added.
-     */
-    public NbtCompound getModData(String modID) {
-        for (int i = 0; i < modData.size(); ++i) {
-            NbtCompound nbt = modData.getCompound(i).orElse(null);
-            if (nbt != null && nbt.contains("modID") && Objects.equals(nbt.getString("modID").orElse(null), modID)) {
-                return nbt.getCompound("data").orElse(nbt);
-            }
-        }
-        return null;
     }
 
     public NbtList getAllModData() {
