@@ -13,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
@@ -110,6 +111,21 @@ public class GravestonesCommands {
                                                 context -> getUuid(context, context.getSource().getPlayerOrThrow())
                                         )
                                 )
+                                .then(literal("view")
+                                        .then(argument("death", DeathArgumentType.death())
+                                                .executes(context -> {
+                                                    ServerCommandSource source = context.getSource();
+
+                                                    DeathArgumentType.Death death = DeathArgumentType.getDeath(context, "death");
+                                                    if (death == null) throw DeathArgumentType.COULD_NOT_READ.create("");
+
+                                                    source.sendFeedback(() -> Text.literal("Inventory: " + getInventoryMessageWithoutAir(death.inventory())), false);
+                                                    source.sendFeedback(() -> Text.literal("XP: " + death.experience()), false);
+                                                    source.sendFeedback(() -> Text.literal("Mod Data: " + death.modData().toString()), false);
+                                                    return 1;
+                                                })
+                                        )
+                                )
                         )
                 )
         );
@@ -119,6 +135,22 @@ public class GravestonesCommands {
         StringBuilder inventoryMessage = new StringBuilder();
         boolean notFirst = false;
         for (ItemStack item : entity.getItems()) {
+            if (notFirst) {
+                inventoryMessage.append(", ");
+            } else {
+                notFirst = true;
+            }
+            inventoryMessage.append(item.toString());
+        }
+        return inventoryMessage.toString();
+    }
+
+    private static String getInventoryMessageWithoutAir(DefaultedList<ItemStack> inventory) {
+        List<ItemStack> nonAirStacks = inventory.stream().filter(stack -> !stack.isEmpty()).toList();
+
+        StringBuilder inventoryMessage = new StringBuilder();
+        boolean notFirst = false;
+        for (ItemStack item : nonAirStacks) {
             if (notFirst) {
                 inventoryMessage.append(", ");
             } else {

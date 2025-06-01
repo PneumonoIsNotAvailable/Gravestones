@@ -1,5 +1,6 @@
 package net.pneumono.gravestones.content;
 
+import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -9,6 +10,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -95,6 +97,12 @@ public class GravestonesRegistry {
 
     public static void registerModContent() {
         FabricDefaultAttributeRegistry.register(GRAVESTONE_SKELETON_ENTITY_TYPE, GravestoneSkeletonEntity.createAbstractSkeletonAttributes());
+
+        ArgumentTypeRegistry.registerArgumentType(
+                Gravestones.identifier("deaths"),
+                DeathArgumentType.class,
+                ConstantArgumentSerializer.of(DeathArgumentType::new)
+        );
 
         addToFunctionalGroup(
                 GravestonesRegistry.GRAVESTONE,
