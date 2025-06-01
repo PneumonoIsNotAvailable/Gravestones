@@ -62,7 +62,7 @@ public class GravestoneCreation extends GravestonesManager {
             if (GravestonesConfig.CONSOLE_INFO.getValue()) {
                 uuid = " (" + playerProfile.getId() + ")";
             }
-            Gravestones.LOGGER.info("Placed {}'s{} Gravestone at {}", playerName, uuid, gravestonePos);
+            Gravestones.LOGGER.info("Placed {}'s{} Gravestone at {}", playerName, uuid, posToString(gravestonePos));
 
             MinecraftServer server = world.getServer();
             if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
