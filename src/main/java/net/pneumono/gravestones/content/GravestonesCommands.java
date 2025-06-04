@@ -52,11 +52,7 @@ public class GravestonesCommands {
                                                             context.getSource().sendFeedback(() -> Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and no graveOwner!").formatted(Formatting.RED), false);
                                                         }
 
-                                                        String inventoryMessage = getInventoryMessage(entity.getItems());
-
-                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following items " + inventoryMessage).formatted(Formatting.GOLD), false);
-                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has " + entity.getExperience() + " experience points").formatted(Formatting.GOLD), false);
-                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following mod data " + entity.getAllModData().toString()).formatted(Formatting.GOLD), false);
+                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following contents data " + entity.getContents().toString()).formatted(Formatting.GOLD), false);
                                                     }
                                                     return 1;
                                                 })

@@ -7,11 +7,9 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -22,26 +20,21 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
-import net.pneumono.gravestones.gravestones.GravestoneContents;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
 
 import java.util.*;
 
-public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity implements ImplementedInventory {
+public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
     // Should be used for backwards compat but I'm too lazy atm
     private static final int CURRENT_FORMAT_VERSION = 2;
     private int format;
     private NbtCompound contents;
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
-    private int experience;
-    private final NbtList modData;
     private ProfileComponent graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
 
     public TechnicalGravestoneBlockEntity(BlockPos pos, BlockState state) {
         super(GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, pos, state);
-        this.modData = new NbtList();
     }
 
     @Override
@@ -212,23 +205,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     public long getSpawnDateTicks() {
         return this.spawnDateTicks;
-    }
-
-    public int getExperience() {
-        return experience;
-    }
-
-    public void setExperience(int experience) {
-        this.experience = experience;
-    }
-
-    public NbtList getAllModData() {
-        return modData;
-    }
-
-    @Override
-    public DefaultedList<ItemStack> getItems() {
-        return this.inventory;
     }
 
     @Override

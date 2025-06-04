@@ -5,10 +5,8 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -105,10 +103,7 @@ public class GravestoneCreation extends GravestonesManager {
         }
 
         NbtCompound deathData = new NbtCompound();
-        DynamicRegistryManager registries = Objects.requireNonNull(gravestone.getWorld()).getRegistryManager();
-        Inventories.writeNbt(deathData, gravestone.getItems(), registries);
-        deathData.putInt("experience", gravestone.getExperience());
-        deathData.put("modData", gravestone.getAllModData());
+        deathData.put("contents", gravestone.getContents());
 
         try {
             NbtIo.writeCompressed(deathData, path);
