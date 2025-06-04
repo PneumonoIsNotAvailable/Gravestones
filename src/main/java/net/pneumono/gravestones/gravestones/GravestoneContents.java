@@ -1,22 +1,11 @@
 package net.pneumono.gravestones.gravestones;
 
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 
 public class GravestoneContents extends GravestonesManager {
-    public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
-        return GravestonesApi.shouldSkipItem(player, stack) ||
-                stack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
-                EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP) ||
-                EnchantmentHelper.hasAnyEnchantmentsIn(stack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES);
-    }
-
     public static void insertModData(PlayerEntity entity, TechnicalGravestoneBlockEntity gravestone) {
         info("Inserting additional mod data into grave...");
 

@@ -1,12 +1,15 @@
 package net.pneumono.gravestones.api;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 
@@ -89,6 +92,12 @@ public class GravestonesApi {
      * @return Whether the item should be inserted.
      */
     public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
+        if (
+                stack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
+                EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP) ||
+                EnchantmentHelper.hasAnyEnchantmentsIn(stack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
+        ) return true;
+
         for (ModSupport support : GravestonesApi.getModSupports()) {
             if (!support.shouldPutItemInGravestone(player, stack)) {
                 return true;
