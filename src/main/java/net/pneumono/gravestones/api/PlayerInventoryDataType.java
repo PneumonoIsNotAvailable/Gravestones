@@ -68,6 +68,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         EntityEquipment equipment = nbt.get("equipment", EntityEquipment.CODEC, registryOps).orElseGet(EntityEquipment::new);
         for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot == EquipmentSlot.MAINHAND) continue;
 
             ItemStack stack = equipment.get(slot);
             ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
@@ -106,6 +107,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         EntityEquipment equipment = nbt.get("equipment", EntityEquipment.CODEC, registryOps).orElseGet(EntityEquipment::new);
         for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot == EquipmentSlot.MAINHAND) continue;
 
             ItemStack stack = equipment.get(slot);
             if (player.getEquippedStack(slot).isEmpty()) {
