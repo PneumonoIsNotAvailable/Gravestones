@@ -218,10 +218,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return experience;
     }
 
-    public int getExperienceToDrop(BlockState state) {
-        return GravestoneContents.getExperienceToDrop(getExperience(), state.get(TechnicalGravestoneBlock.DAMAGE));
-    }
-
     public void setExperience(int experience) {
         this.experience = experience;
     }
