@@ -112,21 +112,11 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
 
     @Override
     public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        if (state.getBlock() == world.getBlockState(pos).getBlock()) {
-            return;
+        ItemScatterer.onStateReplaced(state, world, pos);
+
+        if (state.getBlock() != world.getBlockState(pos).getBlock()) {
+            createSoulParticles(world, pos);
         }
-
-        createSoulParticles(world, pos);
-
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof TechnicalGravestoneBlockEntity gravestone) {
-            ItemScatterer.spawn(world, pos, gravestone);
-            if (world instanceof ServerWorld serverWorld) ExperienceOrbEntity.spawn(serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), gravestone.getExperienceToDrop(state));
-            GravestonesApi.onBreak(gravestone);
-            world.updateComparators(pos, this);
-        }
-
-        super.onStateReplaced(state, world, pos, moved);
     }
 
     public static void createSoulParticles(World world, BlockPos pos) {

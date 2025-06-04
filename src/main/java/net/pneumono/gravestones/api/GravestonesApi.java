@@ -1,11 +1,13 @@
 package net.pneumono.gravestones.api;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 
 import java.util.ArrayList;
@@ -50,8 +52,8 @@ public class GravestonesApi {
         return contents;
     }
 
-    public static void onBreak(TechnicalGravestoneBlockEntity entity) {
-        onBreak(entity.getWorld(), entity.getPos(), entity.getDecay(), entity.getContents());
+    public static void onBreak(BlockState state, TechnicalGravestoneBlockEntity entity) {
+        onBreak(entity.getWorld(), entity.getPos(), state.get(TechnicalGravestoneBlock.DAMAGE), entity.getContents());
     }
 
     public static void onBreak(World world, BlockPos pos, int decay, NbtCompound contents) {
