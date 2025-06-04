@@ -9,6 +9,8 @@ import net.minecraft.world.World;
 public abstract class GravestoneDataType {
     /**
      * Called when a new grave is created.<p>
+     * Normal inventory dropping on death still occurs after this is called, so make sure to clear/remove data when it's inserted to prevent it being duplicated.<p>
+     * You can avoid doing this if you want normal death functionality under certain conditions (e.g. a specific item that should drop normally rather than be put into the gravestone should simply be ignored by this method and not cleared)<p>
      * It is recommended to also check any items with {@link GravestonesApi#shouldSkipItem(PlayerEntity, ItemStack)}, to maintain compatibility.
      *
      * @param player The player who has died.
@@ -27,7 +29,6 @@ public abstract class GravestoneDataType {
 
     /**
      * Called when a player collects a gravestone. This may be a player other than the grave's owner, if owner-only access is disabled in the configs or if commands are used.<p>
-     * Keep in mind the fact that {@link GravestoneDataType#onBreak(World, BlockPos, int, NbtElement)} will be called after this, as well anything other mods have added to the dropInventory method, so you may need to remove data to prevent it being duplicated<p>
      * Remember to null check the NBT element, since it's possible that the mod being supported was added in after a gravestone had already been created.
      *
      * @param player The player collecting the gravestone.
