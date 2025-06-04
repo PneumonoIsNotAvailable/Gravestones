@@ -7,7 +7,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
@@ -22,17 +21,19 @@ import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
+import net.pneumono.gravestones.gravestones.GravestoneContents;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
 
 import java.util.*;
 
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity implements ImplementedInventory {
-    private static final int CURRENT_FORMAT_VERSION = 1;
+    // Should be used for backwards compat but I'm too lazy atm
+    private static final int CURRENT_FORMAT_VERSION = 2;
     private int format;
     private NbtCompound contents;
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
     private int experience;
-    private NbtList modData;
+    private final NbtList modData;
     private ProfileComponent graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
@@ -47,8 +48,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         super.writeNbt(nbt, registryLookup);
         nbt.putInt("format", this.format);
         nbt.put("contents", this.contents);
-        Inventories.writeNbt(nbt, this.inventory, registryLookup);
-        nbt.putInt("experience", this.experience);
         if (this.graveOwner != null) {
             nbt.put("owner", ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.graveOwner).getOrThrow());
         }
@@ -58,9 +57,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         if (this.spawnDateTicks != 0) {
             nbt.putLong("spawnDateTicks", this.spawnDateTicks);
         }
-        if (this.modData != null) {
-            nbt.put("modData", this.modData);
-        }
     }
 
     @Override
@@ -68,12 +64,9 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         super.readNbt(nbt, registryLookup);
         this.format = nbt.getInt("format", 1);
         this.contents = nbt.getCompoundOrEmpty("contents");
-        Inventories.readNbt(nbt, this.inventory, registryLookup);
-        this.experience = nbt.getInt("experience", 0);
         ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("owner")).resultOrPartial(string -> Gravestones.LOGGER.error("Failed to load profile from gravestone: {}", string)).ifPresent(this::setGraveOwner);
         this.spawnDateTime = nbt.getString("spawnDateTime", null);
         this.spawnDateTicks = nbt.getLong("spawnDateTicks", 0);
-        this.modData = nbt.getListOrEmpty("modData");
     }
 
     public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
@@ -219,12 +212,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public int getExperienceToDrop(BlockState state) {
-        int experience = getExperience();
-        if (GravestonesConfig.EXPERIENCE_DECAY.getValue()) {
-            return experience / (state.get(TechnicalGravestoneBlock.DAMAGE) + 1);
-        } else {
-            return experience;
-        }
+        return GravestoneContents.getExperienceToDrop(getExperience(), state.get(TechnicalGravestoneBlock.DAMAGE));
     }
 
     public void setExperience(int experience) {

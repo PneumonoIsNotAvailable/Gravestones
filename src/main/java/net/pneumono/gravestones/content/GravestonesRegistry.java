@@ -29,6 +29,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.api.ExperienceDataType;
+import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.api.PlayerInventoryDataType;
 import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
@@ -103,6 +106,9 @@ public class GravestonesRegistry {
                 DeathArgumentType.class,
                 ConstantArgumentSerializer.of(DeathArgumentType::new)
         );
+
+        GravestonesApi.registerDataType(Gravestones.identifier("inventory"), new PlayerInventoryDataType());
+        GravestonesApi.registerDataType(Gravestones.identifier("experience"), new ExperienceDataType());
 
         addToFunctionalGroup(
                 GravestonesRegistry.GRAVESTONE,

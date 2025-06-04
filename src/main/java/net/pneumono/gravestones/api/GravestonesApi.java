@@ -56,22 +56,26 @@ public class GravestonesApi {
 
     public static void onBreak(World world, BlockPos pos, int decay, NbtCompound contents) {
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+            String id = entry.getKey().toString();
             entry.getValue().onBreak(
                     world,
                     pos,
                     decay,
-                    contents.get(entry.getKey().toString())
+                    contents.get(id)
             );
+            contents.remove(id);
         }
     }
 
     public static void onCollect(PlayerEntity player, int decay, NbtCompound contents) {
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+            String id = entry.getKey().toString();
             entry.getValue().onCollect(
                     player,
                     decay,
-                    contents.get(entry.getKey().toString())
+                    contents.get(id)
             );
+            contents.remove(id);
         }
     }
 

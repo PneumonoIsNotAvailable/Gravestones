@@ -41,7 +41,6 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
-import net.pneumono.gravestones.gravestones.GravestoneContents;
 import net.pneumono.gravestones.gravestones.GravestonesManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,7 +87,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                 Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, pos.toString());
 
                 GravestonesManager.info("Returning items...");
-                GravestoneContents.returnContentsToPlayer(world, gravestone, player, pos, state);
+                GravestonesApi.onCollect(player, gravestone.getDecay(), gravestone.getContents());
 
                 player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
                 MinecraftServer server = world.getServer();
