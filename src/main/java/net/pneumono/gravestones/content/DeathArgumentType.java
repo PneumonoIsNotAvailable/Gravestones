@@ -8,15 +8,11 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
 import net.pneumono.gravestones.Gravestones;
 
 import java.io.File;
@@ -78,7 +74,7 @@ public class DeathArgumentType implements ArgumentType<String> {
         return new DeathArgumentType();
     }
 
-    public static Death getDeath(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+    public static NbtCompound getDeath(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         File deathsFile = Gravestones.GRAVESTONES_ROOT.apply(context.getSource().getServer());
         String file = context.getArgument(name, String.class);
         File deathFile = new File(deathsFile, file);
@@ -89,17 +85,6 @@ public class DeathArgumentType implements ArgumentType<String> {
         } catch (IOException e) {
             throw COULD_NOT_READ.create(file);
         }
-        if (nbt == null) return null;
-
-        DefaultedList<ItemStack> inventory = DefaultedList.ofSize(127, ItemStack.EMPTY);
-        Inventories.readNbt(nbt, inventory, context.getSource().getRegistryManager());
-        int experience = nbt.getInt("experience", 0);
-        NbtList modData = nbt.getListOrEmpty("modData");
-
-        return new Death(inventory, experience, modData);
-    }
-
-    public record Death(DefaultedList<ItemStack> inventory, int experience, NbtList modData) {
-
+        return nbt;
     }
 }

@@ -6,14 +6,14 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
@@ -102,12 +102,10 @@ public class GravestonesCommands {
                                                 .executes(context -> {
                                                     ServerCommandSource source = context.getSource();
 
-                                                    DeathArgumentType.Death death = DeathArgumentType.getDeath(context, "death");
-                                                    if (death == null) throw DeathArgumentType.COULD_NOT_READ.create("");
+                                                    NbtCompound nbt = DeathArgumentType.getDeath(context, "death");
+                                                    if (nbt == null) throw DeathArgumentType.COULD_NOT_READ.create("");
 
-                                                    source.sendFeedback(() -> Text.literal("Inventory: " + getInventoryMessage(death.inventory())), false);
-                                                    source.sendFeedback(() -> Text.literal("XP: " + death.experience()), false);
-                                                    source.sendFeedback(() -> Text.literal("Mod Data: " + death.modData().toString()), false);
+                                                    source.sendFeedback(() -> Text.literal("Inventory: ").append(NbtHelper.toPrettyPrintedText(nbt)), false);
                                                     return 1;
                                                 })
                                         )
@@ -125,22 +123,6 @@ public class GravestonesCommands {
                         )
                 )
         );
-    }
-
-    private static String getInventoryMessage(DefaultedList<ItemStack> inventory) {
-        List<ItemStack> nonAirStacks = inventory.stream().filter(stack -> !stack.isEmpty()).toList();
-
-        StringBuilder inventoryMessage = new StringBuilder();
-        boolean notFirst = false;
-        for (ItemStack item : nonAirStacks) {
-            if (notFirst) {
-                inventoryMessage.append(", ");
-            } else {
-                notFirst = true;
-            }
-            inventoryMessage.append(item.toString());
-        }
-        return inventoryMessage.toString();
     }
 
     private static int getUuid(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
