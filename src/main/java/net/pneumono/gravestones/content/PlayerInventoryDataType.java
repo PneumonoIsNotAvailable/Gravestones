@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.api;
+package net.pneumono.gravestones.content;
 
 import net.minecraft.entity.EntityEquipment;
 import net.minecraft.entity.EquipmentSlot;
@@ -15,6 +15,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.pneumono.gravestones.api.GravestoneDataType;
 
 import java.util.ArrayList;
 import java.util.List;

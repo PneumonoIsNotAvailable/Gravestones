@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.content;
+package net.pneumono.gravestones.block;
 
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.fabric.api.entity.FakePlayer;
@@ -38,7 +38,7 @@ import net.minecraft.world.tick.ScheduledTickView;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestonesManager;
 import org.jetbrains.annotations.Nullable;
 

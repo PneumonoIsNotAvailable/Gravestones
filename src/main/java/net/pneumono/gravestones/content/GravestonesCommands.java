@@ -17,7 +17,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.data.GravestoneData;
 import net.pneumono.gravestones.gravestones.data.GravestonePosition;
 

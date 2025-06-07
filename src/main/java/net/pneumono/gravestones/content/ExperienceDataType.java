@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.api;
+package net.pneumono.gravestones.content;
 
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
+import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.gravestones.GravestoneContents;
 
 public class ExperienceDataType extends GravestoneDataType {

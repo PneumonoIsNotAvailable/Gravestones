@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestonesRegistry;
-import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.block.TechnicalGravestoneBlock;
+import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.data.GravestonePosition;
 import net.pneumono.gravestones.gravestones.enums.DecayTimeType;
 

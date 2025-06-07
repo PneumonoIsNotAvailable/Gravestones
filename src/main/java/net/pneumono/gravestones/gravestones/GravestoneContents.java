@@ -3,7 +3,7 @@ package net.pneumono.gravestones.gravestones;
 import net.minecraft.entity.player.PlayerEntity;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 
 public class GravestoneContents extends GravestonesManager {
     public static void insertGravestoneData(PlayerEntity entity, TechnicalGravestoneBlockEntity gravestone) {

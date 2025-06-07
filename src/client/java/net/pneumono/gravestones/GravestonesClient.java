@@ -13,7 +13,7 @@ import net.pneumono.gravestones.content.AestheticGravestoneEditScreen;
 import net.pneumono.gravestones.content.GravestoneBlockEntityRenderer;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
 import net.pneumono.gravestones.content.GravestonesRegistry;
-import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
+import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 
 public class GravestonesClient implements ClientModInitializer {
     @Override

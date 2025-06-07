@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
-import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
+import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;

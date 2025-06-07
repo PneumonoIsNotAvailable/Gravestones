@@ -14,9 +14,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.content.entity.AbstractGravestoneBlockEntity;
-import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.block.AbstractGravestoneBlockEntity;
+import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
+import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
 import net.pneumono.gravestones.gravestones.enums.TimeFormat;
 

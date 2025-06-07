@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.content.entity;
+package net.pneumono.gravestones.block;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.component.type.ProfileComponent;
@@ -19,7 +19,6 @@ import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
-import net.pneumono.gravestones.content.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
 
 import java.util.*;

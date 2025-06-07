@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.content.entity;
+package net.pneumono.gravestones.block;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

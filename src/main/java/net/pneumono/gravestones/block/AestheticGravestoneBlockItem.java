@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.content;
+package net.pneumono.gravestones.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;

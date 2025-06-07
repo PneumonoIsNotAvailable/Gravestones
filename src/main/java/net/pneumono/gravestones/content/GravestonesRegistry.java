@@ -29,11 +29,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
-import net.pneumono.gravestones.api.ExperienceDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.api.PlayerInventoryDataType;
-import net.pneumono.gravestones.content.entity.AestheticGravestoneBlockEntity;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.block.*;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 

@@ -1,4 +1,4 @@
-package net.pneumono.gravestones.content.entity;
+package net.pneumono.gravestones.block;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.Block;

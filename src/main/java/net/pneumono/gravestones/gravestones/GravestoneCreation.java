@@ -18,7 +18,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.data.GravestonePosition;
 import net.pneumono.gravestones.gravestones.data.GravestoneData;
 import net.pneumono.gravestones.gravestones.data.PlayerGravestoneData;
