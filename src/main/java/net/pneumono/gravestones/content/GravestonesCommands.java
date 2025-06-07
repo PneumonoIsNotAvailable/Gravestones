@@ -53,7 +53,7 @@ public class GravestonesCommands {
                                                             context.getSource().sendFeedback(() -> Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and no graveOwner!").formatted(Formatting.RED), false);
                                                         }
 
-                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following contents data ").formatted(Formatting.GOLD).append(NbtHelper.toPrettyPrintedText(entity.getContents())), false);
+                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following contents data ").append(NbtHelper.toPrettyPrintedText(entity.getContents())), false);
                                                     }
                                                     return 1;
                                                 })
