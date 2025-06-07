@@ -25,9 +25,6 @@ import net.pneumono.gravestones.gravestones.GravestoneDecay;
 import java.util.*;
 
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
-    // Should be used for backwards compat but I'm too lazy atm
-    private static final int CURRENT_FORMAT_VERSION = 2;
-    private int format;
     private NbtCompound contents;
     private ProfileComponent graveOwner;
     private String spawnDateTime;
@@ -40,7 +37,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        nbt.putInt("format", this.format);
         nbt.put("contents", this.contents);
         if (this.graveOwner != null) {
             nbt.put("owner", ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.graveOwner).getOrThrow());
@@ -56,7 +52,6 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        this.format = nbt.getInt("format", 1);
         this.contents = nbt.getCompoundOrEmpty("contents");
         ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("owner")).resultOrPartial(string -> Gravestones.LOGGER.error("Failed to load profile from gravestone: {}", string)).ifPresent(this::setGraveOwner);
         this.spawnDateTime = nbt.getString("spawnDateTime", null);
