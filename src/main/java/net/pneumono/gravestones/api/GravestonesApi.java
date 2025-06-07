@@ -73,6 +73,8 @@ public class GravestonesApi {
     }
 
     public static void onCollect(PlayerEntity player, int decay, NbtCompound contents) {
+        if (contents.isEmpty()) return;
+
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String id = entry.getKey().toString();
             entry.getValue().onCollect(
