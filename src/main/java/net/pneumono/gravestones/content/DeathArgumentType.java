@@ -85,6 +85,7 @@ public class DeathArgumentType implements ArgumentType<String> {
         } catch (IOException e) {
             throw COULD_NOT_READ.create(file);
         }
+        if (nbt == null) throw DeathArgumentType.COULD_NOT_READ.create(file);
         return nbt;
     }
 }
