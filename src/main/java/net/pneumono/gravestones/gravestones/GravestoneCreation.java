@@ -71,7 +71,7 @@ public class GravestoneCreation extends GravestonesManager {
                 gravestone.setGraveOwner(new ProfileComponent(playerProfile));
                 Date date = new Date();
                 gravestone.setSpawnDate(GravestoneTime.READABLE.format(date), world.getTime());
-                GravestoneContents.insertModData(player, gravestone);
+                GravestoneContents.insertGravestoneData(player, gravestone);
 
                 recordDeathData(gravestone, player, date);
 

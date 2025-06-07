@@ -6,8 +6,8 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 
 public class GravestoneContents extends GravestonesManager {
-    public static void insertModData(PlayerEntity entity, TechnicalGravestoneBlockEntity gravestone) {
-        info("Inserting additional mod data into grave...");
+    public static void insertGravestoneData(PlayerEntity entity, TechnicalGravestoneBlockEntity gravestone) {
+        info("Inserting gravestone data into grave...");
 
         gravestone.setContents(GravestonesApi.getDataToInsert(entity));
 
