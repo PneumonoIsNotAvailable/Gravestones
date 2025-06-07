@@ -10,7 +10,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestoneDataType;
-import net.pneumono.gravestones.gravestones.GravestoneContents;
 
 public class ExperienceDataType extends GravestoneDataType {
     @Override
@@ -50,8 +49,16 @@ public class ExperienceDataType extends GravestoneDataType {
         if (world instanceof ServerWorld serverWorld) {
             ExperienceOrbEntity.spawn(
                     serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()),
-                    GravestoneContents.getExperienceToDrop(experience, decay)
+                    getExperienceToDrop(experience, decay)
             );
+        }
+    }
+
+    public static int getExperienceToDrop(int experience, int damage) {
+        if (GravestonesConfig.EXPERIENCE_DECAY.getValue()) {
+            return experience / (damage + 1);
+        } else {
+            return experience;
         }
     }
 }

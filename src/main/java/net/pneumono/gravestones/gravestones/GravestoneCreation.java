@@ -18,6 +18,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
+import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.data.GravestonePosition;
 import net.pneumono.gravestones.gravestones.data.GravestoneData;
@@ -71,7 +72,10 @@ public class GravestoneCreation extends GravestonesManager {
                 gravestone.setGraveOwner(new ProfileComponent(playerProfile));
                 Date date = new Date();
                 gravestone.setSpawnDate(GravestoneTime.READABLE.format(date), world.getTime());
-                GravestoneContents.insertGravestoneData(player, gravestone);
+
+                info("Inserting gravestone data into grave...");
+                gravestone.setContents(GravestonesApi.getDataToInsert(player));
+                info("Data inserted!");
 
                 recordDeathData(gravestone, player, date);
 
