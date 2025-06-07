@@ -16,6 +16,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.entity.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.data.GravestoneData;
 import net.pneumono.gravestones.gravestones.data.GravestonePosition;
@@ -103,11 +104,22 @@ public class GravestonesCommands {
                                                     ServerCommandSource source = context.getSource();
 
                                                     NbtCompound nbt = DeathArgumentType.getDeath(context, "death");
-                                                    if (nbt == null) throw DeathArgumentType.COULD_NOT_READ.create("");
 
                                                     source.sendFeedback(() -> Text.literal("Inventory: ").append(NbtHelper.toPrettyPrintedText(nbt)), false);
                                                     return 1;
                                                 })
+                                        )
+                                )
+                                .then(literal("recover")
+                                        .then(argument("death", DeathArgumentType.death())
+                                                .executes(context -> recoverDeath(context, DeathArgumentType.getDeath(context, "death"), context.getSource().getPlayerOrThrow()))
+                                                .then(argument("player", EntityArgumentType.player())
+                                                        .executes(context -> recoverDeath(
+                                                                context,
+                                                                DeathArgumentType.getDeath(context, "death"),
+                                                                EntityArgumentType.getPlayer(context, "player")
+                                                        ))
+                                                )
                                         )
                                 )
                         )
@@ -123,6 +135,12 @@ public class GravestonesCommands {
                         )
                 )
         );
+    }
+
+    private static int recoverDeath(CommandContext<ServerCommandSource> context, NbtCompound nbt, ServerPlayerEntity player) {
+        GravestonesApi.onCollect(player, 0, nbt.getCompoundOrEmpty("contents"));
+        context.getSource().sendFeedback(() -> Text.literal("Recovered inventory from death"), true);
+        return 1;
     }
 
     private static int getUuid(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
