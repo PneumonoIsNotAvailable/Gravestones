@@ -39,10 +39,10 @@ public class ExperienceDataType extends GravestoneDataType {
     }
 
     private void dropExperience(World world, BlockPos pos, int decay, NbtElement nbt) {
-        if (nbt == null) {
+        if (!(nbt instanceof NbtInt nbtInt)) {
             return;
         }
-        dropExperience(world, pos, decay, nbt.asInt().orElse(0));
+        dropExperience(world, pos, decay, nbtInt.intValue());
     }
 
     private void dropExperience(World world, BlockPos pos, int decay, int experience) {

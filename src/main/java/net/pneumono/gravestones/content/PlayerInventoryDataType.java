@@ -38,7 +38,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
                 NbtCompound compound = new NbtCompound();
                 compound.putByte("Slot", (byte)i);
 
-                list.add(inventory.removeStack(i + offset).toNbt(player.getRegistryManager(), compound));
+                list.add(inventory.removeStack(i + offset).encode(player.getRegistryManager(), compound));
             }
         }
 
@@ -47,10 +47,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
     @Override
     public void onBreak(World world, BlockPos pos, int decay, NbtElement element) {
-        if (element == null) return;
-        Optional<NbtCompound> optional = element.asCompound();
-        if (optional.isEmpty()) return;
-        NbtCompound nbt = optional.get();
+        if (!(element instanceof NbtCompound nbt)) return;
 
         Collection<ItemStack> items = inventoryFromNbt(nbt, world.getRegistryManager()).values();
 
@@ -61,10 +58,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
     @Override
     public void onCollect(PlayerEntity player, int decay, NbtElement element) {
-        if (element == null) return;
-        Optional<NbtCompound> optional = element.asCompound();
-        if (optional.isEmpty()) return;
-        NbtCompound nbt = optional.get();
+        if (!(element instanceof NbtCompound nbt)) return;
 
         Map<Integer, ItemStack> items = inventoryFromNbt(nbt, player.getRegistryManager());
 
@@ -93,13 +87,12 @@ public class PlayerInventoryDataType extends GravestoneDataType {
     }
 
     public static Map<Integer, ItemStack> inventoryFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
-        Map<Integer, ItemStack> map = new HashMap<>();
 
-        Optional<NbtList> inventoryOptional = nbt.getList("inventory");
-        inventoryOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, registries, 0)));
+        NbtList inventory = nbt.getList("inventory", NbtElement.COMPOUND_TYPE);
+        Map<Integer, ItemStack> map = new HashMap<>(subInventoryFromNbtList(inventory, registries, 0));
 
-        Optional<NbtList> equipmentOptional = nbt.getList("equipment");
-        equipmentOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, registries, 36)));
+        NbtList equipment = nbt.getList("equipment", NbtElement.COMPOUND_TYPE);
+        map.putAll(subInventoryFromNbtList(equipment, registries, 36));
 
         return map;
     }
@@ -108,9 +101,9 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         Map<Integer, ItemStack> map = new HashMap<>();
 
         for (int i = 0; i < nbtList.size(); i++) {
-            NbtCompound nbtCompound = nbtList.getCompoundOrEmpty(i);
+            NbtCompound nbtCompound = nbtList.getCompound(i);
 
-            int slot = nbtCompound.getByte("Slot", (byte)0) & 255;
+            int slot = nbtCompound.getByte("Slot") & 255;
             ItemStack stack = ItemStack.fromNbt(registries, nbtCompound).orElse(ItemStack.EMPTY);
 
             if (!stack.isEmpty()) {

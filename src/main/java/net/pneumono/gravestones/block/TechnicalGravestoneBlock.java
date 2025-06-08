@@ -32,9 +32,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.tick.ScheduledTickView;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
@@ -109,11 +108,14 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        ItemScatterer.onStateReplaced(state, world, pos);
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        ItemScatterer.onStateReplaced(state, newState, world, pos);
 
-        if (state.getBlock() != world.getBlockState(pos).getBlock()) {
+        if (state.getBlock() != newState.getBlock()) {
             createSoulParticles(world, pos);
+            if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
+                GravestonesApi.onBreak(state, entity);
+            }
         }
     }
 
@@ -137,12 +139,12 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, net.minecraft.util.math.random.Random random) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED)) {
-            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
 
-        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
@@ -174,7 +176,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+    protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
     }
 
     @Nullable

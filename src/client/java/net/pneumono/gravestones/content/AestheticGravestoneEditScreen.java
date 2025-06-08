@@ -8,13 +8,12 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
@@ -162,14 +161,14 @@ public class AestheticGravestoneEditScreen extends Screen {
 
     protected void renderSignBackground(DrawContext context) {
         context.getMatrices().scale(7.0F, 7.0F, 1.0F);
-        context.drawTexture(RenderLayer::getGuiTextured, this.texture, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
+        context.drawTexture(this.texture, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
     }
 
     private void renderSignText(DrawContext context) {
         context.getMatrices().translate(0.0F, 0.0F, 4.0F);
         Vector3f textScale = new Vector3f(1.0F, 1.0F, 1.0F);
         context.getMatrices().scale(textScale.x(), textScale.y(), textScale.z());
-        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : AbstractSignBlockEntityRenderer.getTextColor(this.text);
+        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : SignBlockEntityRenderer.getColor(this.text);
         boolean shouldFlashCursor = this.ticksSinceOpened / 6 % 2 == 0;
         Objects.requireNonNull(this.selectionManager);
         int selectionStart = this.selectionManager.getSelectionStart();
@@ -202,7 +201,7 @@ public class AestheticGravestoneEditScreen extends Screen {
                 int substringWidth = this.textRenderer.getWidth(message.substring(0, Math.min(selectionStart, message.length())));
                 int adjustedX = substringWidth - this.textRenderer.getWidth(message) / 2;
                 if (shouldFlashCursor && selectionStart < message.length()) {
-                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, ColorHelper.fullAlpha(color));
+                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, Colors.BLACK | color);
                 }
 
                 if (selectionEnd != selectionStart) {

@@ -59,8 +59,8 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
-        this.text = nbt.get("text", SignText.CODEC, dynamicOps).map(this::parseLines).orElseGet(SignText::new);
-        this.waxed = nbt.getBoolean("is_waxed", false);
+        SignText.CODEC.parse(dynamicOps, nbt.getCompound("text")).resultOrPartial(Gravestones.LOGGER::error).ifPresent(signText -> this.text = this.parseLines(signText));
+        this.waxed = nbt.getBoolean("is_waxed");
     }
 
     private SignText parseLines(SignText signText) {
@@ -115,8 +115,9 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
         for (Text text : this.getText().getMessages(player.shouldFilterText())) {
             Style style = text.getStyle();
-            if (style.getClickEvent() instanceof ClickEvent.RunCommand(String var14)) {
-                Objects.requireNonNull(player.getServer()).getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), var14);
+            ClickEvent clickEvent = style.getClickEvent();
+            if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
+                Objects.requireNonNull(player.getServer()).getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), clickEvent.getValue());
                 hasRunCommand = true;
             }
         }

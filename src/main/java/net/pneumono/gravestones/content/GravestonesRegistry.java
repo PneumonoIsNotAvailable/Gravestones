@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -52,10 +51,10 @@ public class GravestonesRegistry {
             AestheticGravestoneBlock::new, AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool());
 
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("technical_gravestone"), FabricBlockEntityTypeBuilder.create(TechnicalGravestoneBlockEntity::new, GRAVESTONE_TECHNICAL).build()
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("technical_gravestone"), BlockEntityType.Builder.create(TechnicalGravestoneBlockEntity::new, GRAVESTONE_TECHNICAL).build()
     );
     public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(AestheticGravestoneBlockEntity::new, GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED).build()
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("aesthetic_gravestone"), BlockEntityType.Builder.create(AestheticGravestoneBlockEntity::new, GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
@@ -64,7 +63,7 @@ public class GravestonesRegistry {
             EntityType.Builder.<GravestoneSkeletonEntity>create(GravestoneSkeletonEntity::new, SpawnGroup.MISC)
                     .dimensions(0.6F, 1.99F)
                     .maxTrackingRange(8)
-                    .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Gravestones.identifier("gravestone_skeleton")))
+                    .build()
     );
 
     public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.identifier("skips_gravestones"));
@@ -76,12 +75,12 @@ public class GravestonesRegistry {
 
     private static Block registerAestheticGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Block block = registerGravestone(name, factory, settings);
-        Registry.register(Registries.ITEM, Gravestones.identifier(name), new AestheticGravestoneBlockItem(block, new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.identifier(name)))));
+        Registry.register(Registries.ITEM, Gravestones.identifier(name), new AestheticGravestoneBlockItem(block, new Item.Settings()));
         return block;
     }
 
     private static Block registerGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
-        return Registry.register(Registries.BLOCK, Gravestones.identifier(name), factory.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.identifier(name)))));
+        return Registry.register(Registries.BLOCK, Gravestones.identifier(name), factory.apply(settings));
     }
 
     private static SoundEvent waxedInteractFailSound() {
@@ -132,11 +131,6 @@ public class GravestonesRegistry {
             List<String> list = Stream.of(payload.getText()).map(Formatting::strip).collect(Collectors.toList());
             context.player().networkHandler.filterTexts(list).thenAcceptAsync(texts -> onSignUpdate(context.player(), payload, texts), context.server());
         });
-
-        Registries.ITEM.addAlias(Gravestones.identifier("gravestone_default"), Gravestones.identifier("gravestone"));
-        Registries.BLOCK.addAlias(Gravestones.identifier("gravestone_default"), Gravestones.identifier("gravestone"));
-        Registries.BLOCK_ENTITY_TYPE.addAlias(Identifier.of("gravestone"), Gravestones.identifier("technical_gravestone"));
-        Registries.BLOCK_ENTITY_TYPE.addAlias(Gravestones.identifier("gravestone"), Gravestones.identifier("technical_gravestone"));
     }
 
     @SuppressWarnings("deprecation")

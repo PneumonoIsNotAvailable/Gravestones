@@ -94,7 +94,7 @@ public class GravestonesCommands {
 
                                                     NbtCompound nbt = DeathArgumentType.getDeath(context, "death");
 
-                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(nbt.getCompoundOrEmpty("contents"))), false);
+                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(nbt.getCompound("contents"))), false);
                                                     return 1;
                                                 })
                                         )
@@ -127,7 +127,7 @@ public class GravestonesCommands {
     }
 
     private static int recoverDeath(CommandContext<ServerCommandSource> context, NbtCompound nbt, ServerPlayerEntity player) {
-        GravestonesApi.onCollect(player, 0, nbt.getCompoundOrEmpty("contents"));
+        GravestonesApi.onCollect(player, 0, nbt.getCompound("contents"));
         context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.deaths.recover"), true);
         return 1;
     }

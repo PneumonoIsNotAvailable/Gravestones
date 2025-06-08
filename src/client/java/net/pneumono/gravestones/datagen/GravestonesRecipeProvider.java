@@ -2,9 +2,9 @@ package net.pneumono.gravestones.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.data.recipe.CookingRecipeJsonBuilder;
-import net.minecraft.data.recipe.RecipeExporter;
-import net.minecraft.data.recipe.RecipeGenerator;
+import net.minecraft.data.server.recipe.CookingRecipeJsonBuilder;
+import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -23,38 +23,28 @@ public class GravestonesRecipeProvider extends FabricRecipeProvider {
     }
 
     @Override
-    protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup wrapperLookup, RecipeExporter recipeExporter) {
-        return new RecipeGenerator(wrapperLookup, recipeExporter) {
-            @Override
-            public void generate() {
-                ConfigResourceCondition condition = new ConfigResourceCondition(GravestonesConfig.AESTHETIC_GRAVESTONES, ConfigResourceCondition.Operator.EQUAL, "true");
+    public void generate(RecipeExporter exporter) {
+        ConfigResourceCondition condition = new ConfigResourceCondition(GravestonesConfig.AESTHETIC_GRAVESTONES, ConfigResourceCondition.Operator.EQUAL, "true");
 
-                this.createShaped(RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE)
-                        .pattern(" s ")
-                        .pattern("SSS")
-                        .pattern("sss")
-                        .input('S', Items.STONE)
-                        .input('s', Items.STONE_SLAB)
-                        .criterion(hasItem(Items.LEATHER), conditionsFromItem(Items.LEATHER))
-                        .criterion(hasItem(Items.STICK), conditionsFromItem(Items.STICK))
-                        .offerTo(withConditions(exporter, condition));
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE)
+                .pattern(" s ")
+                .pattern("SSS")
+                .pattern("sss")
+                .input('S', Items.STONE)
+                .input('s', Items.STONE_SLAB)
+                .criterion(hasItem(Items.LEATHER), conditionsFromItem(Items.LEATHER))
+                .criterion(hasItem(Items.STICK), conditionsFromItem(Items.STICK))
+                .offerTo(withConditions(exporter, condition));
 
-                // This is bad, but I have no idea what the intended way to use resource conditions is anymore-
-                CookingRecipeJsonBuilder.create(Ingredient.ofItem(GravestonesRegistry.GRAVESTONE), RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE_CHIPPED, 0.1F, 200, RecipeSerializer.SMELTING, SmeltingRecipe::new)
-                        .group("gravestone_cracking")
-                        .criterion(hasItem(GravestonesRegistry.GRAVESTONE), this.conditionsFromItem(GravestonesRegistry.GRAVESTONE))
-                        .offerTo(withConditions(this.exporter, condition), getItemPath(GravestonesRegistry.GRAVESTONE_CHIPPED));
+        // This is bad, but I have no idea what the intended way to use resource conditions is anymore-
+        CookingRecipeJsonBuilder.create(Ingredient.ofItems(GravestonesRegistry.GRAVESTONE), RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE_CHIPPED, 0.1F, 200, RecipeSerializer.SMELTING, SmeltingRecipe::new)
+                .group("gravestone_cracking")
+                .criterion(hasItem(GravestonesRegistry.GRAVESTONE), conditionsFromItem(GravestonesRegistry.GRAVESTONE))
+                .offerTo(withConditions(exporter, condition), getItemPath(GravestonesRegistry.GRAVESTONE_CHIPPED));
 
-                CookingRecipeJsonBuilder.create(Ingredient.ofItem(GravestonesRegistry.GRAVESTONE_CHIPPED), RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE_DAMAGED, 0.1F, 200, RecipeSerializer.SMELTING, SmeltingRecipe::new)
-                        .group("gravestone_cracking")
-                        .criterion(hasItem(GravestonesRegistry.GRAVESTONE_CHIPPED), this.conditionsFromItem(GravestonesRegistry.GRAVESTONE_CHIPPED))
-                        .offerTo(withConditions(this.exporter, condition), getItemPath(GravestonesRegistry.GRAVESTONE_DAMAGED));
-            }
-        };
-    }
-
-    @Override
-    public String getName() {
-        return "Recipes (Gravestones)";
+        CookingRecipeJsonBuilder.create(Ingredient.ofItems(GravestonesRegistry.GRAVESTONE_CHIPPED), RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE_DAMAGED, 0.1F, 200, RecipeSerializer.SMELTING, SmeltingRecipe::new)
+                .group("gravestone_cracking")
+                .criterion(hasItem(GravestonesRegistry.GRAVESTONE_CHIPPED), conditionsFromItem(GravestonesRegistry.GRAVESTONE_CHIPPED))
+                .offerTo(withConditions(exporter, condition), getItemPath(GravestonesRegistry.GRAVESTONE_DAMAGED));
     }
 }

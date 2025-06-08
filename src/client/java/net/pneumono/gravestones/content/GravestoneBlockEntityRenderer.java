@@ -4,15 +4,14 @@ import net.minecraft.block.entity.SignText;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.AbstractGravestoneBlockEntity;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
@@ -33,7 +32,7 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
     }
 
     @Override
-    public void render(AbstractGravestoneBlockEntity entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
+    public void render(AbstractGravestoneBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
 
         int rotation = switch (entity.getGravestoneDirection()) {
@@ -95,9 +94,9 @@ public class GravestoneBlockEntityRenderer implements BlockEntityRenderer<Abstra
         SignText signText = blockEntity.getText();
 
         boolean glowing = signText.isGlowing();
-        int textColor = AbstractSignBlockEntityRenderer.getTextColor(signText);
+        int textColor = SignBlockEntityRenderer.getColor(signText);
         int color = glowing ? signText.getColor().getSignColor() : textColor;
-        boolean renderOutline = glowing && AbstractSignBlockEntityRenderer.shouldRenderTextOutline(blockEntity.getPos(), color);
+        boolean renderOutline = glowing && SignBlockEntityRenderer.shouldRender(blockEntity.getPos(), color);
         int light = glowing ? 15728880 : worldLight;
 
         for (int i = 0; i < 4; ++i) {
