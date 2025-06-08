@@ -11,7 +11,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
@@ -106,6 +108,13 @@ public class GravestonesRegistry {
 
         GravestonesApi.registerDataType(Gravestones.identifier("inventory"), new PlayerInventoryDataType());
         GravestonesApi.registerDataType(Gravestones.identifier("experience"), new ExperienceDataType());
+        GravestonesApi.registerItemSkipPredicate((player, stack) ->
+                stack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
+                EnchantmentHelper.hasAnyEnchantmentsIn(stack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
+        );
+        GravestonesApi.registerItemSkipPredicate((player, stack) ->
+                EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
+        );
 
         addToFunctionalGroup(
                 GravestonesRegistry.GRAVESTONE,

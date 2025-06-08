@@ -2,12 +2,11 @@ package net.pneumono.gravestones;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.compat.SpelunkerySupport;
-import net.pneumono.gravestones.compat.TrinketsSupport;
 import net.pneumono.gravestones.content.GravestonesCommands;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import org.slf4j.Logger;
@@ -29,14 +28,8 @@ public class Gravestones implements ModInitializer {
 		GravestonesRegistry.registerModContent();
 		GravestonesCommands.registerCommands();
 
-		// Commented out until Trinkets updates to 1.21.5
-		/*
-		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
-			TrinketsSupport.register();
-		}
-		 */
 		if (FabricLoader.getInstance().isModLoaded("spelunkery")) {
-			GravestonesApi.registerModSupport(new SpelunkerySupport());
+			GravestonesApi.registerItemSkipPredicate((player, stack) -> stack.isOf(Items.RECOVERY_COMPASS));
 		}
 	}
 
