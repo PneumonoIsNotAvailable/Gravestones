@@ -10,12 +10,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
+import net.pneumono.gravestones.api.GravestonesApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         NbtCompound nbt = new NbtCompound();
 
         PlayerInventory inventory = player.getInventory();
-        nbt.put("inventory", inventory.writeNbt(new NbtList()));
+        nbt.put("inventory", filterToNbt(inventory, new NbtList()));
         RegistryOps<NbtElement> registryOps = player.getRegistryManager().getOps(NbtOps.INSTANCE);
         nbt.put("equipment", EntityEquipment.CODEC, registryOps, createEntityEquipment(player));
 
@@ -36,10 +38,34 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         return nbt;
     }
 
+    public NbtList filterToNbt(PlayerInventory inventory, NbtList nbtList) {
+        DefaultedList<ItemStack> main = inventory.getMainStacks();
+        PlayerEntity player = inventory.player;
+
+        for (int i = 0; i < main.size(); i++) {
+            ItemStack stack = main.get(i);
+            if (!stack.isEmpty() && !GravestonesApi.shouldSkipItem(player, stack)) {
+                NbtCompound nbtCompound = new NbtCompound();
+                nbtCompound.putByte("Slot", (byte)i);
+                nbtList.add(stack.toNbt(player.getRegistryManager(), nbtCompound));
+            }
+        }
+
+        return nbtList;
+    }
+
     // Scuffed
     private EntityEquipment createEntityEquipment(PlayerEntity player) {
         EntityEquipment equipment = new EntityEquipment();
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
+        EquipmentSlot[] slots = new EquipmentSlot[]{
+                EquipmentSlot.OFFHAND,
+                EquipmentSlot.FEET,
+                EquipmentSlot.LEGS,
+                EquipmentSlot.CHEST,
+                EquipmentSlot.HEAD
+        };
+
+        for (EquipmentSlot slot : slots) {
             equipment.put(slot, player.getEquippedStack(slot));
         }
         return equipment;
@@ -69,8 +95,6 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         EntityEquipment equipment = nbt.get("equipment", EntityEquipment.CODEC, registryOps).orElseGet(EntityEquipment::new);
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot == EquipmentSlot.MAINHAND) continue;
-
             ItemStack stack = equipment.get(slot);
             ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
         }
@@ -108,8 +132,6 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         EntityEquipment equipment = nbt.get("equipment", EntityEquipment.CODEC, registryOps).orElseGet(EntityEquipment::new);
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot == EquipmentSlot.MAINHAND) continue;
-
             ItemStack stack = equipment.get(slot);
             if (player.getEquippedStack(slot).isEmpty()) {
                 player.equipStack(slot, stack);
