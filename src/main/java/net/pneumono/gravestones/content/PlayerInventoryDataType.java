@@ -65,7 +65,10 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         };
 
         for (EquipmentSlot slot : slots) {
-            equipment.put(slot, player.getEquippedStack(slot));
+            ItemStack stack = player.getEquippedStack(slot);
+            if (!GravestonesApi.shouldSkipItem(player, stack)) {
+                equipment.put(slot, player.getEquippedStack(slot));
+            }
         }
         return equipment;
     }
