@@ -1,5 +1,6 @@
 package net.pneumono.gravestones.gravestones.data;
 
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -45,6 +46,10 @@ public class GravestonePosition {
         } else {
             return false;
         }
+    }
+
+    public Text toText() {
+        return Text.translatable("gravestones.position", posX, posY, posZ, dimension.toString());
     }
 
     @Override

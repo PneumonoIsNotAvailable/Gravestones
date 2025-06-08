@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Objects;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -44,16 +43,16 @@ public class GravestonesCommands {
                                                     BlockPos pos = BlockPosArgumentType.getBlockPos(context, "position");
 
                                                     if (!(world.getBlockState(pos).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL))) {
-                                                        context.getSource().sendFeedback(() -> Text.literal("No gravestone at that position!").formatted(Formatting.RED), false);
+                                                        context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.no_gravestone").formatted(Formatting.RED), false);
                                                     } else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
                                                         ProfileComponent owner = entity.getGraveOwner();
                                                         if (owner != null) {
-                                                            context.getSource().sendFeedback(() -> Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and a graveOwner of " + owner.name().orElse("???") + " (" + owner.id().orElse(null) + ")").formatted(Formatting.GREEN), false);
+                                                            context.getSource().sendFeedback(() -> Text.stringifiedTranslatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), owner.name().orElse("???"), owner.id().orElse(null)).formatted(Formatting.GREEN), false);
                                                         } else {
-                                                            context.getSource().sendFeedback(() -> Text.literal("Gravestone has a spawnDate of " + entity.getSpawnDateTime() + " and no graveOwner!").formatted(Formatting.RED), false);
+                                                            context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.no_grave_owner", entity.getSpawnDateTime()).formatted(Formatting.RED), false);
                                                         }
 
-                                                        context.getSource().sendFeedback(() -> Text.literal("Gravestone has the following contents data ").append(NbtHelper.toPrettyPrintedText(entity.getContents())), false);
+                                                        context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.contents_data", NbtHelper.toPrettyPrintedText(entity.getContents())), false);
                                                     }
                                                     return 1;
                                                 })
@@ -71,25 +70,15 @@ public class GravestonesCommands {
                                                             reader.close();
 
                                                             List<GravestonePosition> positions = data.getPlayerGravePositions(EntityArgumentType.getPlayer(context, "player").getGameProfile().getId());
-                                                            StringBuilder posList = new StringBuilder();
-                                                            boolean notFirst = false;
-                                                            for (GravestonePosition pos : positions) {
-                                                                if (notFirst) {
-                                                                    posList.append(", ");
-                                                                } else {
-                                                                    notFirst = true;
-                                                                }
-                                                                posList.append("(").append(pos.posX).append(",").append(pos.posY).append(",").append(pos.posZ).append(") in ").append(pos.dimension);
-                                                            }
                                                             ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
-                                                            context.getSource().sendFeedback(() -> Text.literal(Objects.requireNonNull(player.getDisplayName()).getString() + " has graves at the following locations: " + posList), false);
+                                                            context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.grave_data", player.getDisplayName(), positions.getFirst().toText(), positions.get(1).toText(), positions.get(2).toText()), false);
                                                         } else {
-                                                            Gravestones.LOGGER.error("Could not find gravestone data file.");
-                                                            context.getSource().sendFeedback(() -> Text.literal("Could not find gravestone data file.").formatted(Formatting.RED), false);
+                                                            Gravestones.LOGGER.error("Could not find gravestone data file!");
+                                                            context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.cannot_find").formatted(Formatting.RED), false);
                                                         }
                                                     } catch (IOException e) {
                                                         Gravestones.LOGGER.error("Could not read gravestone data file!", e);
-                                                        context.getSource().sendFeedback(() -> Text.literal("Could not read gravestone data file!").formatted(Formatting.RED), false);
+                                                        context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.cannot_read").formatted(Formatting.RED), false);
                                                     }
 
                                                     return 1;
@@ -105,7 +94,7 @@ public class GravestonesCommands {
 
                                                     NbtCompound nbt = DeathArgumentType.getDeath(context, "death");
 
-                                                    source.sendFeedback(() -> Text.literal("Inventory: ").append(NbtHelper.toPrettyPrintedText(nbt)), false);
+                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(nbt)), false);
                                                     return 1;
                                                 })
                                         )
@@ -139,12 +128,12 @@ public class GravestonesCommands {
 
     private static int recoverDeath(CommandContext<ServerCommandSource> context, NbtCompound nbt, ServerPlayerEntity player) {
         GravestonesApi.onCollect(player, 0, nbt.getCompoundOrEmpty("contents"));
-        context.getSource().sendFeedback(() -> Text.literal("Recovered inventory from death"), true);
+        context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.deaths.recover"), true);
         return 1;
     }
 
     private static int getUuid(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
-        context.getSource().sendFeedback(() -> player.getName().copy().append(" has UUID " + player.getUuidAsString()), false);
+        context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getuuid", player.getDisplayName(), player.getUuidAsString()), false);
         return 1;
     }
 }

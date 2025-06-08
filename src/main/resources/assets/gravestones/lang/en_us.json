@@ -14,6 +14,7 @@
     "gravestones.player_collected_grave_at_coords": "%1$s has found their grave at %2$s!",
     "gravestones.grave_spawned": "%1$s's grave is at %2$s",
     "gravestones.edit_text": "Edit Gravestone Message",
+    "gravestones.position": "(%1$s,%2$s,%3$s) in %4$s",
 
     "entity.gravestones.gravestone_skeleton": "Gravestone Skeleton",
 
@@ -23,6 +24,17 @@
 
     "tag.item.gravestones.skips_gravestones": "Skips Gravestone Processing",
     "tag.enchantment.gravestones.skips_gravestones": "Skips Gravestone Processing",
+
+    "commands.gravestones.getdata.gravestone.all_data": "Gravestone has a spawnDate of %1$s and a graveOwner of %2$s (%3$s)",
+    "commands.gravestones.getdata.gravestone.no_grave_owner": "Gravestone has a spawnDate of %s and no graveOwner!",
+    "commands.gravestones.getdata.gravestone.no_gravestone": "No gravestone at that position!",
+    "commands.gravestones.getdata.gravestone.contents_data": "Gravestone has the following contents data: %s",
+    "commands.gravestones.getdata.player.grave_data": "%1$s has graves at the following locations: %2$s, %3$s, %4$s",
+    "commands.gravestones.getdata.player.cannot_read": "Could not read gravestones data file!",
+    "commands.gravestones.getdata.player.cannot_find": "Could not find gravestones data file!",
+    "commands.gravestones.deaths.view": "Inventory: %s",
+    "commands.gravestones.deaths.recover": "Recovered inventory from death",
+    "commands.gravestones.getuuid": "%1$s has UUID %2$s",
 
     "configs.gravestones.screen_title": "Gravestones Configs",
     "configs.gravestones.aesthetic_gravestones" : "Aesthetic Gravestones",
