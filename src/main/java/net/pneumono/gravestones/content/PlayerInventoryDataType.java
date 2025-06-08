@@ -1,7 +1,5 @@
 package net.pneumono.gravestones.content;
 
-import net.minecraft.entity.EntityEquipment;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -9,68 +7,42 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class PlayerInventoryDataType extends GravestoneDataType {
     @Override
     public NbtElement getDataToInsert(PlayerEntity player) {
         NbtCompound nbt = new NbtCompound();
-
         PlayerInventory inventory = player.getInventory();
-        nbt.put("inventory", filterToNbt(inventory, new NbtList()));
-        RegistryOps<NbtElement> registryOps = player.getRegistryManager().getOps(NbtOps.INSTANCE);
-        nbt.put("equipment", EntityEquipment.CODEC, registryOps, createEntityEquipment(player));
 
-        inventory.clear();
+        nbt.put("inventory", inventoryToNbtList(inventory, 36, 0));
+        nbt.put("equipment", inventoryToNbtList(inventory, 5, 36));
 
         return nbt;
     }
 
-    public NbtList filterToNbt(PlayerInventory inventory, NbtList nbtList) {
-        DefaultedList<ItemStack> main = inventory.getMainStacks();
+    public NbtList inventoryToNbtList(PlayerInventory inventory, int amount, int offset) {
         PlayerEntity player = inventory.player;
+        NbtList list = new NbtList();
 
-        for (int i = 0; i < main.size(); i++) {
-            ItemStack stack = main.get(i);
+        for (int i = 0; i < amount; i++) {
+            ItemStack stack = inventory.getStack(i + offset);
             if (!stack.isEmpty() && !GravestonesApi.shouldSkipItem(player, stack)) {
-                NbtCompound nbtCompound = new NbtCompound();
-                nbtCompound.putByte("Slot", (byte)i);
-                nbtList.add(stack.toNbt(player.getRegistryManager(), nbtCompound));
+                NbtCompound compound = new NbtCompound();
+                compound.putByte("Slot", (byte)i);
+
+                list.add(inventory.removeStack(i + offset).toNbt(player.getRegistryManager(), compound));
             }
         }
 
-        return nbtList;
-    }
-
-    // Scuffed
-    private EntityEquipment createEntityEquipment(PlayerEntity player) {
-        EntityEquipment equipment = new EntityEquipment();
-        EquipmentSlot[] slots = new EquipmentSlot[]{
-                EquipmentSlot.OFFHAND,
-                EquipmentSlot.FEET,
-                EquipmentSlot.LEGS,
-                EquipmentSlot.CHEST,
-                EquipmentSlot.HEAD
-        };
-
-        for (EquipmentSlot slot : slots) {
-            ItemStack stack = player.getEquippedStack(slot);
-            if (!GravestonesApi.shouldSkipItem(player, stack)) {
-                equipment.put(slot, player.getEquippedStack(slot));
-            }
-        }
-        return equipment;
+        return list;
     }
 
     @Override
@@ -80,24 +52,9 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         if (optional.isEmpty()) return;
         NbtCompound nbt = optional.get();
 
-        Optional<NbtList> inventoryOptional = nbt.getList("inventory");
-        if (inventoryOptional.isPresent()) {
-            NbtList nbtList = inventoryOptional.get();
+        Collection<ItemStack> items = inventoryFromNbt(nbt, world.getRegistryManager()).values();
 
-            for (int i = 0; i < nbtList.size(); i++) {
-                NbtCompound nbtCompound = nbtList.getCompoundOrEmpty(i);
-                ItemStack stack = ItemStack.fromNbt(world.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
-                if (!stack.isEmpty()) {
-                    ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
-                }
-            }
-        }
-
-        RegistryOps<NbtElement> registryOps = world.getRegistryManager().getOps(NbtOps.INSTANCE);
-
-        EntityEquipment equipment = nbt.get("equipment", EntityEquipment.CODEC, registryOps).orElseGet(EntityEquipment::new);
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack stack = equipment.get(slot);
+        for (ItemStack stack : items) {
             ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
         }
     }
@@ -109,34 +66,16 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         if (optional.isEmpty()) return;
         NbtCompound nbt = optional.get();
 
-        DefaultedList<ItemStack> playerInventory = player.getInventory().getMainStacks();
+        Map<Integer, ItemStack> items = inventoryFromNbt(nbt, player.getRegistryManager());
+
         List<ItemStack> additionalItems = new ArrayList<>();
+        PlayerInventory inventory = player.getInventory();
+        for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
+            int slot = entry.getKey();
+            ItemStack stack = entry.getValue();
 
-        Optional<NbtList> inventoryOptional = nbt.getList("inventory");
-        if (inventoryOptional.isPresent()) {
-            NbtList nbtList = inventoryOptional.get();
-
-            for (int i = 0; i < nbtList.size(); i++) {
-                NbtCompound nbtCompound = nbtList.getCompoundOrEmpty(i);
-                int j = nbtCompound.getByte("Slot", (byte)0) & 255;
-                ItemStack itemStack = ItemStack.fromNbt(player.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
-                if (!itemStack.isEmpty()) {
-                    if (j < playerInventory.size() && playerInventory.get(j).isEmpty()) {
-                        playerInventory.set(j, itemStack);
-                    } else {
-                        additionalItems.add(itemStack);
-                    }
-                }
-            }
-        }
-
-        RegistryOps<NbtElement> registryOps = player.getRegistryManager().getOps(NbtOps.INSTANCE);
-
-        EntityEquipment equipment = nbt.get("equipment", EntityEquipment.CODEC, registryOps).orElseGet(EntityEquipment::new);
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack stack = equipment.get(slot);
-            if (player.getEquippedStack(slot).isEmpty()) {
-                player.equipStack(slot, stack);
+            if (inventory.getStack(slot).isEmpty()) {
+                inventory.setStack(slot, stack);
             } else {
                 additionalItems.add(stack);
             }
@@ -151,5 +90,34 @@ public class PlayerInventoryDataType extends GravestoneDataType {
                 }
             }
         }
+    }
+
+    public static Map<Integer, ItemStack> inventoryFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+        Map<Integer, ItemStack> map = new HashMap<>();
+
+        Optional<NbtList> inventoryOptional = nbt.getList("inventory");
+        inventoryOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, registries, 0)));
+
+        Optional<NbtList> equipmentOptional = nbt.getList("equipment");
+        equipmentOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, registries, 36)));
+
+        return map;
+    }
+
+    private static Map<Integer, ItemStack> subInventoryFromNbtList(NbtList nbtList, RegistryWrapper.WrapperLookup registries, int slotOffset) {
+        Map<Integer, ItemStack> map = new HashMap<>();
+
+        for (int i = 0; i < nbtList.size(); i++) {
+            NbtCompound nbtCompound = nbtList.getCompoundOrEmpty(i);
+
+            int slot = nbtCompound.getByte("Slot", (byte)0) & 255;
+            ItemStack stack = ItemStack.fromNbt(registries, nbtCompound).orElse(ItemStack.EMPTY);
+
+            if (!stack.isEmpty()) {
+                map.put(slot + slotOffset, stack);
+            }
+        }
+
+        return map;
     }
 }
