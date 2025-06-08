@@ -94,7 +94,7 @@ public class GravestonesCommands {
 
                                                     NbtCompound nbt = DeathArgumentType.getDeath(context, "death");
 
-                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(nbt)), false);
+                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(nbt.getCompoundOrEmpty("contents"))), false);
                                                     return 1;
                                                 })
                                         )
