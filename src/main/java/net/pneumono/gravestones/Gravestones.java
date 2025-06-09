@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.compat.TrinketsDataType;
 import net.pneumono.gravestones.content.GravestonesCommands;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import org.slf4j.Logger;
@@ -30,6 +31,9 @@ public class Gravestones implements ModInitializer {
 
 		if (FabricLoader.getInstance().isModLoaded("spelunkery")) {
 			GravestonesApi.registerItemSkipPredicate((player, stack) -> stack.isOf(Items.RECOVERY_COMPASS));
+		}
+		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
+			GravestonesApi.registerDataType(identifier("trinkets"), new TrinketsDataType());
 		}
 	}
 
