@@ -1,0 +1,6 @@
+{
+	"parent": "gravestones:block/gravestone_template",
+	"textures": {
+		"gravestone": "gravestones:block/gravestone_chipped"
+	}
+}
