@@ -5,7 +5,7 @@ Gravestones adds blocks which store your items on death.
 
 It's a fairly standard grave mod, but with nicer, vanilla-style textures, extra config options to help tailor the mod to specific servers, and the option to use gravestones in builds.
 
-[The wiki](https://github.com/PneumonoIsNotAvailable/Gravestones/wiki) has more detailed information, if necessary.
+See [the wiki](https://github.com/PneumonoIsNotAvailable/Gravestones/wiki) has more detailed information!
 
 ### Decay
 Gravestone decay is very configurable and **all of its features can be configured or disabled** if they are not wanted!
