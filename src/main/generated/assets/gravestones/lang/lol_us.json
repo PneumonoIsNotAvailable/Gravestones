@@ -71,6 +71,9 @@
   "item.gravestones.gravestone": "Die box",
   "item.gravestones.gravestone_chipped": "Half brokn die box",
   "item.gravestones.gravestone_damaged": "Very brokn die box!!",
+  "modmenu.descriptionTranslation.gravestones": "Addz die boxz 2 stor ur stuffz wen u die!",
+  "modmenu.nameTranslation.gravestones": "Die boxz!!!",
+  "modmenu.summaryTranslation.gravestones": "Addz die boxz 2 stor ur stuffz wen u die!",
   "stat.gravestones.gravestones_collected": "Die boxz got bak",
   "tag.enchantment.gravestones.skips_gravestones": "Not 4 die box!",
   "tag.item.gravestones.skips_gravestones": "Not 4 die box!"

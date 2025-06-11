@@ -71,6 +71,9 @@
   "item.gravestones.gravestone": "Gravestone",
   "item.gravestones.gravestone_chipped": "Chipped Gravestone",
   "item.gravestones.gravestone_damaged": "Damaged Gravestone",
+  "modmenu.descriptionTranslation.gravestones": "Adds Gravestones that store items after death.",
+  "modmenu.nameTranslation.gravestones": "Gravestones",
+  "modmenu.summaryTranslation.gravestones": "Adds Gravestones that store items after death.",
   "stat.gravestones.gravestones_collected": "Gravestones Collected",
   "tag.enchantment.gravestones.skips_gravestones": "Skips Gravestone Processing",
   "tag.item.gravestones.skips_gravestones": "Skips Gravestone Processing"

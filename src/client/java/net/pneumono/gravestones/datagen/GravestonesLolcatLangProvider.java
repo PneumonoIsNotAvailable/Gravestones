@@ -97,5 +97,9 @@ public class GravestonesLolcatLangProvider extends FabricLanguageProvider {
         builder.add("configs.category.gravestones.decay", "Die box oldin");
         builder.add("configs.category.gravestones.experience", "Kewlness");
         builder.add("configs.category.gravestones.multiplayer", "Wiv othr catz");
+
+        builder.add("modmenu.nameTranslation.gravestones", "Die boxz!!!");
+        builder.add("modmenu.descriptionTranslation.gravestones", "Addz die boxz 2 stor ur stuffz wen u die!");
+        builder.add("modmenu.summaryTranslation.gravestones", "Addz die boxz 2 stor ur stuffz wen u die!");
     }
 }

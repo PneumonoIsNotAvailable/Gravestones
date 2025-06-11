@@ -97,5 +97,9 @@ public class GravestonesEnglishLangProvider extends FabricLanguageProvider {
         builder.add("configs.category.gravestones.decay", "Gravestone Decay");
         builder.add("configs.category.gravestones.experience", "Experience Storage");
         builder.add("configs.category.gravestones.multiplayer", "Multiplayer");
+
+        builder.add("modmenu.nameTranslation.gravestones", "Gravestones");
+        builder.add("modmenu.descriptionTranslation.gravestones", "Adds Gravestones that store items after death.");
+        builder.add("modmenu.summaryTranslation.gravestones", "Adds Gravestones that store items after death.");
     }
 }
