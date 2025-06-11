@@ -2,10 +2,7 @@ package net.pneumono.gravestones;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.pneumono.gravestones.datagen.GravestonesBlockTagProvider;
-import net.pneumono.gravestones.datagen.GravestonesEnglishLangProvider;
-import net.pneumono.gravestones.datagen.GravestonesLootTableProvider;
-import net.pneumono.gravestones.datagen.GravestonesRecipeProvider;
+import net.pneumono.gravestones.datagen.*;
 
 @SuppressWarnings("unused")
 public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
@@ -16,5 +13,6 @@ public class GravestonesDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(GravestonesLootTableProvider::new);
         pack.addProvider(GravestonesBlockTagProvider::new);
         pack.addProvider(GravestonesEnglishLangProvider::new);
+        pack.addProvider(GravestonesLolcatLangProvider::new);
     }
 }
