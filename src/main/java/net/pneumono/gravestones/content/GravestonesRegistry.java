@@ -90,7 +90,7 @@ public class GravestonesRegistry {
     }
 
     private static void addToFunctionalGroup(ItemConvertible... items) {
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register((content) -> {
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
             for (ItemConvertible item : items) {
                 content.add(item);
             }
