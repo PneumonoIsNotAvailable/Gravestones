@@ -38,7 +38,8 @@ public class GravestonesConfig {
                 BROADCAST_COLLECT_IN_CHAT,
                 BROADCAST_COORDINATES_IN_CHAT,
                 CONSOLE_INFO,
-                TIME_FORMAT);
+                TIME_FORMAT
+        );
         Configs.registerCategories(Gravestones.MOD_ID,
                 new ConfigCategory(Gravestones.MOD_ID, "decay",
                         DECAY_WITH_TIME,
