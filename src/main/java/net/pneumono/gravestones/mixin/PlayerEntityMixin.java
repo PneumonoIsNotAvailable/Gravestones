@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntity.class)
-@SuppressWarnings("unused")
 public abstract class PlayerEntityMixin extends LivingEntity {
     @Shadow
     @Final
