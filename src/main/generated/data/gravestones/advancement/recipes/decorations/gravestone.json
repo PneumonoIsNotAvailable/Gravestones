@@ -9,21 +9,21 @@
   ],
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_leather": {
+    "has_stone": {
       "conditions": {
         "items": [
           {
-            "items": "minecraft:leather"
+            "items": "minecraft:stone"
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_stick": {
+    "has_stone_slab": {
       "conditions": {
         "items": [
           {
-            "items": "minecraft:stick"
+            "items": "minecraft:stone_slab"
           }
         ]
       },
@@ -39,8 +39,8 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_leather",
-      "has_stick"
+      "has_stone",
+      "has_stone_slab"
     ]
   ],
   "rewards": {

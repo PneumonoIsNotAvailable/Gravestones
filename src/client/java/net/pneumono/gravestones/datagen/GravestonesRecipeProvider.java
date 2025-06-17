@@ -35,11 +35,10 @@ public class GravestonesRecipeProvider extends FabricRecipeProvider {
                         .pattern("sss")
                         .input('S', Items.STONE)
                         .input('s', Items.STONE_SLAB)
-                        .criterion(hasItem(Items.LEATHER), conditionsFromItem(Items.LEATHER))
-                        .criterion(hasItem(Items.STICK), conditionsFromItem(Items.STICK))
-                        .offerTo(withConditions(exporter, condition));
+                        .criterion(hasItem(Items.STONE), conditionsFromItem(Items.STONE))
+                        .criterion(hasItem(Items.STONE_SLAB), conditionsFromItem(Items.STONE_SLAB))
+                        .offerTo(withConditions(this.exporter, condition));
 
-                // This is bad, but I have no idea what the intended way to use resource conditions is anymore-
                 CookingRecipeJsonBuilder.create(Ingredient.ofItem(GravestonesRegistry.GRAVESTONE), RecipeCategory.DECORATIONS, GravestonesRegistry.GRAVESTONE_CHIPPED, 0.1F, 200, RecipeSerializer.SMELTING, SmeltingRecipe::new)
                         .group("gravestone_cracking")
                         .criterion(hasItem(GravestonesRegistry.GRAVESTONE), this.conditionsFromItem(GravestonesRegistry.GRAVESTONE))
@@ -55,6 +54,6 @@ public class GravestonesRecipeProvider extends FabricRecipeProvider {
 
     @Override
     public String getName() {
-        return "Recipes (Gravestones)";
+        return "Recipes";
     }
 }
