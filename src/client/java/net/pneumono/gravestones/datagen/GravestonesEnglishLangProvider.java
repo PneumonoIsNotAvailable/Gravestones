@@ -37,8 +37,8 @@ public class GravestonesEnglishLangProvider extends FabricLanguageProvider {
 
         builder.add("gravestones.subtitles.block.gravestone.waxed_interact_fail", "Gravestone thumps");
 
-        builder.add("tag.item.gravestones.skips_gravestones", "Skips Gravestone Processing");
-        builder.add("tag.enchantment.gravestones.skips_gravestones", "Skips Gravestone Processing");
+        builder.add(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES, "Skips Gravestone Processing");
+        builder.add(GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES, "Skips Gravestone Processing");
 
         builder.add("commands.gravestones.getdata.gravestone.all_data", "Gravestone has a spawnDate of %1$s and a graveOwner of %2$s (%3$s)");
         builder.add("commands.gravestones.getdata.gravestone.no_grave_owner", "Gravestone has a spawnDate of %s and no graveOwner!");
