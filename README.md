@@ -1,4 +1,7 @@
 # Gravestones
+
+[Modrinth Page](https://modrinth.com/mod/pneumono_gravestones)
+
 ![A screenshot of a gravestone in front of a cliff. Written on the gravestone is the name Pneumono_, and the date and time of death.](images/gravestone.png)
 
 Gravestones adds blocks which store your items on death.
@@ -51,3 +54,5 @@ Then simply go through all the English phrases and translate them.
 
 ### Dependencies
 Gravestones depends on my core mod, [PneumonoCore](https://modrinth.com/mod/pneumono_core), however this is included in the mod and does not need to be downloaded separately.
+
+[Download on Modrinth](https://modrinth.com/mod/pneumono_gravestones)
