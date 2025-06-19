@@ -7,8 +7,6 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.screen.ScreenTexts;
@@ -21,7 +19,6 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
