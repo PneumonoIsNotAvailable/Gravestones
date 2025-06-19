@@ -142,7 +142,7 @@ public class GravestonesRegistry {
     @SuppressWarnings("deprecation")
     private static void onSignUpdate(ServerPlayerEntity player, UpdateGravestoneC2SPayload payload, List<FilteredMessage> signText) {
         player.updateLastActionTime();
-        ServerWorld serverWorld = player.getServerWorld();
+        ServerWorld serverWorld = player.getWorld();
         BlockPos blockPos = payload.pos();
         if (serverWorld.isChunkLoaded(blockPos)) {
             if (!(serverWorld.getBlockEntity(blockPos) instanceof AestheticGravestoneBlockEntity blockEntity)) {
