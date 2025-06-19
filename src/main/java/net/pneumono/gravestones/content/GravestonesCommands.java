@@ -47,7 +47,7 @@ public class GravestonesCommands {
                                                     } else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
                                                         ProfileComponent owner = entity.getGraveOwner();
                                                         if (owner != null) {
-                                                            context.getSource().sendFeedback(() -> Text.stringifiedTranslatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), owner.name().orElse("???"), owner.id().orElse(null)).formatted(Formatting.GREEN), false);
+                                                            context.getSource().sendFeedback(() -> Text.stringifiedTranslatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), owner.name().orElse("???"), owner.uuid().orElse(null)).formatted(Formatting.GREEN), false);
                                                         } else {
                                                             context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.no_grave_owner", entity.getSpawnDateTime()).formatted(Formatting.RED), false);
                                                         }
