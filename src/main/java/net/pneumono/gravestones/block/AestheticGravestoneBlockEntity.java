@@ -15,6 +15,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -48,19 +50,17 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
-        SignText.CODEC.encodeStart(dynamicOps, this.text).resultOrPartial(Gravestones.LOGGER::error).ifPresent(frontText -> nbt.put("text", frontText));
-        nbt.putBoolean("is_waxed", this.waxed);
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.put("text", SignText.CODEC, this.text);
+        view.putBoolean("is_waxed", this.waxed);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        RegistryOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
-        this.text = nbt.get("text", SignText.CODEC, dynamicOps).map(this::parseLines).orElseGet(SignText::new);
-        this.waxed = nbt.getBoolean("is_waxed", false);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        this.text = view.read("text", SignText.CODEC).map(this::parseLines).orElseGet(SignText::new);
+        this.waxed = view.getBoolean("is_waxed", false);
     }
 
     private SignText parseLines(SignText signText) {

@@ -10,6 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -34,27 +36,27 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        nbt.put("contents", this.contents);
-        if (this.graveOwner != null) {
-            nbt.put("owner", ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.graveOwner).getOrThrow());
-        }
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        // Scuffed, will move away from NBT in future if possible
+        view.put("contents", NbtCompound.CODEC, this.contents);
+        view.putNullable("owner", ProfileComponent.CODEC, this.graveOwner);
         if (this.spawnDateTime != null) {
-            nbt.putString("spawnDateTime", this.spawnDateTime);
+            view.putString("spawnDateTime", this.spawnDateTime);
         }
         if (this.spawnDateTicks != 0) {
-            nbt.putLong("spawnDateTicks", this.spawnDateTicks);
+            view.putLong("spawnDateTicks", this.spawnDateTicks);
         }
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        this.contents = nbt.getCompoundOrEmpty("contents");
-        ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("owner")).resultOrPartial(string -> Gravestones.LOGGER.error("Failed to load profile from gravestone: {}", string)).ifPresent(this::setGraveOwner);
-        this.spawnDateTime = nbt.getString("spawnDateTime", null);
-        this.spawnDateTicks = nbt.getLong("spawnDateTicks", 0);
+    public void readData(ReadView view) {
+        super.readData(view);
+        // Scuffed, will move away from NBT in future if possible
+        this.contents = view.read("contents", NbtCompound.CODEC).orElseThrow(() -> new IllegalStateException("Failed to load contents from gravestone!"));
+        this.graveOwner = view.read("owner", ProfileComponent.CODEC).orElseThrow(() -> new IllegalStateException("Failed to load profile from gravestone!"));
+        this.spawnDateTime = view.getString("spawnDateTime", null);
+        this.spawnDateTicks = view.getLong("spawnDateTicks", 0);
     }
 
     @Override
