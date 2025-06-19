@@ -15,6 +15,8 @@ public class GravestonesBlockTagProvider extends FabricTagProvider.BlockTagProvi
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+        // Non-essential, will fix later
+        /*
         getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(
                 GravestonesRegistry.GRAVESTONE,
                 GravestonesRegistry.GRAVESTONE_CHIPPED,
@@ -28,5 +30,6 @@ public class GravestonesBlockTagProvider extends FabricTagProvider.BlockTagProvi
         getOrCreateTagBuilder(BlockTags.WITHER_IMMUNE).add(GravestonesRegistry.GRAVESTONE_TECHNICAL);
         getOrCreateTagBuilder(BlockTags.DRAGON_TRANSPARENT).add(GravestonesRegistry.GRAVESTONE_TECHNICAL);
         getOrCreateTagBuilder(BlockTags.FEATURES_CANNOT_REPLACE).add(GravestonesRegistry.GRAVESTONE_TECHNICAL);
+         */
     }
 }
