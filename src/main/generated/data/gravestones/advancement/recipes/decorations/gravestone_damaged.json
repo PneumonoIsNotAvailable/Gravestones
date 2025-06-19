@@ -21,7 +21,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:gravestone_damaged"
+        "recipe": "gravestones:gravestone_damaged"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -34,7 +34,7 @@
   ],
   "rewards": {
     "recipes": [
-      "minecraft:gravestone_damaged"
+      "gravestones:gravestone_damaged"
     ]
   }
 }
