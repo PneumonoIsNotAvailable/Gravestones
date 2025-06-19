@@ -21,7 +21,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:gravestone_chipped"
+        "recipe": "gravestones:gravestone_chipped"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -34,7 +34,7 @@
   ],
   "rewards": {
     "recipes": [
-      "minecraft:gravestone_chipped"
+      "gravestones:gravestone_chipped"
     ]
   }
 }

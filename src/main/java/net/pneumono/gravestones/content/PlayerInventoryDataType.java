@@ -1,5 +1,6 @@
 package net.pneumono.gravestones.content;
 
+import com.mojang.serialization.DataResult;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -7,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -38,7 +39,8 @@ public class PlayerInventoryDataType extends GravestoneDataType {
                 NbtCompound compound = new NbtCompound();
                 compound.putByte("Slot", (byte)i);
 
-                list.add(inventory.removeStack(i + offset).toNbt(player.getRegistryManager(), compound));
+                DataResult<NbtElement> result = ItemStack.CODEC.encode(inventory.removeStack(i + offset), NbtOps.INSTANCE, compound);
+                list.add(result.result().orElseThrow());
             }
         }
 
@@ -52,7 +54,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         if (optional.isEmpty()) return;
         NbtCompound nbt = optional.get();
 
-        Collection<ItemStack> items = inventoryFromNbt(nbt, world.getRegistryManager()).values();
+        Collection<ItemStack> items = inventoryFromNbt(nbt).values();
 
         for (ItemStack stack : items) {
             ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
@@ -66,7 +68,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         if (optional.isEmpty()) return;
         NbtCompound nbt = optional.get();
 
-        Map<Integer, ItemStack> items = inventoryFromNbt(nbt, player.getRegistryManager());
+        Map<Integer, ItemStack> items = inventoryFromNbt(nbt);
 
         List<ItemStack> additionalItems = new ArrayList<>();
         PlayerInventory inventory = player.getInventory();
@@ -92,26 +94,26 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         }
     }
 
-    public static Map<Integer, ItemStack> inventoryFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+    public static Map<Integer, ItemStack> inventoryFromNbt(NbtCompound nbt) {
         Map<Integer, ItemStack> map = new HashMap<>();
 
         Optional<NbtList> inventoryOptional = nbt.getList("inventory");
-        inventoryOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, registries, 0)));
+        inventoryOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, 0)));
 
         Optional<NbtList> equipmentOptional = nbt.getList("equipment");
-        equipmentOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, registries, 36)));
+        equipmentOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, 36)));
 
         return map;
     }
 
-    private static Map<Integer, ItemStack> subInventoryFromNbtList(NbtList nbtList, RegistryWrapper.WrapperLookup registries, int slotOffset) {
+    private static Map<Integer, ItemStack> subInventoryFromNbtList(NbtList nbtList, int slotOffset) {
         Map<Integer, ItemStack> map = new HashMap<>();
 
         for (int i = 0; i < nbtList.size(); i++) {
             NbtCompound nbtCompound = nbtList.getCompoundOrEmpty(i);
 
             int slot = nbtCompound.getByte("Slot", (byte)0) & 255;
-            ItemStack stack = ItemStack.fromNbt(registries, nbtCompound).orElse(ItemStack.EMPTY);
+            ItemStack stack = ItemStack.CODEC.parse(NbtOps.INSTANCE, nbtCompound).result().orElseThrow();
 
             if (!stack.isEmpty()) {
                 map.put(slot + slotOffset, stack);
