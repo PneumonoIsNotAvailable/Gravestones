@@ -6,6 +6,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneTime;
@@ -41,7 +42,7 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
                     message,
                     (float) (-this.textRenderer.getWidth(message) / 2),
                     0.0F,
-                    0,
+                    Colors.BLACK,
                     false,
                     matrices.peek().getPositionMatrix(),
                     vertexConsumers,
