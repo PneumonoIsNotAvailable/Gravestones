@@ -1,4 +1,4 @@
-package net.pneumono.gravestones;
+package net.pneumono.gravestones.common;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.block.Blocks;
@@ -12,7 +12,7 @@ import net.pneumono.gravestones.block.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 
 @SuppressWarnings("unused")
-public class GravestonesGameTest {
+public class PlacementTests {
     @GameTest()
     public void gravestonesAppear(TestContext context) {
         ServerWorld world = context.getWorld();

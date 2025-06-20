@@ -12,10 +12,7 @@
     "environment": "*",
     "entrypoints": {
         "fabric-gametest": [
-            "net.pneumono.gravestones.GravestonesGameTest"
-        ],
-        "fabric-client-gametest": [
-            "net.pneumono.gravestones.GravestonesClientGameTest"
+            "net.pneumono.gravestones.common.PlacementTests"
         ]
     },
     "depends": {
