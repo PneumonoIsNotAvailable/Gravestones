@@ -13,7 +13,7 @@ public class PlacementTests {
     @GameTest(
             structure = "gravestones_test:spawn_at_death_pos"
     )
-    public void gravestonesSpawnAtDeathPos(TestContext context) {
+    public void graveSpawnsAtDeathPos(TestContext context) {
         BlockPos pos = new BlockPos(1, 1, 1);
 
         TestsUtil.createAndKillPlayer(context, pos);
@@ -25,7 +25,7 @@ public class PlacementTests {
     @GameTest(
             structure = "gravestones_test:adjust_position"
     )
-    public void gravestonesAdjustPosition(TestContext context) {
+    public void graveAdjustsPosition(TestContext context) {
         BlockPos pos = new BlockPos(1, 1, 1);
 
         TestsUtil.createAndKillPlayer(context, pos);
