@@ -57,7 +57,7 @@ public class PlacementTests {
             structure = "gravestones_test:is_waterlogged"
     )
     public void graveIsWaterlogged(TestContext context) {
-        BlockPos pos = TestsUtil.createPos(3);;
+        BlockPos pos = TestsUtil.createPos(3);
 
         TestsUtil.createAndKillPlayer(context, pos);
 
