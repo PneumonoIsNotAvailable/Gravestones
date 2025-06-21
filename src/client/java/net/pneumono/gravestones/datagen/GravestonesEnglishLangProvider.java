@@ -3,6 +3,8 @@ package net.pneumono.gravestones.datagen;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.registry.RegistryWrapper;
+import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.pneumonocore.datagen.PneumonoCoreTranslationBuilder;
 
@@ -54,49 +56,79 @@ public class GravestonesEnglishLangProvider extends FabricLanguageProvider {
         builder.add("commands.gravestones.deaths.recover", "Recovered inventory from death");
         builder.add("commands.gravestones.getuuid", "%1$s has UUID %2$s");
 
-        builder.add("configs.gravestones.screen_title", "Gravestones Configs");
-        builder.add("configs.gravestones.aesthetic_gravestones", "Aesthetic Gravestones");
-        builder.add("configs.gravestones.aesthetic_gravestones.tooltip", "Whether or not aesthetic gravestones can be crafted for building purposes");
-        builder.add("configs.gravestones.decay_with_time", "Time Decay");
-        builder.add("configs.gravestones.decay_with_time.tooltip", "Whether or not gravestones are damaged over time");
-        builder.add("configs.gravestones.decay_with_deaths", "Death Decay");
-        builder.add("configs.gravestones.decay_with_deaths.tooltip", "Whether or not gravestones are damaged from further deaths");
-        builder.add("configs.gravestones.decay_time", "Time to Decay");
-        builder.add("configs.gravestones.decay_time.tooltip", "The amount of time it takes for gravestones to be damaged by time (if enabled)");
-        builder.add("configs.gravestones.decay_time_type", "Decay Time Measurement");
-        builder.add("configs.gravestones.decay_time_type.tooltip", "Whether decay time is based on real-world time (Real Time), or time the server is active (Ticks). Gravestone decay will occur regardless of whether chunks are loaded");
-        builder.add("configs.gravestones.decay_time_type.ticks", "Ticks");
-        builder.add("configs.gravestones.decay_time_type.real_time", "Real Time");
-        builder.add("configs.gravestones.store_experience", "Store Experience");
-        builder.add("configs.gravestones.store_experience.tooltip", "Whether or not graves store experience. If not, experience is dropped on the ground on death");
-        builder.add("configs.gravestones.experience_cap", "Experience Cap");
-        builder.add("configs.gravestones.experience_cap.tooltip", "Whether or not graves have a limit to how much experience they can store. This limit is the same as with vanilla deaths (100 points)");
-        builder.add("configs.gravestones.experience_kept", "Experience Kept");
-        builder.add("configs.gravestones.experience_kept.all", "All (100%)");
-        builder.add("configs.gravestones.experience_kept.three_quarters", "3/4 (75%)");
-        builder.add("configs.gravestones.experience_kept.two_thirds", "2/3 (66%)");
-        builder.add("configs.gravestones.experience_kept.half", "1/2 (50%)");
-        builder.add("configs.gravestones.experience_kept.one_third", "1/3 (33%)");
-        builder.add("configs.gravestones.experience_kept.one_quarter", "1/4 (25%)");
-        builder.add("configs.gravestones.experience_kept.vanilla", "Vanilla");
-        builder.add("configs.gravestones.experience_kept.tooltip", "How experience kept on death is calculated. Either no experience is lost, a fraction is kept, or it uses the vanilla calculation (7 * current level)");
-        builder.add("configs.gravestones.experience_decay", "Experience Decay");
-        builder.add("configs.gravestones.experience_decay.tooltip", "Whether or not grave decay affects the experience stored in the grave (if enabled). If so, experience dropped is divided by the decay stage (stage 1 drops 100%, stage 2 drops 50%, and stage 3 drops 33%)");
-        builder.add("configs.gravestones.gravestone_accessible_owner_only", "Owner-Only Access");
-        builder.add("configs.gravestones.gravestone_accessible_owner_only.tooltip", "Whether or not players who aren't the owner are prevented from accessing a grave's items");
-        builder.add("configs.gravestones.spawn_gravestone_skeletons", "Spawn Skeletons");
-        builder.add("configs.gravestones.spawn_gravestone_skeletons.tooltip", "Whether or not gravestones spawn skeletons when their owner is near");
-        builder.add("configs.gravestones.broadcast_collect_in_chat", "Broadcast Collection");
-        builder.add("configs.gravestones.broadcast_collect_in_chat.tooltip", "Whether or not grave collection is broadcasted in chat");
-        builder.add("configs.gravestones.broadcast_coordinates_in_chat", "Broadcast Coordinates");
-        builder.add("configs.gravestones.broadcast_coordinates_in_chat.tooltip", "Whether or not the coordinates of placed graves are broadcasted in chat");
-        builder.add("configs.gravestones.console_info", "Console Info");
-        builder.add("configs.gravestones.console_info.tooltip", "Whether or not highly detailed information about graves is recorded in console. This is mostly just for debugging!");
-        builder.add("configs.gravestones.time_format", "Time Format");
-        builder.add("configs.gravestones.time_format.ddmmyyyy", "DD/MM/YYYY");
-        builder.add("configs.gravestones.time_format.mmddyyyy", "MM/DD/YYYY");
-        builder.add("configs.gravestones.time_format.yyyymmdd", "YYYY/MM/DD");
-        builder.add("configs.gravestones.time_format.tooltip", "The format of the death time shown on gravestones");
+        builder.addConfigScreenTitle(Gravestones.MOD_ID, "Gravestones Configs");
+        builder.addConfig(GravestonesConfig.AESTHETIC_GRAVESTONES,
+                "Aesthetic Gravestones",
+                "Whether or not aesthetic gravestones can be crafted for building purposes"
+        );
+        builder.addConfig(GravestonesConfig.DECAY_WITH_TIME,
+                "Time Decay",
+                "Whether or not gravestones are damaged over time"
+        );
+        builder.addConfig(GravestonesConfig.DECAY_WITH_DEATHS,
+                "Death Decay",
+                "Whether or not gravestones are damaged from further deaths"
+        );
+        builder.addConfig(GravestonesConfig.DECAY_TIME,
+                "Time to Decay",
+                "The amount of time it takes for gravestones to be damaged by time (if enabled)"
+        );
+        builder.addEnumConfig(GravestonesConfig.GRAVESTONE_DECAY_TIME_TYPE,
+                "Decay Time Measurement" ,
+                "Whether decay time is based on real-world time (Real Time), or time the server is active (Ticks). Gravestone decay will occur regardless of whether chunks are loaded",
+                "Ticks",
+                "Real Time"
+        );
+        builder.addConfig(GravestonesConfig.STORE_EXPERIENCE,
+                "Store Experience",
+                "Whether or not graves store experience. If not, experience is dropped on the ground on death"
+        );
+        builder.addConfig(GravestonesConfig.EXPERIENCE_CAP,
+                "Experience Cap",
+                "Whether or not graves have a limit to how much experience they can store. This limit is the same as with vanilla deaths (100 points)"
+        );
+        builder.addEnumConfig(GravestonesConfig.EXPERIENCE_KEPT,
+                "Experience Kept",
+                "How experience kept on death is calculated. Either no experience is lost, a fraction is kept, or it uses the vanilla calculation (7 * current level)",
+                "All (100%)",
+                "3/4 (75%)",
+                "2/3 (66%)",
+                "1/2 (50%)",
+                "1/3 (33%)",
+                "1/4 (25%)",
+                "Vanilla"
+        );
+        builder.addConfig(GravestonesConfig.EXPERIENCE_DECAY,
+                "Experience Decay",
+                "Whether or not grave decay affects the experience stored in the grave (if enabled). If so, experience dropped is divided by the decay stage (stage 1 drops 100%, stage 2 drops 50%, and stage 3 drops 33%)"
+        );
+        builder.addConfig(GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY,
+                "Owner-Only Access",
+                "Whether or not players who aren't the owner are prevented from accessing a grave's items"
+        );
+        builder.addConfig(GravestonesConfig.SPAWN_GRAVESTONE_SKELETONS,
+                "Spawn Skeletons",
+                "Whether or not gravestones spawn skeletons when their owner is near"
+        );
+        builder.addConfig(GravestonesConfig.BROADCAST_COLLECT_IN_CHAT,
+                "Broadcast Collection",
+                "Whether or not grave collection is broadcasted in chat"
+        );
+        builder.addConfig(GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT,
+                "Broadcast Coordinates",
+                "Whether or not the coordinates of placed graves are broadcasted in chat"
+        );
+        builder.addConfig(GravestonesConfig.CONSOLE_INFO,
+                "Console Info",
+                "Whether or not highly detailed information about graves is recorded in console. This is mostly just for debugging!"
+        );
+        builder.addEnumConfig(GravestonesConfig.TIME_FORMAT,
+                "Time Format",
+                "The format of the death time shown on gravestones",
+                "DD/MM/YYYY",
+                "MM/DD/YYYY",
+                "YYYY/MM/DD"
+        );
         builder.add("configs.category.gravestones.decay", "Gravestone Decay");
         builder.add("configs.category.gravestones.experience", "Experience Storage");
         builder.add("configs.category.gravestones.multiplayer", "Multiplayer");
