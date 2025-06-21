@@ -12,6 +12,7 @@ public class GravestonesLolcatLangProvider extends FabricLanguageProvider {
         super(dataOutput, "lol_us", registryLookup);
     }
 
+    // Will update to new PneumonoCore datagen stuff later
     @Override
     public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder builder) {
         builder.add(GravestonesRegistry.GRAVESTONE, "Die box");
@@ -35,7 +36,7 @@ public class GravestonesLolcatLangProvider extends FabricLanguageProvider {
 
         builder.add("stat.gravestones.gravestones_collected", "Die boxz got bak");
 
-        builder.add("gravestones.subtitles.block.gravestone.waxed_interact_fail", "Die box go thump");
+        builder.add("subtitles.gravestones.block.gravestone.waxed_interact_fail", "Die box go thump");
 
         builder.add("tag.item.gravestones.skips_gravestones", "Not 4 die box!");
         builder.add("tag.enchantment.gravestones.skips_gravestones", "Not 4 die box!");
