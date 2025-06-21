@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.registry.RegistryWrapper;
 import net.pneumono.gravestones.content.GravestonesRegistry;
+import net.pneumono.pneumonocore.datagen.PneumonoCoreTranslationBuilder;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -13,7 +14,9 @@ public class GravestonesEnglishLangProvider extends FabricLanguageProvider {
     }
 
     @Override
-    public void generateTranslations(RegistryWrapper.WrapperLookup wrapperLookup, TranslationBuilder builder) {
+    public void generateTranslations(RegistryWrapper.WrapperLookup wrapperLookup, TranslationBuilder translationBuilder) {
+        PneumonoCoreTranslationBuilder builder = new PneumonoCoreTranslationBuilder(translationBuilder);
+
         builder.add(GravestonesRegistry.GRAVESTONE, "Gravestone");
         builder.add(GravestonesRegistry.GRAVESTONE_CHIPPED, "Chipped Gravestone");
         builder.add(GravestonesRegistry.GRAVESTONE_DAMAGED, "Damaged Gravestone");
