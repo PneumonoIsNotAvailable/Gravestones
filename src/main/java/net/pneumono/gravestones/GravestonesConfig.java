@@ -22,7 +22,7 @@ public class GravestonesConfig {
     public static final BooleanConfiguration CONSOLE_INFO = new BooleanConfiguration(Gravestones.MOD_ID, "console_info", ConfigEnv.CLIENT, false);
     public static final EnumConfiguration<TimeFormat> TIME_FORMAT = new EnumConfiguration<>(Gravestones.MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormat.MMDDYYYY);
 
-    public static void registerConfigs() {
+    public static void registerGravestonesConfigs() {
         Configs.register(Gravestones.MOD_ID,
                 AESTHETIC_GRAVESTONES,
                 DECAY_WITH_TIME,

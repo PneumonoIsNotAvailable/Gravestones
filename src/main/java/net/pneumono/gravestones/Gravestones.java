@@ -23,7 +23,7 @@ public class Gravestones implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing Gravestones");
-		GravestonesConfig.registerConfigs();
+		GravestonesConfig.registerGravestonesConfigs();
 
 		GravestonesRegistry.registerModContent();
 		GravestonesCommands.registerCommands();
