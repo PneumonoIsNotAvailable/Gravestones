@@ -67,7 +67,6 @@
   "gravestones.player_collected_grave": "%s has found their grave!",
   "gravestones.player_collected_grave_at_coords": "%1$s has found their grave at %2$s!",
   "gravestones.position": "(%1$s,%2$s,%3$s) in %4$s",
-  "gravestones.subtitles.block.gravestone.waxed_interact_fail": "Gravestone thumps",
   "item.gravestones.gravestone": "Gravestone",
   "item.gravestones.gravestone_chipped": "Chipped Gravestone",
   "item.gravestones.gravestone_damaged": "Damaged Gravestone",
@@ -75,6 +74,7 @@
   "modmenu.nameTranslation.gravestones": "Gravestones",
   "modmenu.summaryTranslation.gravestones": "Adds Gravestones that store items after death.",
   "stat.gravestones.gravestones_collected": "Gravestones Collected",
+  "subtitles.gravestones.block.gravestone.waxed_interact_fail": "Gravestone thumps",
   "tag.enchantment.gravestones.skips_gravestones": "Skips Gravestone Processing",
   "tag.item.gravestones.skips_gravestones": "Skips Gravestone Processing"
 }

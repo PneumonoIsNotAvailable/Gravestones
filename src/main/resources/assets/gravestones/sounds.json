@@ -23,6 +23,6 @@
                 "pitch": 0.9
             }
         ],
-        "subtitle": "gravestones.subtitles.block.gravestone.waxed_interact_fail"
+        "subtitle": "subtitles.gravestones.block.gravestone.waxed_interact_fail"
     }
 }
