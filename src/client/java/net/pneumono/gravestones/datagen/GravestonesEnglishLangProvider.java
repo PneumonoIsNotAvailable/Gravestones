@@ -73,7 +73,7 @@ public class GravestonesEnglishLangProvider extends FabricLanguageProvider {
                 "Time to Decay",
                 "The amount of time it takes for gravestones to be damaged by time (if enabled)"
         );
-        builder.addEnumConfig(GravestonesConfig.GRAVESTONE_DECAY_TIME_TYPE,
+        builder.addEnumConfig(GravestonesConfig.DECAY_TIME_TYPE,
                 "Decay Time Measurement" ,
                 "Whether decay time is based on real-world time (Real Time), or time the server is active (Ticks). Gravestone decay will occur regardless of whether chunks are loaded",
                 "Ticks",

@@ -26,7 +26,7 @@ public class GravestoneDecay extends GravestonesManager {
         if (GravestonesConfig.DECAY_WITH_TIME.getValue() && entity.getGraveOwner() != null) {
             long difference;
 
-            if (GravestonesConfig.GRAVESTONE_DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
+            if (GravestonesConfig.DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
                 difference = world.getTime() - entity.getSpawnDateTicks();
             } else if (entity.getSpawnDateTime() != null) {
                 difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.READABLE.format(new Date()), entity.getSpawnDateTime()) * 20;
