@@ -13,9 +13,16 @@
 		"wouter173"
 	],
 	"contact": {
-		"homepage": "https://github.com/PneumonoIsNotAvailable/Gravestones",
+		"homepage": "https://modrinth.com/mod/pneumono_gravestones",
 		"sources": "https://github.com/PneumonoIsNotAvailable/Gravestones",
 		"issues": "https://github.com/PneumonoIsNotAvailable/Gravestones/issues"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.modrinth": "https://modrinth.com/mod/pneumono_gravestones"
+			}
+		}
 	},
 	"license": "MIT",
 	"icon": "assets/gravestones/icon.png",
