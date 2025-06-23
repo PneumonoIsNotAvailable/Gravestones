@@ -13,14 +13,14 @@
 		"wouter173"
 	],
 	"contact": {
-		"homepage": "https://modrinth.com/mod/pneumono_gravestones",
+		"homepage": "https://modrinth.com/project/Heh3BbSv",
 		"sources": "https://github.com/PneumonoIsNotAvailable/Gravestones",
 		"issues": "https://github.com/PneumonoIsNotAvailable/Gravestones/issues"
 	},
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.modrinth": "https://modrinth.com/mod/pneumono_gravestones"
+				"modmenu.modrinth": "https://modrinth.com/project/Heh3BbSv"
 			}
 		}
 	},
