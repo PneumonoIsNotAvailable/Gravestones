@@ -12,6 +12,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -85,6 +86,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
 
                 GravestonesManager.info("Returning items...");
                 GravestonesApi.onCollect(world, pos, player, gravestone.getDecay(), gravestone.getContents());
+                gravestone.setContents(new NbtCompound());
 
                 player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
                 MinecraftServer server = world.getServer();
