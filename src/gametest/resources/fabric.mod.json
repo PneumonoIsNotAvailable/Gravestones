@@ -2,8 +2,7 @@
     "schemaVersion": 1,
     "id": "gravestones_test",
     "version": "1.0.0",
-    "name": "Gravestones",
-    "description": "Adds Gravestones that store items after death.",
+    "name": "Gravestones Test Mod",
     "authors": [
         "Pneumono_"
     ],
@@ -21,6 +20,5 @@
         "java": ">=21",
         "fabric-api": "*",
         "pneumonocore": ">=1.1.14"
-    },
-    "suggests": {}
+    }
 }
