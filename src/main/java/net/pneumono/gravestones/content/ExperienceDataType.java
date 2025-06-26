@@ -37,7 +37,7 @@ public class ExperienceDataType extends GravestoneDataType {
 
     @Override
     public void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay) {
-        dropExperience(view, player.getWorld(), player.getBlockPos(), decay);
+        dropExperience(view, world, pos, decay);
     }
 
     private void dropExperience(ReadView view, World world, BlockPos pos, int decay) {
