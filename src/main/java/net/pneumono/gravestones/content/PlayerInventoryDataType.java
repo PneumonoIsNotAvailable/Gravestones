@@ -1,89 +1,58 @@
 package net.pneumono.gravestones.content;
 
-import com.mojang.serialization.DataResult;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.StackWithSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
-import net.pneumono.gravestones.api.GravestonesApi;
-
-import java.util.*;
 
 public class PlayerInventoryDataType extends GravestoneDataType {
     @Override
-    public NbtElement getDataToInsert(PlayerEntity player) {
-        NbtCompound nbt = new NbtCompound();
+    public void writeData(WriteView view, PlayerEntity player) {
+        WriteView.ListAppender<StackWithSlot> list = view.getListAppender("inventory", StackWithSlot.CODEC);
         PlayerInventory inventory = player.getInventory();
 
-        nbt.put("inventory", inventoryToNbtList(inventory, 36, 0));
-        nbt.put("equipment", inventoryToNbtList(inventory, 5, 36));
-
-        return nbt;
-    }
-
-    public NbtList inventoryToNbtList(PlayerInventory inventory, int amount, int offset) {
-        PlayerEntity player = inventory.player;
-        NbtList list = new NbtList();
-
-        for (int i = 0; i < amount; i++) {
-            ItemStack stack = inventory.getStack(i + offset);
-            if (!stack.isEmpty() && !GravestonesApi.shouldSkipItem(player, stack)) {
-                NbtCompound compound = new NbtCompound();
-                compound.putByte("Slot", (byte)i);
-
-                DataResult<NbtElement> result = ItemStack.CODEC.encode(inventory.removeStack(i + offset), NbtOps.INSTANCE, compound);
-                list.add(result.result().orElseThrow());
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack itemStack = inventory.getStack(i);
+            if (!itemStack.isEmpty()) {
+                list.add(new StackWithSlot(i, itemStack));
             }
-        }
-
-        return list;
-    }
-
-    @Override
-    public void onBreak(World world, BlockPos pos, int decay, NbtElement element) {
-        if (element == null) return;
-        Optional<NbtCompound> optional = element.asCompound();
-        if (optional.isEmpty()) return;
-        NbtCompound nbt = optional.get();
-
-        Collection<ItemStack> items = inventoryFromNbt(nbt).values();
-
-        for (ItemStack stack : items) {
-            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
         }
     }
 
     @Override
-    public void onCollect(PlayerEntity player, int decay, NbtElement element) {
-        if (element == null) return;
-        Optional<NbtCompound> optional = element.asCompound();
-        if (optional.isEmpty()) return;
-        NbtCompound nbt = optional.get();
+    public void onBreak(ReadView view, World world, BlockPos pos, int decay) {
+        ReadView.TypedListReadView<StackWithSlot> list = view.getTypedListView("inventory", StackWithSlot.CODEC);
 
-        Map<Integer, ItemStack> items = inventoryFromNbt(nbt);
+        list.stream().map(StackWithSlot::stack).forEach(stack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack));
+    }
 
-        List<ItemStack> additionalItems = new ArrayList<>();
+    @Override
+    public void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay) {
         PlayerInventory inventory = player.getInventory();
-        for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
-            int slot = entry.getKey();
-            ItemStack stack = entry.getValue();
+        ReadView.TypedListReadView<StackWithSlot> list = view.getTypedListView("inventory", StackWithSlot.CODEC);
 
-            if (inventory.getStack(slot).isEmpty()) {
-                inventory.setStack(slot, stack);
-            } else {
-                additionalItems.add(stack);
+        list.stream().filter(stackWithSlot -> {
+            int slot = stackWithSlot.slot();
+            if (stackWithSlot.isValidSlot(inventory.size())) {
+
+                ItemStack stack = inventory.getStack(slot);
+                if (stack.isEmpty()) return false;
+
+                if (player.getInventory().getStack(slot).isEmpty()) {
+                    player.getInventory().setStack(slot, stack);
+                    return false;
+                }
             }
-        }
-
-        for (ItemStack stack : additionalItems) {
+            return true;
+        }).forEach(stackWithSlot -> {
+            ItemStack stack = stackWithSlot.stack();
             if (!player.giveItemStack(stack)) {
                 ItemEntity itemEntity = player.dropItem(stack, false);
                 if (itemEntity != null) {
@@ -91,35 +60,6 @@ public class PlayerInventoryDataType extends GravestoneDataType {
                     itemEntity.setOwner(player.getUuid());
                 }
             }
-        }
-    }
-
-    public static Map<Integer, ItemStack> inventoryFromNbt(NbtCompound nbt) {
-        Map<Integer, ItemStack> map = new HashMap<>();
-
-        Optional<NbtList> inventoryOptional = nbt.getList("inventory");
-        inventoryOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, 0)));
-
-        Optional<NbtList> equipmentOptional = nbt.getList("equipment");
-        equipmentOptional.ifPresent(nbtList -> map.putAll(subInventoryFromNbtList(nbtList, 36)));
-
-        return map;
-    }
-
-    private static Map<Integer, ItemStack> subInventoryFromNbtList(NbtList nbtList, int slotOffset) {
-        Map<Integer, ItemStack> map = new HashMap<>();
-
-        for (int i = 0; i < nbtList.size(); i++) {
-            NbtCompound nbtCompound = nbtList.getCompoundOrEmpty(i);
-
-            int slot = nbtCompound.getByte("Slot", (byte)0) & 255;
-            ItemStack stack = ItemStack.CODEC.parse(NbtOps.INSTANCE, nbtCompound).result().orElseThrow();
-
-            if (!stack.isEmpty()) {
-                map.put(slot + slotOffset, stack);
-            }
-        }
-
-        return map;
+        });
     }
 }

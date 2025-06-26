@@ -59,7 +59,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     @Override
     public void onBlockReplaced(BlockPos pos, BlockState oldState) {
-        GravestonesApi.onBreak(oldState, this);
+        GravestonesApi.onBreak(getWorld(), pos, getDecay(), this);
         super.onBlockReplaced(pos, oldState);
     }
 

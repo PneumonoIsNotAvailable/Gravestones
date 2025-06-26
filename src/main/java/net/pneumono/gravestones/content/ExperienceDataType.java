@@ -5,6 +5,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -13,8 +15,8 @@ import net.pneumono.gravestones.api.GravestoneDataType;
 
 public class ExperienceDataType extends GravestoneDataType {
     @Override
-    public NbtElement getDataToInsert(PlayerEntity player) {
-        if (!GravestonesConfig.STORE_EXPERIENCE.getValue()) return NbtInt.of(0);
+    public void writeData(WriteView view, PlayerEntity player) {
+        if (!GravestonesConfig.STORE_EXPERIENCE.getValue()) return;
 
         int experience = GravestonesConfig.EXPERIENCE_KEPT.getValue().calculateExperienceKept(player);
         if (GravestonesConfig.EXPERIENCE_CAP.getValue() && experience > 100) {
@@ -25,24 +27,21 @@ public class ExperienceDataType extends GravestoneDataType {
         player.experienceLevel = 0;
         player.totalExperience = 0;
 
-        return NbtInt.of(experience);
+        view.putInt("experience", experience);
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, int decay, NbtElement nbt) {
-        dropExperience(world, pos, decay, nbt);
+    public void onBreak(ReadView view, World world, BlockPos pos, int decay) {
+        dropExperience(view, world, pos, decay);
     }
 
     @Override
-    public void onCollect(PlayerEntity player, int decay, NbtElement nbt) {
-        dropExperience(player.getWorld(), player.getBlockPos(), decay, nbt);
+    public void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay) {
+        dropExperience(view, player.getWorld(), player.getBlockPos(), decay);
     }
 
-    private void dropExperience(World world, BlockPos pos, int decay, NbtElement nbt) {
-        if (nbt == null) {
-            return;
-        }
-        dropExperience(world, pos, decay, nbt.asInt().orElse(0));
+    private void dropExperience(ReadView view, World world, BlockPos pos, int decay) {
+        dropExperience(world, pos, decay, view.getInt("experience", 0));
     }
 
     private void dropExperience(World world, BlockPos pos, int decay, int experience) {
