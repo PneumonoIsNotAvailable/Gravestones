@@ -44,11 +44,11 @@ public class PlayerInventoryDataType extends GravestoneDataType {
             int slot = stackWithSlot.slot();
             if (stackWithSlot.isValidSlot(inventory.size())) {
 
-                ItemStack stack = inventory.getStack(slot);
+                ItemStack stack = stackWithSlot.stack();
                 if (stack.isEmpty()) return false;
 
-                if (player.getInventory().getStack(slot).isEmpty()) {
-                    player.getInventory().setStack(slot, stack);
+                if (inventory.getStack(slot).isEmpty()) {
+                    inventory.setStack(slot, stack);
                     return false;
                 }
             }
