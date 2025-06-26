@@ -71,6 +71,8 @@ public class GravestonesApi {
     }
 
     public static void onBreak(ErrorReporter reporter, RegistryWrapper.WrapperLookup registries, World world, BlockPos pos, int decay, NbtCompound contents) {
+        if (contents.isEmpty()) return;
+
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String id = entry.getKey().toString();
             ReadView view = NbtReadView.create(reporter, registries, contents);

@@ -19,7 +19,7 @@ public abstract class GravestoneDataType {
     public abstract void writeData(WriteView view, PlayerEntity player);
 
     /**
-     * Called when a gravestone is broken. This happens when gravestones are collected, but also when a Creative Mode player breaks a gravestone, and if other mods create new ways of breaking gravestones.<p>
+     * Called when a gravestone is broken. This happens when a Creative Mode player breaks a gravestone, and also if other mods create new ways of breaking gravestones.<p>
      * Exists so that data is not lost if graves are broken through other means.<p>
      * Remember to add null checks, since it's possible that the mod being supported was added in after a gravestone had already been created.
      */
