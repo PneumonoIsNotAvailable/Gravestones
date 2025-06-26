@@ -50,7 +50,7 @@ public class GravestonesApi {
             ErrorReporter reporter = logging.makeChild(player.getErrorReporterContext());
 
             for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-                NbtWriteView view = NbtWriteView.create(reporter);
+                NbtWriteView view = NbtWriteView.create(reporter, player.getRegistryManager());
                 entry.getValue().writeData(view, player);
 
                 contents.put(
