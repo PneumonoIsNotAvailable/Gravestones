@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "gravestones_test",
-    "version": "${version}",
+    "version": "1.0.0",
     "name": "Gravestones",
     "description": "Adds Gravestones that store items after death.",
     "authors": [
@@ -20,7 +20,7 @@
         "minecraft": "~1.21.6",
         "java": ">=21",
         "fabric-api": "*",
-        "pneumonocore": ">=1.1.13"
+        "pneumonocore": ">=1.1.14"
     },
     "suggests": {}
 }
