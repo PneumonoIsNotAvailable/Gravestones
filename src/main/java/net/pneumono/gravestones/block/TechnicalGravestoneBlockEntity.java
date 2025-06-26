@@ -59,7 +59,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     @Override
     public void onBlockReplaced(BlockPos pos, BlockState oldState) {
-        GravestonesApi.onBreak(getWorld(), pos, getDecay(), this);
+        GravestonesApi.onBreak(getWorld(), pos, getDecay(oldState), this);
         super.onBlockReplaced(pos, oldState);
     }
 
@@ -167,7 +167,11 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public int getDecay() {
-        return Objects.requireNonNull(this.getWorld()).getBlockState(this.getPos()).get(TechnicalGravestoneBlock.DAMAGE);
+        return getDecay(Objects.requireNonNull(this.getWorld()).getBlockState(this.getPos()));
+    }
+
+    public static int getDecay(BlockState state) {
+        return state.get(TechnicalGravestoneBlock.DAMAGE);
     }
 
     public NbtCompound getContents() {
