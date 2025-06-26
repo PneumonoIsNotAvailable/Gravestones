@@ -3,7 +3,10 @@ package net.pneumono.gravestones.datagen;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.registry.RegistryWrapper;
+import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestonesRegistry;
+import net.pneumono.pneumonocore.datagen.PneumonoCoreTranslationBuilder;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -12,9 +15,10 @@ public class GravestonesLolcatLangProvider extends FabricLanguageProvider {
         super(dataOutput, "lol_us", registryLookup);
     }
 
-    // Will update to new PneumonoCore datagen stuff later
     @Override
-    public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder builder) {
+    public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder translationBuilder) {
+        PneumonoCoreTranslationBuilder builder = new PneumonoCoreTranslationBuilder(translationBuilder);
+
         builder.add(GravestonesRegistry.GRAVESTONE, "Die box");
         builder.add(GravestonesRegistry.GRAVESTONE_CHIPPED, "Half brokn die box");
         builder.add(GravestonesRegistry.GRAVESTONE_DAMAGED, "Very brokn die box!!");
@@ -34,12 +38,12 @@ public class GravestonesLolcatLangProvider extends FabricLanguageProvider {
 
         builder.add(GravestonesRegistry.GRAVESTONE_SKELETON_ENTITY_TYPE, "Die box Skeletun");
 
-        builder.add("stat.gravestones.gravestones_collected", "Die boxz got bak");
+        builder.add(GravestonesRegistry.GRAVESTONES_COLLECTED.toTranslationKey("stat"), "Die boxz got bak");
 
-        builder.add("subtitles.gravestones.block.gravestone.waxed_interact_fail", "Die box go thump");
+        builder.addSubtitle(GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, "Die box go thump");
 
-        builder.add("tag.item.gravestones.skips_gravestones", "Not 4 die box!");
-        builder.add("tag.enchantment.gravestones.skips_gravestones", "Not 4 die box!");
+        builder.add(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES, "Not 4 die box!");
+        builder.add(GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES, "Not 4 die box!");
 
         builder.add("commands.gravestones.getdata.gravestone.all_data", "Die box waz made %1$s by %2$s (%3$s) dyin");
         builder.add("commands.gravestones.getdata.gravestone.no_grave_owner", "Die box waz made %s but no cat ownah!");
@@ -52,49 +56,79 @@ public class GravestonesLolcatLangProvider extends FabricLanguageProvider {
         builder.add("commands.gravestones.deaths.recover", "Got stuffs bak");
         builder.add("commands.gravestones.getuuid", "%1$s haz cat ID %2$s");
 
-        builder.add("configs.gravestones.screen_title", "Die box settinz");
-        builder.add("configs.gravestones.aesthetic_gravestones", "Pretteh die boxz");
-        builder.add("configs.gravestones.aesthetic_gravestones.tooltip", "If I can haz pretteh die boxz 4 dekrait littrbox");
-        builder.add("configs.gravestones.decay_with_time", "Die box gets old");
-        builder.add("configs.gravestones.decay_with_time.tooltip", "If die boxz die frm old");
-        builder.add("configs.gravestones.decay_with_deaths", "Die box ouchy when u die");
-        builder.add("configs.gravestones.decay_with_deaths.tooltip", "If die boxz ouchy more when u die agen");
-        builder.add("configs.gravestones.decay_time", "Olding r8");
-        builder.add("configs.gravestones.decay_time.tooltip", "How much long it takez 4 die box to old");
-        builder.add("configs.gravestones.decay_time_type", "how keep trak?");
-        builder.add("configs.gravestones.decay_time_type.tooltip", "If oldness mezurd by reel-life (bad), or by fleas and tiks (also bad). Die boxz still gets old when kittehs not near!");
-        builder.add("configs.gravestones.decay_time_type.ticks", "Tiks");
-        builder.add("configs.gravestones.decay_time_type.real_time", "Reel life");
-        builder.add("configs.gravestones.store_experience", "Rember levlz");
-        builder.add("configs.gravestones.store_experience.tooltip", "If die boxz has ur levlz in dem. If not ur expee wil go on floor!!");
-        builder.add("configs.gravestones.experience_cap", "Kewl limit");
-        builder.add("configs.gravestones.experience_cap.tooltip", "If die boxz only saiv some of ur levlz. Kewlnes limit is da same as norml dies (100 points)");
-        builder.add("configs.gravestones.experience_kept", "Levl keeping amownt");
-        builder.add("configs.gravestones.experience_kept.all", "ALL OF DEM (100%)");
-        builder.add("configs.gravestones.experience_kept.three_quarters", "3/4 (75%)");
-        builder.add("configs.gravestones.experience_kept.two_thirds", "2/3 (66%)");
-        builder.add("configs.gravestones.experience_kept.half", "1/2 (50%)");
-        builder.add("configs.gravestones.experience_kept.one_third", "1/3 (33%)");
-        builder.add("configs.gravestones.experience_kept.one_quarter", "1/4 (25%)");
-        builder.add("configs.gravestones.experience_kept.vanilla", "norml");
-        builder.add("configs.gravestones.experience_kept.tooltip", "How ur levlz kept gets knowed. Kan use frakshuns or da normal numberz (7 * currnt lvelz)");
-        builder.add("configs.gravestones.experience_decay", "Expee gets old 2!??");
-        builder.add("configs.gravestones.experience_decay.tooltip", "If die box olding takes away som of ur levz. Normly dropz 100%, but wen ouchied dropz 50%, and wen almost dyin dropz 33%)");
-        builder.add("configs.gravestones.gravestone_accessible_owner_only", "STEALINGG");
-        builder.add("configs.gravestones.gravestone_accessible_owner_only.tooltip", "If othr kittehz kan steel ur stuffs!!");
-        builder.add("configs.gravestones.spawn_gravestone_skeletons", "spuky skary skeletuns");
-        builder.add("configs.gravestones.spawn_gravestone_skeletons.tooltip", "If die boxz make skeletun frends sometiems");
-        builder.add("configs.gravestones.broadcast_collect_in_chat", "evry1 sees collekt");
-        builder.add("configs.gravestones.broadcast_collect_in_chat.tooltip", "If gettin ur stuffs bak gets told 2 evry1");
-        builder.add("configs.gravestones.broadcast_coordinates_in_chat", "evry1 sees die place");
-        builder.add("configs.gravestones.broadcast_coordinates_in_chat.tooltip", "If dyin means evry1 sees wher u dieded");
-        builder.add("configs.gravestones.console_info", "Clevr knowings");
-        builder.add("configs.gravestones.console_info.tooltip", "Putz smart kitteh knowings in ur consol. FOR CLEVR COED CATS ONLY!!");
-        builder.add("configs.gravestones.time_format", "Tiem way");
-        builder.add("configs.gravestones.time_format.ddmmyyyy", "DD/MM/YYYY");
-        builder.add("configs.gravestones.time_format.mmddyyyy", "MM/DD/YYYY");
-        builder.add("configs.gravestones.time_format.yyyymmdd", "YYYY/MM/DD");
-        builder.add("configs.gravestones.time_format.tooltip", "Wat way u tel da tiem");
+        builder.addConfigScreenTitle(Gravestones.MOD_ID, "Die box settinz");
+        builder.addConfig(GravestonesConfig.AESTHETIC_GRAVESTONES,
+                "Pretteh die boxz",
+                "If I can haz pretteh die boxz 4 dekrait littrbox"
+        );
+        builder.addConfig(GravestonesConfig.DECAY_WITH_TIME,
+                "Die box gets old",
+                "If die boxz die frm old"
+        );
+        builder.addConfig(GravestonesConfig.DECAY_WITH_DEATHS,
+                "Die box ouchy when u die",
+                "If die boxz ouchy more when u die agen"
+        );
+        builder.addConfig(GravestonesConfig.DECAY_TIME,
+                "Olding r8",
+                "How much long it takez 4 die box to old"
+        );
+        builder.addEnumConfig(GravestonesConfig.DECAY_TIME_TYPE,
+                "how keep trak?" ,
+                "If oldness mezurd by reel-life (bad), or by fleas and tiks (also bad). Die boxz still gets old when kittehs not near!",
+                "Tiks",
+                "Reel life"
+        );
+        builder.addConfig(GravestonesConfig.STORE_EXPERIENCE,
+                "Rember levlz",
+                "If die boxz has ur levlz in dem. If not ur expee wil go on floor!!"
+        );
+        builder.addConfig(GravestonesConfig.EXPERIENCE_CAP,
+                "Kewl limit",
+                "If die boxz only saiv some of ur levlz. Kewlnes limit is da same as norml dies (100 points)"
+        );
+        builder.addEnumConfig(GravestonesConfig.EXPERIENCE_KEPT,
+                "Levl keeping amownt",
+                "How ur levlz kept gets knowed. Kan use frakshuns or da normal numberz (7 * currnt lvelz)",
+                "ALL OF DEM (100%)",
+                "3/4 (75%)",
+                "2/3 (66%)",
+                "1/2 (50%)",
+                "1/3 (33%)",
+                "1/4 (25%)",
+                "norml"
+        );
+        builder.addConfig(GravestonesConfig.EXPERIENCE_DECAY,
+                "Expee gets old 2!??",
+                "If die box olding takes away som of ur levz. Normly dropz 100%, but wen ouchied dropz 50%, and wen almost dyin dropz 33%)"
+        );
+        builder.addConfig(GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY,
+                "STEALINGG",
+                "If othr kittehz kan steel ur stuffs!!"
+        );
+        builder.addConfig(GravestonesConfig.SPAWN_GRAVESTONE_SKELETONS,
+                "spuky skary skeletuns",
+                "If die boxz make skeletun frends sometiems"
+        );
+        builder.addConfig(GravestonesConfig.BROADCAST_COLLECT_IN_CHAT,
+                "evry1 sees collekt",
+                "If gettin ur stuffs bak gets told 2 evry1"
+        );
+        builder.addConfig(GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT,
+                "evry1 sees die place",
+                "If dyin means evry1 sees wher u dieded"
+        );
+        builder.addConfig(GravestonesConfig.CONSOLE_INFO,
+                "Clevr knowings",
+                "Putz smart kitteh knowings in ur consol. FOR CLEVR COED CATS ONLY!!"
+        );
+        builder.addEnumConfig(GravestonesConfig.TIME_FORMAT,
+                "Tiem way",
+                "Wat way u tel da tiem",
+                "DD/MM/YYYY",
+                "MM/DD/YYYY",
+                "YYYY/MM/DD"
+        );
         builder.add("configs.category.gravestones.decay", "Die box oldin");
         builder.add("configs.category.gravestones.experience", "Kewlness");
         builder.add("configs.category.gravestones.multiplayer", "Wiv othr catz");
