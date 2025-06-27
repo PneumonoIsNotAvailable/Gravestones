@@ -52,10 +52,16 @@ public class GravestonesRegistry {
             AestheticGravestoneBlock::new, AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool());
 
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("technical_gravestone"), FabricBlockEntityTypeBuilder.create(TechnicalGravestoneBlockEntity::new, GRAVESTONE_TECHNICAL).build()
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("technical_gravestone"), FabricBlockEntityTypeBuilder.create(
+                    TechnicalGravestoneBlockEntity::new,
+                    GRAVESTONE_TECHNICAL
+            ).build()
     );
     public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(AestheticGravestoneBlockEntity::new, GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED).build()
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(
+                    AestheticGravestoneBlockEntity::new,
+                    GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED
+            ).canPotentiallyExecuteCommands(true).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
