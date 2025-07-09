@@ -51,10 +51,10 @@
 	"accessWidener": "gravestones.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.16.14",
-		"minecraft": "~1.21.6",
+		"minecraft": ">=1.21.6 <=1.21.7",
 		"java": ">=21",
 		"fabric-api": "*",
-		"pneumonocore": ">=1.1.14"
+		"pneumonocore": ">=1.1.15"
 	},
 	"suggests": {
 		"modmenu": "*"

@@ -40,7 +40,7 @@ public class GravestonesLolcatLangProvider extends FabricLanguageProvider {
 
         builder.add(GravestonesRegistry.GRAVESTONES_COLLECTED.toTranslationKey("stat"), "Die boxz got bak");
 
-        builder.addSubtitle(GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, "Die box go thump");
+        builder.add(GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, "Die box go thump");
 
         builder.add(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES, "Not 4 die box!");
         builder.add(GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES, "Not 4 die box!");

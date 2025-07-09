@@ -40,7 +40,7 @@ public class GravestonesEnglishLangProvider extends FabricLanguageProvider {
 
         builder.add(GravestonesRegistry.GRAVESTONES_COLLECTED.toTranslationKey("stat"), "Gravestones Collected");
 
-        builder.addSubtitle(GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, "Gravestone thumps");
+        builder.add(GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, "Gravestone thumps");
 
         builder.add(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES, "Skips Gravestone Processing");
         builder.add(GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES, "Skips Gravestone Processing");

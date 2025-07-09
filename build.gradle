@@ -66,12 +66,12 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	// Core mod
-	include(modImplementation "com.github.pneumonoisnotavailable:pneumonocore:${project.core_version}")
+	modImplementation "com.github.pneumonoisnotavailable:pneumonocore:${project.core_version}"
 
 	// ModMenu
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
-	// Trinkets - Removed - Not updated to 1.21.4
+	// Trinkets - Removed - Not updated
 	// modImplementation "dev.emi:trinkets:${project.trinkets_version}"
 }
 
