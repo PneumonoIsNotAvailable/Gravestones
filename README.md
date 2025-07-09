@@ -53,6 +53,6 @@ Create a copy of the `en_us.json` file in the mod's asset folder, and rename it 
 Then simply go through all the English phrases and translate them.
 
 ### Dependencies
-Gravestones depends on my core mod, [PneumonoCore](https://modrinth.com/project/ZLKQjA7t), however this is included in the mod and does not need to be downloaded separately.
+Gravestones depends on my core mod, [PneumonoCore](https://modrinth.com/project/ZLKQjA7t).
 
-[Download on Modrinth](https://modrinth.com/project/Heh3BbSv)
+[Download Gravestones on Modrinth](https://modrinth.com/project/Heh3BbSv)
