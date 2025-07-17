@@ -17,7 +17,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
@@ -83,12 +82,16 @@ public class GravestonesRegistry {
 
     private static Block registerAestheticGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Block block = registerGravestone(name, factory, settings);
-        Registry.register(Registries.ITEM, Gravestones.id(name), new AestheticGravestoneBlockItem(block, new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.id(name)))));
+        Registry.register(Registries.ITEM, Gravestones.id(name), new AestheticGravestoneBlockItem(block,
+                new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.id(name)))
+        ));
         return block;
     }
 
     private static Block registerGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
-        return Registry.register(Registries.BLOCK, Gravestones.id(name), factory.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.id(name)))));
+        return Registry.register(Registries.BLOCK, Gravestones.id(name),
+                factory.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.id(name))))
+        );
     }
 
     private static SoundEvent waxedInteractFailSound() {
@@ -96,16 +99,10 @@ public class GravestonesRegistry {
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 
-    private static void addToFunctionalGroup(ItemConvertible... items) {
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
-            for (ItemConvertible item : items) {
-                content.add(item);
-            }
-        });
-    }
-
     public static void registerModContent() {
-        FabricDefaultAttributeRegistry.register(GRAVESTONE_SKELETON_ENTITY_TYPE, GravestoneSkeletonEntity.createAbstractSkeletonAttributes());
+        FabricDefaultAttributeRegistry.register(GRAVESTONE_SKELETON_ENTITY_TYPE,
+                GravestoneSkeletonEntity.createAbstractSkeletonAttributes()
+        );
 
         ArgumentTypeRegistry.registerArgumentType(
                 Gravestones.id("deaths"),
@@ -113,21 +110,13 @@ public class GravestonesRegistry {
                 ConstantArgumentSerializer.of(DeathArgumentType::new)
         );
 
-        GravestonesApi.registerDataType(Gravestones.id("inventory"), new PlayerInventoryDataType());
-        GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
-        InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
-                itemStack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
-                EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
-        );
-        InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
-                EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
-        );
+        registerAPIUsages();
 
-        addToFunctionalGroup(
-                GravestonesRegistry.GRAVESTONE,
-                GravestonesRegistry.GRAVESTONE_CHIPPED,
-                GravestonesRegistry.GRAVESTONE_DAMAGED
-        );
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
+            content.add(GRAVESTONE);
+            content.add(GRAVESTONE_CHIPPED);
+            content.add(GRAVESTONE_DAMAGED);
+        });
 
         Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
         Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
@@ -137,13 +126,23 @@ public class GravestonesRegistry {
 
         ServerPlayNetworking.registerGlobalReceiver(UpdateGravestoneC2SPayload.ID, (payload, context) -> {
             List<String> list = Stream.of(payload.getText()).map(Formatting::strip).collect(Collectors.toList());
-            context.player().networkHandler.filterTexts(list).thenAcceptAsync(texts -> onSignUpdate(context.player(), payload, texts), context.server());
+            context.player().networkHandler.filterTexts(list).thenAcceptAsync(texts ->
+                    onSignUpdate(context.player(), payload, texts), context.server()
+            );
         });
+    }
 
-        Registries.ITEM.addAlias(Gravestones.id("gravestone_default"), Gravestones.id("gravestone"));
-        Registries.BLOCK.addAlias(Gravestones.id("gravestone_default"), Gravestones.id("gravestone"));
-        Registries.BLOCK_ENTITY_TYPE.addAlias(Identifier.of("gravestone"), Gravestones.id("technical_gravestone"));
-        Registries.BLOCK_ENTITY_TYPE.addAlias(Gravestones.id("gravestone"), Gravestones.id("technical_gravestone"));
+    private static void registerAPIUsages() {
+        GravestonesApi.registerDataType(Gravestones.id("inventory"), new PlayerInventoryDataType());
+        GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
+
+        InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
+                itemStack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
+                EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
+        );
+        InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
+                EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
+        );
     }
 
     @SuppressWarnings("deprecation")
