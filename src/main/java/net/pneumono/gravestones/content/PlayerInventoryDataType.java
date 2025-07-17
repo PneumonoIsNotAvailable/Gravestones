@@ -25,8 +25,6 @@ public class PlayerInventoryDataType extends GravestoneDataType {
                 list.add(new StackWithSlot(i, inventory.removeStack(i)));
             }
         }
-
-        inventory.clear();
     }
 
     @Override
