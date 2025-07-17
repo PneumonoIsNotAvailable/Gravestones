@@ -11,6 +11,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
+import net.pneumono.gravestones.api.GravestonesApi;
 
 public class PlayerInventoryDataType extends GravestoneDataType {
     @Override
@@ -20,7 +21,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack itemStack = inventory.getStack(i);
-            if (!itemStack.isEmpty()) {
+            if (!itemStack.isEmpty() && !GravestonesApi.shouldSkipItem(player, itemStack)) {
                 list.add(new StackWithSlot(i, itemStack));
             }
         }
