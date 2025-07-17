@@ -6,7 +6,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
-import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
 import net.pneumono.gravestones.content.GravestonesCommands;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class Gravestones implements ModInitializer {
 		GravestonesCommands.registerCommands();
 
 		if (FabricLoader.getInstance().isModLoaded("spelunkery")) {
-			GravestonesApi.registerItemSkipPredicate((player, stack) -> stack.isOf(Items.RECOVERY_COMPASS));
+			InsertGravestoneItemCallback.EVENT.register((player, itemStack) -> itemStack.isOf(Items.RECOVERY_COMPASS));
 		}
 	}
 
