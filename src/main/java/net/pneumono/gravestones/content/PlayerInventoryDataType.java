@@ -22,7 +22,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack itemStack = inventory.getStack(i);
             if (!itemStack.isEmpty() && !GravestonesApi.shouldSkipItem(player, itemStack)) {
-                list.add(new StackWithSlot(i, itemStack));
+                list.add(new StackWithSlot(i, inventory.removeStack(i)));
             }
         }
 
