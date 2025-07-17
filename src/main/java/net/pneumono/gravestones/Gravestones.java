@@ -33,7 +33,7 @@ public class Gravestones implements ModInitializer {
 		}
 	}
 
-	public static Identifier identifier(String path) {
+	public static Identifier id(String path) {
 		return Identifier.of(MOD_ID, path);
 	}
 }

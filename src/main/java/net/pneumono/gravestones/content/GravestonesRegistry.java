@@ -52,13 +52,13 @@ public class GravestonesRegistry {
             AestheticGravestoneBlock::new, AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool());
 
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("technical_gravestone"), FabricBlockEntityTypeBuilder.create(
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("technical_gravestone"), FabricBlockEntityTypeBuilder.create(
                     TechnicalGravestoneBlockEntity::new,
                     GRAVESTONE_TECHNICAL
             ).build()
     );
     public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.identifier("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(
                     AestheticGravestoneBlockEntity::new,
                     GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED
             ).canPotentiallyExecuteCommands(true).build()
@@ -66,32 +66,32 @@ public class GravestonesRegistry {
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
             Registries.ENTITY_TYPE,
-            Gravestones.identifier("gravestone_skeleton"),
+            Gravestones.id("gravestone_skeleton"),
             EntityType.Builder.<GravestoneSkeletonEntity>create(GravestoneSkeletonEntity::new, SpawnGroup.MISC)
                     .dimensions(0.6F, 1.99F)
                     .maxTrackingRange(8)
-                    .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Gravestones.identifier("gravestone_skeleton")))
+                    .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Gravestones.id("gravestone_skeleton")))
     );
 
-    public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.identifier("skips_gravestones"));
-    public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ITEM, Gravestones.identifier("skips_gravestones"));
+    public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.id("skips_gravestones"));
+    public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ITEM, Gravestones.id("skips_gravestones"));
 
     public static final SoundEvent SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL = waxedInteractFailSound();
 
-    public static final Identifier GRAVESTONES_COLLECTED = Gravestones.identifier("gravestones_collected");
+    public static final Identifier GRAVESTONES_COLLECTED = Gravestones.id("gravestones_collected");
 
     private static Block registerAestheticGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Block block = registerGravestone(name, factory, settings);
-        Registry.register(Registries.ITEM, Gravestones.identifier(name), new AestheticGravestoneBlockItem(block, new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.identifier(name)))));
+        Registry.register(Registries.ITEM, Gravestones.id(name), new AestheticGravestoneBlockItem(block, new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.id(name)))));
         return block;
     }
 
     private static Block registerGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
-        return Registry.register(Registries.BLOCK, Gravestones.identifier(name), factory.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.identifier(name)))));
+        return Registry.register(Registries.BLOCK, Gravestones.id(name), factory.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.id(name)))));
     }
 
     private static SoundEvent waxedInteractFailSound() {
-        Identifier id = Gravestones.identifier("block.gravestone.waxed_interact_fail");
+        Identifier id = Gravestones.id("block.gravestone.waxed_interact_fail");
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 
@@ -107,13 +107,13 @@ public class GravestonesRegistry {
         FabricDefaultAttributeRegistry.register(GRAVESTONE_SKELETON_ENTITY_TYPE, GravestoneSkeletonEntity.createAbstractSkeletonAttributes());
 
         ArgumentTypeRegistry.registerArgumentType(
-                Gravestones.identifier("deaths"),
+                Gravestones.id("deaths"),
                 DeathArgumentType.class,
                 ConstantArgumentSerializer.of(DeathArgumentType::new)
         );
 
-        GravestonesApi.registerDataType(Gravestones.identifier("inventory"), new PlayerInventoryDataType());
-        GravestonesApi.registerDataType(Gravestones.identifier("experience"), new ExperienceDataType());
+        GravestonesApi.registerDataType(Gravestones.id("inventory"), new PlayerInventoryDataType());
+        GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
         GravestonesApi.registerItemSkipPredicate((player, stack) ->
                 stack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
                 EnchantmentHelper.hasAnyEnchantmentsIn(stack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
@@ -139,10 +139,10 @@ public class GravestonesRegistry {
             context.player().networkHandler.filterTexts(list).thenAcceptAsync(texts -> onSignUpdate(context.player(), payload, texts), context.server());
         });
 
-        Registries.ITEM.addAlias(Gravestones.identifier("gravestone_default"), Gravestones.identifier("gravestone"));
-        Registries.BLOCK.addAlias(Gravestones.identifier("gravestone_default"), Gravestones.identifier("gravestone"));
-        Registries.BLOCK_ENTITY_TYPE.addAlias(Identifier.of("gravestone"), Gravestones.identifier("technical_gravestone"));
-        Registries.BLOCK_ENTITY_TYPE.addAlias(Gravestones.identifier("gravestone"), Gravestones.identifier("technical_gravestone"));
+        Registries.ITEM.addAlias(Gravestones.id("gravestone_default"), Gravestones.id("gravestone"));
+        Registries.BLOCK.addAlias(Gravestones.id("gravestone_default"), Gravestones.id("gravestone"));
+        Registries.BLOCK_ENTITY_TYPE.addAlias(Identifier.of("gravestone"), Gravestones.id("technical_gravestone"));
+        Registries.BLOCK_ENTITY_TYPE.addAlias(Gravestones.id("gravestone"), Gravestones.id("technical_gravestone"));
     }
 
     @SuppressWarnings("deprecation")

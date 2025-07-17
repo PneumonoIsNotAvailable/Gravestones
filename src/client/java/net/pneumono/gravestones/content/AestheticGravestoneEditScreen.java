@@ -61,7 +61,7 @@ public class AestheticGravestoneEditScreen extends Screen {
             name = "default";
         }
 
-        return Gravestones.identifier("textures/gui/gravestone_" + name + ".png");
+        return Gravestones.id("textures/gui/gravestone_" + name + ".png");
     }
 
     @Override
