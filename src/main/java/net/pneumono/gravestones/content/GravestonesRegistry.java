@@ -32,6 +32,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
 import net.pneumono.gravestones.block.*;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
@@ -114,12 +115,12 @@ public class GravestonesRegistry {
 
         GravestonesApi.registerDataType(Gravestones.id("inventory"), new PlayerInventoryDataType());
         GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
-        GravestonesApi.registerItemSkipPredicate((player, stack) ->
-                stack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
-                EnchantmentHelper.hasAnyEnchantmentsIn(stack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
+        InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
+                itemStack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
+                EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
         );
-        GravestonesApi.registerItemSkipPredicate((player, stack) ->
-                EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
+        InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
+                EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
         );
 
         addToFunctionalGroup(

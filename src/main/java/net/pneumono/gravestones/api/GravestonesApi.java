@@ -38,7 +38,10 @@ public class GravestonesApi {
      * If {@code false} is returned, the item is put in the gravestone as normal (assuming it passes tests from all other predicates).<p>
      * This is ideal for supporting mods that do other things to items on death, since returning {@code true} skips Gravestones' item handling, and then the other mod's code should run.<p>
      * This can also be used for supporting items that are modified on death but should still be inserted into gravestones (for example, an item that decrements by 1 on death) by simply modifying the item stack, and then returning {@code false}.
+     *
+     * @deprecated Use {@link InsertGravestoneItemCallback#EVENT} instead.
      */
+    @Deprecated
     public static void registerItemSkipPredicate(BiPredicate<PlayerEntity, ItemStack> predicate) {
         ITEM_SKIP_PREDICATES.add(predicate);
     }
@@ -109,19 +112,24 @@ public class GravestonesApi {
     }
 
     /**
-     * Checks against all registered item skip predicates to see whether an item stack should be skipped by gravestone processing.<p>
+     * Checks against all registered {@link InsertGravestoneItemCallback} listeners, and item skip predicates, to see whether an item stack should be skipped by gravestone processing.<p>
      *
      * @param player The player who has died.
      * @param stack The stack being checked.
      * @return Whether the item should be inserted.
-     * @see GravestonesApi#registerItemSkipPredicate(BiPredicate)
+     * @see InsertGravestoneItemCallback#EVENT
      */
     public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
+        if (InsertGravestoneItemCallback.EVENT.invoker().insertItem(player, stack)) {
+            return true;
+        }
+
         for (BiPredicate<PlayerEntity, ItemStack> predicate : ITEM_SKIP_PREDICATES) {
             if (predicate.test(player, stack)) {
                 return true;
             }
         }
+
         return false;
     }
 }
