@@ -12,6 +12,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 
 import java.util.ArrayList;
@@ -131,5 +132,13 @@ public class GravestonesApi {
         }
 
         return false;
+    }
+
+    public static int getDecayedExperience(int experience, int decay) {
+        if (GravestonesConfig.EXPERIENCE_DECAY.getValue()) {
+            return experience / (decay + 1);
+        } else {
+            return experience;
+        }
     }
 }

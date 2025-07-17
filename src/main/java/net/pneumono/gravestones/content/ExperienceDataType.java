@@ -10,6 +10,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestoneDataType;
+import net.pneumono.gravestones.api.GravestonesApi;
 
 public class ExperienceDataType extends GravestoneDataType {
     @Override
@@ -45,14 +46,6 @@ public class ExperienceDataType extends GravestoneDataType {
 
     private static int getExperience(ReadView view, int decay) {
         int experience = view.getInt("experience", 0);
-        return getDecayedExperience(experience, decay);
-    }
-
-    public static int getDecayedExperience(int experience, int decay) {
-        if (GravestonesConfig.EXPERIENCE_DECAY.getValue()) {
-            return experience / (decay + 1);
-        } else {
-            return experience;
-        }
+        return GravestonesApi.getDecayedExperience(experience, decay);
     }
 }
