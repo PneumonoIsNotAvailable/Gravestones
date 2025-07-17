@@ -30,30 +30,27 @@ public class ExperienceDataType extends GravestoneDataType {
 
     @Override
     public void onBreak(ReadView view, World world, BlockPos pos, int decay) {
-        dropExperience(view, world, pos, decay);
-    }
-
-    @Override
-    public void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay) {
-        dropExperience(view, world, pos, decay);
-    }
-
-    private void dropExperience(ReadView view, World world, BlockPos pos, int decay) {
-        dropExperience(world, pos, decay, view.getInt("experience", 0));
-    }
-
-    private void dropExperience(World world, BlockPos pos, int decay, int experience) {
         if (world instanceof ServerWorld serverWorld) {
             ExperienceOrbEntity.spawn(
                     serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()),
-                    getExperienceToDrop(experience, decay)
+                    getExperience(view, decay)
             );
         }
     }
 
-    public static int getExperienceToDrop(int experience, int damage) {
+    @Override
+    public void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay) {
+        player.addExperience(getExperience(view, decay));
+    }
+
+    private static int getExperience(ReadView view, int decay) {
+        int experience = view.getInt("experience", 0);
+        return getDecayedExperience(experience, decay);
+    }
+
+    public static int getDecayedExperience(int experience, int decay) {
         if (GravestonesConfig.EXPERIENCE_DECAY.getValue()) {
-            return experience / (damage + 1);
+            return experience / (decay + 1);
         } else {
             return experience;
         }
