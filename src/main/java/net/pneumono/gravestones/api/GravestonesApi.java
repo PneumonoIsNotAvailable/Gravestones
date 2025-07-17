@@ -33,13 +33,6 @@ public class GravestonesApi {
     }
 
     /**
-     * Registers a predicate that returns {@code true} if an item stack should be skipped by gravestone inventory processing, and handled by vanilla item dropping, or any additional code added by other mods.<p>
-     * Each item in the player's inventory is tested to see if the item should be put in the gravestone.<p>
-     * If {@code true} is returned, the item is "skipped" by the gravestone, and is not put in the gravestone or cleared from the player's inventory. If nothing else is done other than returning {@code true}, this will result in the item being dropped on the ground, like in vanilla.<p>
-     * If {@code false} is returned, the item is put in the gravestone as normal (assuming it passes tests from all other predicates).<p>
-     * This is ideal for supporting mods that do other things to items on death, since returning {@code true} skips Gravestones' item handling, and then the other mod's code should run.<p>
-     * This can also be used for supporting items that are modified on death but should still be inserted into gravestones (for example, an item that decrements by 1 on death) by simply modifying the item stack, and then returning {@code false}.
-     *
      * @deprecated Use {@link InsertGravestoneItemCallback#EVENT} instead.
      */
     @Deprecated
@@ -113,11 +106,15 @@ public class GravestonesApi {
     }
 
     /**
-     * Checks against all registered {@link InsertGravestoneItemCallback} listeners, and item skip predicates, to see whether an item stack should be skipped by gravestone processing.<p>
+     * Checks all registered {@link InsertGravestoneItemCallback} listeners, and item skip predicates,
+     * to see whether an item stack should be skipped by gravestone processing.
+     *
+     * <p>This should be called before checking anything else about the stack,
+     * as listeners may change it (e.g. emptying it).
      *
      * @param player The player who has died.
-     * @param stack The stack being checked.
-     * @return Whether the item should be inserted.
+     * @param stack The item stack being checked.
+     * @return Whether the item should be skipped.
      * @see InsertGravestoneItemCallback#EVENT
      */
     public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
@@ -134,6 +131,14 @@ public class GravestonesApi {
         return false;
     }
 
+    /**
+     * If the Experience Decay config is enabled, applies experience decay to an amount of experience.
+     * Otherwise, does nothing.
+     *
+     * @param experience The initial experience amount
+     * @param decay The decay stage of the gravestone
+     * @return The final (decayed) experience amount
+     */
     public static int getDecayedExperience(int experience, int decay) {
         if (GravestonesConfig.EXPERIENCE_DECAY.getValue()) {
             return experience / (decay + 1);
