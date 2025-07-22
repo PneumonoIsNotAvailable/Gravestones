@@ -10,8 +10,7 @@ import net.minecraft.item.ItemStack;
  *
  * <p>Returning {@code true} cancels further processing,
  * and causes the gravestone to skip moving this item stack from the player's inventory to the gravestone.
- *
- * <p>Returning {@code false} falls back to further processing.
+ * Returning {@code false} falls back to further processing.
  *
  * <p>If an item stack is skipped, the gravestone ignores it completely,
  * and it is treated as it would be if gravestones was not installed (which is usually being dropped on the ground).
