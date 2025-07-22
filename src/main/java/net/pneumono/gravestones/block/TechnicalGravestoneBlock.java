@@ -23,7 +23,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -129,7 +128,7 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
                     text = Text.translatable("gravestones.player_collected_others_grave", player.getName().getString(), graveOwner.name().orElse("???"));
                 }
             }
-            server.getPlayerManager().broadcast(text.formatted(Formatting.AQUA), false);
+            server.getPlayerManager().broadcast(text, false);
         }
         world.breakBlock(pos, true);
 
