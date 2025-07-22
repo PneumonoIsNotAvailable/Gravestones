@@ -58,9 +58,11 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient() || player instanceof FakePlayer || !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone)) {
+        if (player instanceof FakePlayer || !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone)) {
             return ActionResult.FAIL;
         }
+
+        if (world.isClient()) return ActionResult.SUCCESS;
 
         createSoulParticles(world, pos);
 
