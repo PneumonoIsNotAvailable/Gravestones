@@ -83,7 +83,7 @@ public class GravestonesRegistry {
     private static Block registerAestheticGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Block block = registerGravestone(name, factory, settings);
         Registry.register(Registries.ITEM, Gravestones.id(name), new AestheticGravestoneBlockItem(block,
-                new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.id(name)))
+                new Item.Settings().useBlockPrefixedTranslationKey().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.id(name)))
         ));
         return block;
     }
