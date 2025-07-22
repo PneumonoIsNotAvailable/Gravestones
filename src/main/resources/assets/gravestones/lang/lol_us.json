@@ -12,7 +12,7 @@
   "gravestones.player_collected_others_grave": "%1$s stole %2$s's die box!!",
   "gravestones.player_collected_grave_at_coords": "%1$s got bak die box at %2$s!!",
   "gravestones.player_collected_others_grave_at_coords": "%1$s stole %2$s's die box at %2$s!!",
-  "gravestones.position": "(%1$s,%2$s,%3$s) in %4$s",
+  "gravestones.position": "(%1$s, %2$s, %3$s) in %4$s",
 
   "entity.gravestones.gravestone_skeleton": "Die box Skeletun",
 

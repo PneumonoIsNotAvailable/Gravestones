@@ -1,6 +1,5 @@
 package net.pneumono.gravestones.content;
 
-import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.BlockPosArgumentType;
@@ -13,19 +12,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
-import net.pneumono.gravestones.gravestones.data.GravestoneData;
-import net.pneumono.gravestones.gravestones.data.GravestonePosition;
+import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
+import net.pneumono.gravestones.gravestones.GravestoneManager;
+import net.pneumono.gravestones.gravestones.RecentGraveHistory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
 import java.util.List;
+import java.util.UUID;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -61,25 +58,31 @@ public class GravestonesCommands {
                                 .then(literal("player")
                                         .then(argument("player", EntityArgumentType.player())
                                                 .executes(context -> {
-                                                    File gravestoneFile = new File(context.getSource().getWorld().getServer().getSavePath(WorldSavePath.ROOT).toString(), "gravestone_data.json");
+                                                    List<RecentGraveHistory> histories = GravestoneDataSaving.readData(context.getSource().getServer());
 
-                                                    try {
-                                                        if (gravestoneFile.exists()) {
-                                                            Reader reader = Files.newBufferedReader(gravestoneFile.toPath());
-                                                            GravestoneData data = new GsonBuilder().serializeNulls().setPrettyPrinting().create().fromJson(reader, GravestoneData.class);
-                                                            reader.close();
-
-                                                            List<GravestonePosition> positions = data.getPlayerGravePositions(EntityArgumentType.getPlayer(context, "player").getGameProfile().getId());
-                                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
-                                                            context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.grave_data", player.getDisplayName(), positions.getFirst().toText(), positions.get(1).toText(), positions.get(2).toText()), false);
-                                                        } else {
-                                                            Gravestones.LOGGER.error("Could not find gravestone data file!");
-                                                            context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.cannot_find").formatted(Formatting.RED), false);
+                                                    UUID uuid = EntityArgumentType.getPlayer(context, "player").getGameProfile().getId();
+                                                    List<GlobalPos> positions = null;
+                                                    for (RecentGraveHistory history : histories) {
+                                                        if (history.owner().equals(uuid)) {
+                                                            positions = history.getList();
+                                                            break;
                                                         }
-                                                    } catch (IOException e) {
-                                                        Gravestones.LOGGER.error("Could not read gravestone data file!", e);
-                                                        context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.cannot_read").formatted(Formatting.RED), false);
                                                     }
+
+                                                    if (positions == null) {
+                                                        Gravestones.LOGGER.error("Could not find gravestone data file!");
+                                                        context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.cannot_find").formatted(Formatting.RED), false);
+                                                        return 0;
+                                                    }
+
+                                                    ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                                                    Text first = GravestoneManager.posToText(positions.getFirst());
+                                                    Text second = GravestoneManager.posToText(positions.get(1));
+                                                    Text third = GravestoneManager.posToText(positions.get(2));
+                                                    context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.grave_data",
+                                                            player.getDisplayName(),
+                                                            first, second, third
+                                                    ), false);
 
                                                     return 1;
                                                 })

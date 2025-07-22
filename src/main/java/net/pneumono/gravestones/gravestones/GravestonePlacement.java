@@ -3,49 +3,19 @@ package net.pneumono.gravestones.gravestones;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Waterloggable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.pneumono.gravestones.api.PositionValidationCallback;
 import net.pneumono.gravestones.api.RedirectGravestonePositionCallback;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import org.jetbrains.annotations.Nullable;
 
-public class GravestonePlacement extends GravestonesManager {
+public class GravestonePlacement extends GravestoneManager {
     public static final int RADIUS = 2;
-
-    protected static GlobalPos placeGravestone(ServerWorld world, PlayerEntity player, GlobalPos deathPos) {
-        DimensionType dimension = world.getDimension();
-        GlobalPos clampedDeathPos = new GlobalPos(deathPos.dimension(), deathPos.pos().withY(
-                MathHelper.clamp(deathPos.pos().getY(), dimension.minY(), dimension.minY() + dimension.height())
-        ));
-        GlobalPos validPos = getRedirectableValidPos(world, player, clampedDeathPos);
-
-        if (validPos == null) return null;
-
-        World validWorld = world.getServer().getWorld(validPos.dimension());
-        if (validWorld == null) return null;
-
-        BlockState gravestoneBlock = GravestonesRegistry.GRAVESTONE_TECHNICAL.getDefaultState();
-        BlockState replacedBlock = validWorld.getBlockState(validPos.pos());
-        if (
-                replacedBlock.getFluidState().isIn(FluidTags.WATER) ||
-                (replacedBlock.getBlock() instanceof Waterloggable && replacedBlock.get(Properties.WATERLOGGED))
-        ) {
-            gravestoneBlock = gravestoneBlock.with(Properties.WATERLOGGED, true);
-        }
-
-        validWorld.breakBlock(validPos.pos(), true);
-        validWorld.setBlockState(validPos.pos(), gravestoneBlock);
-        return validPos;
-    }
 
     /**
      * Returns the placement position for a gravestone.

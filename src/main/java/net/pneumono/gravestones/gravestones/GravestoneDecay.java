@@ -2,128 +2,108 @@ package net.pneumono.gravestones.gravestones;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
-import net.pneumono.gravestones.gravestones.data.GravestonePosition;
 import net.pneumono.gravestones.gravestones.enums.DecayTimeType;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class GravestoneDecay extends GravestonesManager {
+public class GravestoneDecay extends GravestoneManager {
     public static void timeDecayGravestone(World world, BlockPos pos, BlockState state) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (!(blockEntity instanceof TechnicalGravestoneBlockEntity entity)) return;
+        if (
+                GravestonesConfig.DECAY_WITH_TIME.getValue() ||
+                !(blockEntity instanceof TechnicalGravestoneBlockEntity entity) ||
+                entity.getGraveOwner() == null
+        ) return;
 
-        if (GravestonesConfig.DECAY_WITH_TIME.getValue() && entity.getGraveOwner() != null) {
-            long difference;
+        long difference;
 
-            if (GravestonesConfig.DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
-                difference = world.getTime() - entity.getSpawnDateTicks();
-            } else if (entity.getSpawnDateTime() != null) {
-                difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.READABLE.format(new Date()), entity.getSpawnDateTime()) * 20;
-            } else {
-                difference = 0;
-            }
-
-            long timeUnit = GravestonesConfig.DECAY_TIME.getValue();
-            if (difference > (timeUnit * 3)) {
-                if (GravestonesApi.shouldDecayAffectGameplay()) {
-                    world.breakBlock(pos, true);
-                }
-            } else if (difference > (timeUnit * 2) && !(state.get(TechnicalGravestoneBlock.AGE_DAMAGE) > 1)) {
-                world.setBlockState(pos, state.with(TechnicalGravestoneBlock.AGE_DAMAGE, 2));
-            } else if (difference > (timeUnit) && !(state.get(TechnicalGravestoneBlock.AGE_DAMAGE) > 0)) {
-                world.setBlockState(pos, state.with(TechnicalGravestoneBlock.AGE_DAMAGE, 1));
-            }
-
-            entity.markDirty();
+        if (GravestonesConfig.DECAY_TIME_TYPE.getValue() == DecayTimeType.TICKS) {
+            difference = world.getTime() - entity.getSpawnDateTicks();
+        } else if (entity.getSpawnDateTime() != null) {
+            difference = GravestoneTime.getDifferenceInSeconds(GravestoneTime.READABLE.format(new Date()), entity.getSpawnDateTime()) * 20;
+        } else {
+            difference = 0;
         }
 
-        updateGravestoneDamage(world, pos, state);
+        long timeUnit = GravestonesConfig.DECAY_TIME.getValue();
+        int ageDamage = state.get(TechnicalGravestoneBlock.AGE_DAMAGE);
+
+        if (difference > (timeUnit * 3)) {
+            if (GravestonesApi.shouldDecayAffectGameplay()) {
+                world.breakBlock(pos, true);
+                return;
+            }
+
+        } else if (difference > (timeUnit * 2) && ageDamage != 2) {
+            world.setBlockState(pos, state.with(TechnicalGravestoneBlock.AGE_DAMAGE, 2));
+
+        } else if (difference > timeUnit && ageDamage != 1) {
+            world.setBlockState(pos, state.with(TechnicalGravestoneBlock.AGE_DAMAGE, 1));
+        }
+
+        updateTotalGravestoneDamage(world, pos, state);
     }
 
-    public static void deathDecayOldGravestones(ServerWorld serverWorld, List<GravestonePosition> oldGravePositions, BlockPos gravestonePos) {
+    protected static void deathDamageOldGravestones(ServerWorld serverWorld, List<GlobalPos> oldGravePositions, GlobalPos newPos) {
         if (!GravestonesConfig.DECAY_WITH_DEATHS.getValue()) {
-            info("Gravestone death damage has been disabled in the config, so no graves were damaged");
-            return;
-        }
-        if (oldGravePositions == null) {
-            info("No graves to damage!");
             return;
         }
 
-        List<GravestonePosition> usedPositions = new ArrayList<>();
-        usedPositions.add(new GravestonePosition(serverWorld.getRegistryKey().getValue(), gravestonePos));
-        for (GravestonePosition oldPos : oldGravePositions) {
-            if (usedPositions.contains(oldPos)) {
-                info("Gravestone at " + posToString(oldPos.asBlockPos()) + " in dimension " + oldPos.dimension.toString() + " has already been damaged, skipping");
+        List<GlobalPos> checkedPositions = new ArrayList<>();
+        checkedPositions.add(newPos);
+        for (GlobalPos oldPos : oldGravePositions) {
+            if (checkedPositions.contains(oldPos)) {
                 continue;
             }
 
-            GravestoneDecay.deathDecayGravestone(serverWorld, oldPos);
-            usedPositions.add(oldPos);
+            GravestoneDecay.incrementDeathDamage(serverWorld, oldPos);
+            checkedPositions.add(oldPos);
         }
     }
 
-    public static void deathDecayGravestone(ServerWorld serverWorld, GravestonePosition pos) {
-        ServerWorld graveWorld = serverWorld.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, pos.dimension));
+    public static void incrementDeathDamage(ServerWorld world, GlobalPos globalPos) {
+        BlockPos pos = globalPos.pos();
+        BlockState state = world.getBlockState(pos);
+        if (!state.isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL)) return;
 
-        if (graveWorld == null) {
-            error("GravePosition's dimension (" + pos.dimension.toString() + ") does not exist!");
+        int ageDamage = state.get(TechnicalGravestoneBlock.DEATH_DAMAGE) + 1;
+
+        if (ageDamage >= 3) {
+            if (GravestonesApi.shouldDecayAffectGameplay()) {
+                world.breakBlock(pos, true);
+            }
         } else {
-            if (!graveWorld.getBlockState(pos.asBlockPos()).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL)) {
-                info("No gravestone was found at the position " + posToString(pos.asBlockPos()) + " in dimension " + pos.dimension.toString()
-                        + ". Most likely this is because the grave has already been collected, or was decayed");
-            } else {
-
-                int deathDamage = graveWorld.getBlockState(pos.asBlockPos()).get(TechnicalGravestoneBlock.DEATH_DAMAGE);
-                int ageDamage = graveWorld.getBlockState(pos.asBlockPos()).get(TechnicalGravestoneBlock.AGE_DAMAGE);
-                String damageType;
-
-                String graveData = "Age: " + ageDamage + ", Death: " + deathDamage;
-                if (ageDamage + deathDamage >= 2) {
-                    damageType = "broken";
-                    if (GravestonesApi.shouldDecayAffectGameplay()) {
-                        graveWorld.breakBlock(pos.asBlockPos(), true);
-                    }
-                } else {
-                    damageType = "damaged";
-                    graveWorld.setBlockState(pos.asBlockPos(), graveWorld.getBlockState(pos.asBlockPos()).with(TechnicalGravestoneBlock.DEATH_DAMAGE, deathDamage + 1));
-                }
-                info("Gravestone (" + graveData + ") " + damageType + " at the position " + posToString(pos.asBlockPos()) + " in dimension " + pos.dimension.toString());
-            }
+            world.setBlockState(pos, state.with(TechnicalGravestoneBlock.DEATH_DAMAGE, ageDamage));
+            updateTotalGravestoneDamage(world, pos, world.getBlockState(pos));
         }
     }
 
-    public static void updateGravestoneDamage(World world, BlockPos pos, BlockState state) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (!(blockEntity instanceof TechnicalGravestoneBlockEntity entity)) return;
+    public static void updateTotalGravestoneDamage(World world, BlockPos pos, BlockState state) {
+        int totalDamage = state.get(TechnicalGravestoneBlock.AGE_DAMAGE) + state.get(TechnicalGravestoneBlock.DEATH_DAMAGE);
+        if (totalDamage == state.get(TechnicalGravestoneBlock.DAMAGE)) return;
 
-        if (state.get(TechnicalGravestoneBlock.DAMAGE) != state.get(TechnicalGravestoneBlock.AGE_DAMAGE) + state.get(TechnicalGravestoneBlock.DEATH_DAMAGE)) {
-            if (state.get(TechnicalGravestoneBlock.AGE_DAMAGE) + state.get(TechnicalGravestoneBlock.DEATH_DAMAGE) > 2) {
-                if (GravestonesApi.shouldDecayAffectGameplay()) {
-                    world.breakBlock(pos, true);
-                }
+        if (totalDamage >= 3) {
+            if (GravestonesApi.shouldDecayAffectGameplay()) {
+                world.breakBlock(pos, true);
             } else {
-                world.setBlockState(pos, state.with(TechnicalGravestoneBlock.DAMAGE, state.get(TechnicalGravestoneBlock.AGE_DAMAGE) + state.get(TechnicalGravestoneBlock.DEATH_DAMAGE)));
+                return;
             }
-
-            entity.markDirty();
+        } else {
+            world.setBlockState(pos, state.with(TechnicalGravestoneBlock.DAMAGE, totalDamage));
         }
 
-        if (state.get(TechnicalGravestoneBlock.DAMAGE) >= 3 && GravestonesApi.shouldDecayAffectGameplay()) {
-            world.breakBlock(pos, true);
-
+        if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
             entity.markDirty();
         }
     }

@@ -27,7 +27,6 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestonesRegistry;
-import net.pneumono.gravestones.gravestones.GravestonesManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -92,7 +91,6 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
             );
         }
 
-        GravestonesManager.info("Returning items...");
         GravestonesApi.onCollect(world, pos, player, gravestone.getDecay(), gravestone.getContents());
         gravestone.setContents(new NbtCompound());
 
