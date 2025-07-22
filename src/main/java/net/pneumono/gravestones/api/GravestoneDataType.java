@@ -44,7 +44,7 @@ public abstract class GravestoneDataType {
      *
      * <p>When handling XP, make sure to use {@link GravestonesApi#getDecayedExperience}.
      *
-     * <p>Remember to add null checks,
+     * <p>Remember to null check the {@code ReadView},
      * since it's possible that the gravestone was created before this data type was added.
      *
      * @param pos The position of the gravestone.
@@ -60,7 +60,7 @@ public abstract class GravestoneDataType {
      *
      * <p>When handling XP, make sure to use {@link GravestonesApi#getDecayedExperience}.
      *
-     * <p>Remember to add null checks,
+     * <p>Remember to null check the {@code ReadView},
      * since it's possible that the gravestone was created before this data type was added.
      *
      * @param pos The position of the gravestone.
