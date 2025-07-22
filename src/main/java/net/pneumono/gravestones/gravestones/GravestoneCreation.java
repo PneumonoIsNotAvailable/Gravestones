@@ -52,7 +52,8 @@ public class GravestoneCreation extends GravestoneManager {
         if (gravestonePos != null && deathWorld.getServer().getWorld(gravestonePos.dimension()) instanceof ServerWorld graveWorld) {
             Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", player.getGameProfile().getName(), posToString(gravestonePos.pos()));
         } else {
-            Gravestones.LOGGER.info("Failed to place {}'s Gravestone!", player.getGameProfile().getName());
+            Gravestones.LOGGER.info("Failed to place {}'s Gravestone! Dropping contents...", player.getGameProfile().getName());
+            GravestonesApi.onBreak(deathWorld, deathPos.pos(), 0, contents == null ? new NbtCompound() : contents, player.getErrorReporterContext());
             return;
         }
 
@@ -77,7 +78,7 @@ public class GravestoneCreation extends GravestoneManager {
         try {
             contents = GravestonesApi.getDataToInsert(player);
         } catch (Exception e) {
-            return null;
+            return new NbtCompound();
         }
 
         GravestoneDataSaving.saveDeathData(contents, player, date);

@@ -89,11 +89,14 @@ public class GravestonesApi {
      * Called when gravestones are broken, including when collected.
      */
     public static void onBreak(World world, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
-        NbtCompound contents = entity.getContents();
+        onBreak(world, pos, decay, entity.getContents(), entity.getReporterContext());
+    }
+
+    public static void onBreak(World world, BlockPos pos, int decay, NbtCompound contents, ErrorReporter.Context reporterContext) {
         if (contents.isEmpty()) return;
 
         try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
-            ErrorReporter reporter = logging.makeChild(entity.getReporterContext());
+            ErrorReporter reporter = logging.makeChild(reporterContext);
 
             for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
                 ReadView view = NbtReadView.create(reporter, world.getRegistryManager(), contents);
