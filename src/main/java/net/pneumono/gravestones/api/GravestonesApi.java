@@ -130,6 +130,13 @@ public class GravestonesApi {
     }
 
     /**
+     * @return Whether gravestone decay should affect gameplay.
+     */
+    public static boolean shouldDecayAffectGameplay() {
+        return !GravestonesConfig.AESTHETIC_DECAY.getValue();
+    }
+
+    /**
      * Checks all registered {@link InsertGravestoneItemCallback} listeners, and item skip predicates,
      * to see whether an item stack should be skipped by gravestone processing.
      *
@@ -156,7 +163,8 @@ public class GravestonesApi {
     }
 
     /**
-     * If the Experience Decay config is enabled, applies experience decay to an amount of experience.
+     * If the Experience Decay config is enabled, and gravestone decay should affect gameplay,
+     * applies experience decay to an amount of experience.
      * Otherwise, does nothing.
      *
      * @param experience The initial experience amount
@@ -164,7 +172,7 @@ public class GravestonesApi {
      * @return The final (decayed) experience amount
      */
     public static int getDecayedExperience(int experience, int decay) {
-        if (GravestonesConfig.EXPERIENCE_DECAY.getValue()) {
+        if (GravestonesConfig.EXPERIENCE_DECAY.getValue() && shouldDecayAffectGameplay()) {
             return experience / (decay + 1);
         } else {
             return experience;

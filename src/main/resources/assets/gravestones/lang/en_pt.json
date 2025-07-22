@@ -51,6 +51,8 @@
     "configs.gravestones.decay_time_type.real_time": "Days in all",
     "configs.gravestones.decay_time_type.ticks": "Days at sea",
     "configs.gravestones.decay_time_type.tooltip": "If yer Dead Man's Chest be weathered every moon (Days in all), or only while ye be upon th' waves (Days at sea). Unloadin' yer chunks won't save yer chests!",
+    "configs.gravestones.aesthetic_decay": "Beautiful Weatherin'",
+    "configs.gravestones.aesthetic_decay.tooltip": "If th' weatherin' o' yer Dead Man's Chest be purely visual, or if it affects yer booty.",
     "configs.gravestones.store_experience": "Bury Knowledge",
     "configs.gravestones.store_experience.tooltip": "If yer Dead Man's Chest contains yer knowledge points. If not, yer knowledge be scattered upon th' ground!",
     "configs.gravestones.experience_cap": "Knowledge Limit",

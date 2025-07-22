@@ -51,6 +51,8 @@
   "configs.gravestones.decay_time_type.real_time": "Reel life",
   "configs.gravestones.decay_time_type.ticks": "Tiks",
   "configs.gravestones.decay_time_type.tooltip": "If oldness mezurd by reel-life (bad), or by fleas and tiks (also bad). Die boxz still gets old when kittehs not near!",
+  "configs.gravestones.aesthetic_decay": "Pretteh olding",
+  "configs.gravestones.aesthetic_decay.tooltip": "If oldin afects ur die boxz or if itz jus pwetty",
   "configs.gravestones.store_experience": "Rember levlz",
   "configs.gravestones.store_experience.tooltip": "If die boxz has ur levlz in dem. If not ur expee wil go on floor!!",
   "configs.gravestones.experience_cap": "Kewl limit",

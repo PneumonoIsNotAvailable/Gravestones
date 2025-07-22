@@ -51,6 +51,8 @@
   "configs.gravestones.decay_time_type.real_time": "Real Time",
   "configs.gravestones.decay_time_type.ticks": "Ticks",
   "configs.gravestones.decay_time_type.tooltip": "Whether decay time is based on real-world time (Real Time), or time the server is active (Ticks). Gravestone decay will occur regardless of whether chunks are loaded",
+  "configs.gravestones.aesthetic_decay": "Aesthetic Decay",
+  "configs.gravestones.aesthetic_decay.tooltip": "Whether graves decay affects gameplay, or is purely visual",
   "configs.gravestones.store_experience": "Store Experience",
   "configs.gravestones.store_experience.tooltip": "Whether graves store experience. If not, experience is dropped on the ground on death",
   "configs.gravestones.experience_cap": "Experience Cap",

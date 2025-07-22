@@ -10,6 +10,7 @@ public class GravestonesConfig {
     public static final BooleanConfiguration DECAY_WITH_TIME = new BooleanConfiguration(Gravestones.MOD_ID, "decay_with_time", ConfigEnv.SERVER, true);
     public static final TimeConfiguration DECAY_TIME = new TimeConfiguration(Gravestones.MOD_ID, "decay_time", ConfigEnv.SERVER, 8L * TimeUnit.HOURS.getDivision());
     public static final EnumConfiguration<DecayTimeType> DECAY_TIME_TYPE = new EnumConfiguration<>(Gravestones.MOD_ID, "decay_time_type", ConfigEnv.SERVER, DecayTimeType.TICKS);
+    public static final BooleanConfiguration AESTHETIC_DECAY = new BooleanConfiguration(Gravestones.MOD_ID, "aesthetic_decay", ConfigEnv.SERVER, false);
 
     public static final BooleanConfiguration STORE_EXPERIENCE = new BooleanConfiguration(Gravestones.MOD_ID, "store_experience", ConfigEnv.SERVER, true);
     public static final BooleanConfiguration EXPERIENCE_CAP = new BooleanConfiguration(Gravestones.MOD_ID, "experience_cap", ConfigEnv.SERVER, true);
@@ -33,6 +34,7 @@ public class GravestonesConfig {
                 DECAY_WITH_TIME,
                 DECAY_TIME,
                 DECAY_TIME_TYPE,
+                AESTHETIC_DECAY,
                 STORE_EXPERIENCE,
                 EXPERIENCE_CAP,
                 EXPERIENCE_KEPT,
@@ -52,7 +54,8 @@ public class GravestonesConfig {
                         DECAY_WITH_DEATHS,
                         DECAY_WITH_TIME,
                         DECAY_TIME,
-                        DECAY_TIME_TYPE
+                        DECAY_TIME_TYPE,
+                        AESTHETIC_DECAY
                 ),
                 new ConfigCategory(Gravestones.MOD_ID, "experience",
                         STORE_EXPERIENCE,
