@@ -53,8 +53,8 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     public void readData(ReadView view) {
         super.readData(view);
         // Scuffed, will move away from NBT in future if possible
-        this.contents = view.read("contents", NbtCompound.CODEC).orElseThrow(() -> new IllegalStateException("Failed to load contents from gravestone!"));
-        this.setGraveOwner(view.read("owner", ProfileComponent.CODEC).orElseThrow(() -> new IllegalStateException("Failed to load profile from gravestone!")));
+        this.contents = view.read("contents", NbtCompound.CODEC).orElse(new NbtCompound());
+        this.setGraveOwner(view.read("owner", ProfileComponent.CODEC).orElse(null));
         this.spawnDateTime = view.getString("spawnDateTime", null);
         this.spawnDateTicks = view.getLong("spawnDateTicks", 0);
     }
