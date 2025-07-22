@@ -23,17 +23,25 @@ import java.util.function.BiPredicate;
 /**
  * Contains most methods needed for adding Gravestones support for other mods.
  *
- * <p>If your mod only needs to skip specific items or enchantments,
- * you should instead put them in one of the {@code gravestones:skips_gravestones} tags,
- * as they are simpler and less likely to become outdated.
+ * <p>Gravestones provides several tags that should be used instead of events where possible:
+ * <ul>
+ *     <li>Items or enchantments in the {@code gravestones:skips_gravestones} tags will be skipped by gravestones.
+ *     <li>Blocks in the {@code gravestones:gravestone_irreplaceable} will never be replaced by gravestones.
+ * </ul>
  *
- * <p>Most mods will not need to use anything other than
+ * <p>Most mods will not need to use anything other than the tags,
  * {@link InsertGravestoneItemCallback} (for items with different behavior on death)
  * and {@link #registerDataType} (for custom data that also needs to be saved on death).
  *
  * <p>There is a page on the <a href="https://github.com/PneumonoIsNotAvailable/Gravestones/wiki/Compatibility">Gravestones Wiki</a>
- * for Gravestones' API features, however the documentation here is more detailed and more up-to-date.
- * The wiki may still be helpful as a more user-friendly guide for simple mods.
+ * for Gravestones' API features, however the documentation here is more detailed and up-to-date.
+ *
+ * @see GravestoneDataType
+ * @see CancelGravestonePlacementCallback
+ * @see RedirectGravestonePositionCallback
+ * @see PositionValidationCallback
+ * @see InsertGravestoneItemCallback
+ * @see GravestonePlacedCallback
  */
 public class GravestonesApi {
     private static final Map<Identifier, GravestoneDataType> DATA_TYPES = new HashMap<>();
