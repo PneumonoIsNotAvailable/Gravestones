@@ -23,7 +23,7 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
     @Override
     public void renderGravestoneText(TechnicalGravestoneBlockEntity blockEntity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         for (int i = 0; i < 4; ++i) {
-            matrices.translate(0, 2 * (1 / SCALE), 0);
+            matrices.translate(0, 2 * (1 / TEXT_SCALE), 0);
 
             Text message = Text.literal(switch (i) {
                 case 0 -> {

@@ -3,6 +3,7 @@ package net.pneumono.gravestones.block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -29,4 +30,7 @@ public abstract class AbstractGravestoneBlockEntity extends BlockEntity {
     }
 
     public abstract Direction getGravestoneDirection();
+
+    @Nullable
+    public abstract ProfileComponent getHeadProfile();
 }

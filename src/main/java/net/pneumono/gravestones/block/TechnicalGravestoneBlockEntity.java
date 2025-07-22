@@ -1,6 +1,7 @@
 package net.pneumono.gravestones.block;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -20,6 +21,7 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -52,7 +54,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         super.readData(view);
         // Scuffed, will move away from NBT in future if possible
         this.contents = view.read("contents", NbtCompound.CODEC).orElseThrow(() -> new IllegalStateException("Failed to load contents from gravestone!"));
-        this.graveOwner = view.read("owner", ProfileComponent.CODEC).orElseThrow(() -> new IllegalStateException("Failed to load profile from gravestone!"));
+        this.setGraveOwner(view.read("owner", ProfileComponent.CODEC).orElseThrow(() -> new IllegalStateException("Failed to load profile from gravestone!")));
         this.spawnDateTime = view.getString("spawnDateTime", null);
         this.spawnDateTicks = view.getLong("spawnDateTicks", 0);
     }
@@ -183,8 +185,18 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public void setGraveOwner(ProfileComponent graveOwner) {
-        this.graveOwner = graveOwner;
-        this.markDirty();
+        synchronized (this) {
+            this.graveOwner = graveOwner;
+        }
+
+        if (this.graveOwner != null && !this.graveOwner.isCompleted()) {
+            this.graveOwner.getFuture().thenAcceptAsync(owner -> {
+                this.graveOwner = owner;
+                this.markDirty();
+            }, SkullBlockEntity.EXECUTOR);
+        } else {
+            this.markDirty();
+        }
     }
 
     public ProfileComponent getGraveOwner() {
@@ -208,5 +220,10 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     public Direction getGravestoneDirection() {
         return Direction.NORTH;
+    }
+
+    @Override
+    public @Nullable ProfileComponent getHeadProfile() {
+        return getGraveOwner();
     }
 }

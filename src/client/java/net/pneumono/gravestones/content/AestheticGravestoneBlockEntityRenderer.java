@@ -27,7 +27,7 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
         int light = glowing ? 15728880 : worldLight;
 
         for (int i = 0; i < 4; ++i) {
-            matrices.translate(0, 2 * (1 / SCALE), 0);
+            matrices.translate(0, 2 * (1 / TEXT_SCALE), 0);
 
             OrderedText[] messages = signText.getOrderedMessages(MinecraftClient.getInstance().shouldFilterText(), text -> {
                 List<OrderedText> list = this.textRenderer.wrapLines(text, AestheticGravestoneEditScreen.TEXT_WIDTH);

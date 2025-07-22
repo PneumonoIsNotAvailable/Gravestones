@@ -4,6 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SignText;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -143,6 +144,11 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             }
         }
         return Direction.NORTH;
+    }
+
+    @Override
+    public @Nullable ProfileComponent getHeadProfile() {
+        return null;
     }
 
     public void setEditor(@Nullable UUID editor) {
