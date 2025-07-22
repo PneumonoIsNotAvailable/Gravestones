@@ -130,14 +130,14 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
         }
         Item item = stack.getItem();
 
-        if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof AbstractSkullBlock && gravestone.getHeadStack().isEmpty()) {
+        boolean waxed = gravestone.isWaxed();
+
+        if (!waxed && item instanceof BlockItem blockItem && blockItem.getBlock() instanceof AbstractSkullBlock && gravestone.getHeadStack().isEmpty()) {
             if (!world.isClient()) {
                 gravestone.setHeadStack(player, stack);
             }
             return ActionResult.SUCCESS;
         }
-
-        boolean waxed = gravestone.isWaxed();
 
         if (!world.isClient()) {
             if (
@@ -208,7 +208,7 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
         }
 
         ItemStack headStack = blockEntity.getHeadStack();
-        if (!headStack.isEmpty()) {
+        if (!blockEntity.isWaxed() && !headStack.isEmpty()) {
             if (!player.giveItemStack(headStack)) {
                 player.dropItem(headStack, false);
             }
