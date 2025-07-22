@@ -59,7 +59,7 @@ public class GravestonePlacement extends GravestonesManager {
                 cost += 5;
             }
         }
-        if (!state.isAir()) cost += state.isReplaceable() ? 1.25 : 5;
+        if (!state.isAir()) cost += state.isReplaceable() ? 0.5 : 5;
         if (world.getBlockState(newPos.down()).isAir()) cost += 1.5;
 
         cost += origin.getSquaredDistance(newPos);
