@@ -2,16 +2,17 @@ package net.pneumono.gravestones.api;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
+import net.pneumono.gravestones.gravestones.GravestonePlacement;
 
 /**
  * Callback for changing the placement position of gravestones.
  *
- * <p>Returning a {@link GlobalPos} stops further processing and places the gravestone at that position.
+ * <p>Returning a {@linkplain GravestonePlacement#isInvalid(BlockState) valid} {@link GlobalPos}
+ * stops further processing and places the gravestone at that position.
  * To fall back to further processing, return {@code null}.
  *
  * <p>This is ideal for mods that do not want items dropped at the player's death position.
@@ -23,7 +24,7 @@ import net.minecraft.world.World;
  * The {@code ServerWorld} provided represents the dimension in which the player died.
  *
  * <p>If you want to avoid breaking blocks at your target position,
- * {@link net.pneumono.gravestones.gravestones.GravestonePlacement#getValidPos(World, BlockPos, int)  GravestonePlacement.getValidPos}
+ * {@link GravestonePlacement#getValidPos}
  * can be used to find the best nearby position.
  * Remember that it may return null if it does not find a valid position.
  * If the gravestone is placed at a position with a block, the block will still drop as an item when broken,
@@ -45,6 +46,7 @@ public interface RedirectGravestonePositionCallback {
 
                 for (RedirectGravestonePositionCallback listener : listeners) {
                     placementPos = listener.redirectPosition(world, player, deathPos);
+                    if (GravestonePlacement.isInvalid(world.getBlockState(placementPos.pos()))) placementPos = null;
                     if (placementPos != null) break;
                 }
 

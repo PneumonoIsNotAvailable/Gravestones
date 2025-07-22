@@ -20,7 +20,7 @@ public class GravestonePlacement extends GravestoneManager {
     /**
      * Returns the placement position for a gravestone.
      *
-     * <p>Checks {@link RedirectGravestonePositionCallback} listeners, and if none return a redirected position,
+     * <p>Checks {@link RedirectGravestonePositionCallback} listeners, and if none return a valid redirected position,
      * simply uses the result from {@link #getValidPos}.
      *
      * <p>Should not be called by {@link RedirectGravestonePositionCallback} listeners, for obvious reasons.
@@ -76,13 +76,21 @@ public class GravestonePlacement extends GravestoneManager {
         }
     }
 
+    /**
+     * Returns {@code true} if the block state cannot be replaced by gravestones. Does not check {@link PositionValidationCallback} listeners.
+     */
+    public static boolean isInvalid(BlockState state) {
+        Block block = state.getBlock();
+        return block.getHardness() < 0 ||
+                block.getBlastResistance() >= 3600000 ||
+                block == Blocks.VOID_AIR ||
+                state.isIn(GravestonesRegistry.BLOCK_GRAVESTONE_IRREPLACEABLE);
+    }
+
     private static double getCost(World world, BlockPos newPos, BlockPos origin) {
         BlockState state = world.getBlockState(newPos);
-        Block block = state.getBlock();
         if (
-                block.getHardness() < 0 || block.getBlastResistance() >= 3600000 || block == Blocks.VOID_AIR ||
-                state.isIn(GravestonesRegistry.BLOCK_GRAVESTONE_IRREPLACEABLE) ||
-                !PositionValidationCallback.EVENT.invoker().isPositionValid(world, state, newPos)
+                isInvalid(state) || !PositionValidationCallback.EVENT.invoker().isPositionValid(world, state, newPos)
         ) {
             return -1;
         }
