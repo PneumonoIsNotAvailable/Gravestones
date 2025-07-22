@@ -77,6 +77,8 @@
   "configs.gravestones.spawn_gravestone_skeletons.tooltip": "Whether or not gravestones spawn skeletons when their owner is near",
   "configs.gravestones.console_info": "Console Info",
   "configs.gravestones.console_info.tooltip": "Whether or not highly detailed information about graves is recorded in console. This is mostly just for debugging!",
+  "configs.gravestones.show_heads": "Show Heads",
+  "configs.gravestones.show_heads.tooltip": "Whether or not dead player's heads appear at the foot of their gravestones.",
   "configs.gravestones.time_format": "Time Format",
   "configs.gravestones.time_format.ddmmyyyy": "DD/MM/YYYY",
   "configs.gravestones.time_format.mmddyyyy": "MM/DD/YYYY",

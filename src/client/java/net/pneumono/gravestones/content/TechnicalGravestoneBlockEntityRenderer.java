@@ -67,4 +67,11 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
         }
         return text;
     }
+
+    @Override
+    public void renderHead(TechnicalGravestoneBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        if (GravestonesConfig.SHOW_HEADS.getValue()) {
+            super.renderHead(entity, matrices, vertexConsumers, light);
+        }
+    }
 }

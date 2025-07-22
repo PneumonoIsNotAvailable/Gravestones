@@ -77,6 +77,8 @@
   "configs.gravestones.spawn_gravestone_skeletons.tooltip": "If die boxz make skeletun frends sometiems",
   "configs.gravestones.console_info": "Clevr knowings",
   "configs.gravestones.console_info.tooltip": "Putz smart kitteh knowings in ur consol. FOR CLEVR COED CATS ONLY!!",
+  "configs.gravestones.show_heads": "haz hed",
+  "configs.gravestones.show_heads.tooltip": "If died kittehz hed iz at da die box",
   "configs.gravestones.time_format": "Tiem way",
   "configs.gravestones.time_format.ddmmyyyy": "DD/MM/YYYY",
   "configs.gravestones.time_format.mmddyyyy": "MM/DD/YYYY",
