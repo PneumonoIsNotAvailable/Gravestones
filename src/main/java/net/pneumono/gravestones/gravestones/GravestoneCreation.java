@@ -13,10 +13,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameRules;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
+import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
+import net.pneumono.gravestones.api.GravestonePlacedCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.data.GravestonePosition;
@@ -33,27 +35,36 @@ import java.util.*;
 
 public class GravestoneCreation extends GravestonesManager {
     public static void handleGravestones(PlayerEntity player) {
-        info("----- ----- Beginning Gravestone Work ----- -----");
-        info("This mostly exists for debugging purposes, but might be useful for server owners. " +
-                "If you don't want to see all this every time someone dies, disable 'console_info' in the config!");
-
         World world = player.getWorld();
         if (!(world instanceof ServerWorld serverWorld)) {
             return;
         }
+
+        info("----- ----- Beginning Gravestone Work ----- -----");
+        info("This mostly exists for debugging purposes, but might be useful for server owners. " +
+                "If you don't want to see all this every time someone dies, disable 'console_info' in the config!");
+
         BlockPos playerPos = player.getBlockPos();
         String playerName = player.getName().getString();
         GameProfile playerProfile = player.getGameProfile();
 
-        if (serverWorld.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
-            info("Nevermind, keepInventory is on!");
+        if (CancelGravestonePlacementCallback.EVENT.invoker().shouldCancel(
+                serverWorld, player, new GlobalPos(serverWorld.getRegistryKey(), playerPos)
+        )) {
+            info("Gravestone placement cancelled!");
             info("----- ----- Ending Gravestone Work ----- -----");
             return;
         }
 
-        BlockPos gravestonePos = GravestonePlacement.placeGravestone(world, playerPos);
+        GlobalPos globalDeathPos = new GlobalPos(world.getRegistryKey(), playerPos);
+        GlobalPos globalGravestonePos = GravestonePlacement.placeGravestone(
+                serverWorld, player, globalDeathPos
+        );
+        BlockPos gravestonePos = globalGravestonePos == null ? new BlockPos(0, 0, 0) : globalGravestonePos.pos();
 
-        if (gravestonePos == null) {
+        MinecraftServer server = world.getServer();
+
+        if (globalGravestonePos == null || !(server.getWorld(globalGravestonePos.dimension()) instanceof World validWorld)) {
             error("Gravestone was not placed successfully! The items have been dropped on the floor");
         } else {
             String uuid = "";
@@ -62,15 +73,14 @@ public class GravestoneCreation extends GravestonesManager {
             }
             Gravestones.LOGGER.info("Placed {}'s{} Gravestone at {}", playerName, uuid, posToString(gravestonePos));
 
-            MinecraftServer server = world.getServer();
             if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
                 server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)), false);
             }
 
-            if (world.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone) {
+            if (validWorld.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone) {
                 gravestone.setGraveOwner(new ProfileComponent(playerProfile));
                 Date date = new Date();
-                gravestone.setSpawnDate(GravestoneTime.READABLE.format(date), world.getTime());
+                gravestone.setSpawnDate(GravestoneTime.READABLE.format(date), validWorld.getTime());
 
                 info("Inserting gravestone data into grave...");
                 gravestone.setContents(GravestonesApi.getDataToInsert(player));
@@ -78,7 +88,7 @@ public class GravestoneCreation extends GravestonesManager {
 
                 recordDeathData(gravestone, player, date);
 
-                world.updateListeners(gravestonePos, world.getBlockState(gravestonePos), world.getBlockState(gravestonePos), Block.NOTIFY_LISTENERS);
+                validWorld.updateListeners(gravestonePos, gravestone.getCachedState(), gravestone.getCachedState(), Block.NOTIFY_LISTENERS);
 
                 info("Gave Gravestone it's data (graveOwner, spawnDate, and inventory)");
             } else {
@@ -88,6 +98,9 @@ public class GravestoneCreation extends GravestonesManager {
 
         List<GravestonePosition> oldGravePositions = readAndWriteData(serverWorld, playerProfile, playerName, gravestonePos);
         GravestoneDecay.deathDecayOldGravestones(serverWorld, oldGravePositions, gravestonePos);
+
+        GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(serverWorld, player, globalDeathPos, globalGravestonePos);
+
         info("----- ----- Ending Gravestone Work ----- -----");
     }
 

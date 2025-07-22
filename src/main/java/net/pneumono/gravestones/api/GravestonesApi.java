@@ -3,7 +3,6 @@ package net.pneumono.gravestones.api;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.storage.NbtReadView;
 import net.minecraft.storage.NbtWriteView;
 import net.minecraft.storage.ReadView;
@@ -40,6 +39,9 @@ public class GravestonesApi {
         ITEM_SKIP_PREDICATES.add(predicate);
     }
 
+    /**
+     * Removes data from the player, and returns an NBT Compound with that data.
+     */
     public static NbtCompound getDataToInsert(PlayerEntity player) {
         NbtCompound contents = new NbtCompound();
 
@@ -60,48 +62,47 @@ public class GravestonesApi {
         return contents;
     }
 
+    /**
+     * Called when gravestones are broken, including when collected.
+     */
     public static void onBreak(World world, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
-            ErrorReporter reporter = logging.makeChild(entity.getReporterContext());
-            onBreak(reporter, world.getRegistryManager(), world, pos, decay, entity.getContents());
-        }
-    }
-
-    public static void onBreak(ErrorReporter reporter, RegistryWrapper.WrapperLookup registries, World world, BlockPos pos, int decay, NbtCompound contents) {
+        NbtCompound contents = entity.getContents();
         if (contents.isEmpty()) return;
 
-        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-            String id = entry.getKey().toString();
-            ReadView view = NbtReadView.create(reporter, registries, contents);
+        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
+            ErrorReporter reporter = logging.makeChild(entity.getReporterContext());
 
-            entry.getValue().onBreak(
-                    view.getReadView(id),
-                    world,
-                    pos,
-                    decay
-            );
+            for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+                ReadView view = NbtReadView.create(reporter, world.getRegistryManager(), contents);
+
+                entry.getValue().onBreak(
+                        view.getReadView(entry.getKey().toString()),
+                        world,
+                        pos,
+                        decay
+                );
+            }
         }
     }
 
+    /**
+     * Called when gravestones are collected.
+     */
     public static void onCollect(World world, BlockPos pos, PlayerEntity player, int decay, NbtCompound contents) {
         try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
             ErrorReporter reporter = logging.makeChild(player.getErrorReporterContext());
-            onCollect(reporter, world.getRegistryManager(), world, pos, player, decay, contents);
-        }
-    }
 
-    public static void onCollect(ErrorReporter reporter, RegistryWrapper.WrapperLookup registries, World world, BlockPos pos, PlayerEntity player, int decay, NbtCompound contents) {
-        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-            String id = entry.getKey().toString();
-            ReadView view = NbtReadView.create(reporter, registries, contents);
+            for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+                ReadView view = NbtReadView.create(reporter, world.getRegistryManager(), contents);
 
-            entry.getValue().onCollect(
-                    view.getReadView(id),
-                    world,
-                    pos,
-                    player,
-                    decay
-            );
+                entry.getValue().onCollect(
+                        view.getReadView(entry.getKey().toString()),
+                        world,
+                        pos,
+                        player,
+                        decay
+                );
+            }
         }
     }
 

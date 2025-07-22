@@ -29,7 +29,9 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
 import net.pneumono.gravestones.block.*;
@@ -142,6 +144,10 @@ public class GravestonesRegistry {
         );
         InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
                 EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
+        );
+
+        CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
+                world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)
         );
     }
 
