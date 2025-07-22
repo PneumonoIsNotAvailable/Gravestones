@@ -21,11 +21,13 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
-    private NbtCompound contents;
+    private NbtCompound contents = new NbtCompound();
+    @Nullable
     private ProfileComponent graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
@@ -198,6 +200,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         }
     }
 
+    @Nullable
     public ProfileComponent getGraveOwner() {
         return this.graveOwner;
     }

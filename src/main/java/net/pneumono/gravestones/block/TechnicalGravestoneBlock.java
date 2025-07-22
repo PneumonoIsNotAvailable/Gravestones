@@ -8,33 +8,21 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.tick.ScheduledTickView;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
@@ -44,20 +32,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 
-public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterloggable {
+public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
-    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public static final IntProperty DAMAGE = IntProperty.of("damage", 0, 2);
     public static final IntProperty AGE_DAMAGE = IntProperty.of("age_damage", 0, 2);
     public static final IntProperty DEATH_DAMAGE = IntProperty.of("death_damage", 0, 2);
 
     public TechnicalGravestoneBlock(Settings settings) {
         super(settings);
-        setDefaultState(getDefaultState()
-                .with(WATERLOGGED, false)
-        );
     }
 
     @Override
@@ -67,10 +50,10 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
         builder.add(DAMAGE);
         builder.add(AGE_DAMAGE);
         builder.add(DEATH_DAMAGE);
-        builder.add(WATERLOGGED);
     }
 
     @Override
@@ -154,44 +137,8 @@ public class TechnicalGravestoneBlock extends BlockWithEntity implements Waterlo
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
-        return SHAPE;
-    }
-
-    @Override
-    public FluidState getFluidState(BlockState state) {
-        return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
-    }
-
-    @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, net.minecraft.util.math.random.Random random) {
-        if (state.get(WATERLOGGED)) {
-            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
-        }
-
-        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
-    }
-
-    @Nullable
-    @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState()
-                .with(WATERLOGGED, ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER);
-    }
-
-    private static final VoxelShape SHAPE = Stream.of(
-            Block.createCuboidShape(1, 0, 10, 15, 2, 16),
-            Block.createCuboidShape(2, 2, 12, 14, 14, 14),
-            Block.createCuboidShape(4, 14, 12, 12, 16, 14)
-    ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-
-    @Override
     protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+
     }
 
     @Nullable
