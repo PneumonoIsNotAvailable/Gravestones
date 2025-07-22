@@ -29,6 +29,36 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
+    "has_gravestone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "gravestones:gravestone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravestone_chipped": {
+      "conditions": {
+        "items": [
+          {
+            "items": "gravestones:gravestone_chipped"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravestone_damaged": {
+      "conditions": {
+        "items": [
+          {
+            "items": "gravestones:gravestone_damaged"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "has_the_recipe": {
       "conditions": {
         "recipe": "gravestones:gravestone"
@@ -38,9 +68,12 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
       "has_stone",
-      "has_stone_slab"
+      "has_stone_slab",
+      "has_gravestone",
+      "has_gravestone_chipped",
+      "has_gravestone_damaged",
+      "has_the_recipe"
     ]
   ],
   "rewards": {
