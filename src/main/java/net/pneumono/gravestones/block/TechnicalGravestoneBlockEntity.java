@@ -21,7 +21,6 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -220,10 +219,5 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     public Direction getGravestoneDirection() {
         return Direction.NORTH;
-    }
-
-    @Override
-    public @Nullable ProfileComponent getHeadProfile() {
-        return getGraveOwner();
     }
 }

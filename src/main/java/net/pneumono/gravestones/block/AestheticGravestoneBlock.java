@@ -130,7 +130,7 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
         }
         Item item = stack.getItem();
 
-        if (item instanceof PlayerHeadItem && gravestone.getHeadStack().isEmpty()) {
+        if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof AbstractSkullBlock && gravestone.getHeadStack().isEmpty()) {
             if (!world.isClient()) {
                 gravestone.setHeadStack(player, stack);
             }

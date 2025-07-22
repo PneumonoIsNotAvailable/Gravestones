@@ -1,6 +1,5 @@
 package net.pneumono.gravestones.block;
 
-import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,7 +8,6 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentsAccess;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -37,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
@@ -180,17 +177,6 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return Direction.NORTH;
     }
 
-    @Override
-    public @Nullable ProfileComponent getHeadProfile() {
-        if (!this.headStack.isEmpty() && this.headStack.contains(DataComponentTypes.PROFILE)) {
-            return this.headStack.get(DataComponentTypes.PROFILE);
-        }
-        if (!this.headStack.isEmpty()) {
-            return new ProfileComponent(Optional.empty(), Optional.empty(), new PropertyMap());
-        }
-        return null;
-    }
-
     public void setHeadStack(@Nullable LivingEntity entity, ItemStack headStack) {
         this.headStack = headStack.splitUnlessCreative(1, entity);
         this.updateListeners();
@@ -199,15 +185,15 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         );
     }
 
+    public ItemStack getHeadStack() {
+        return headStack;
+    }
+
     @Override
     public void onBlockReplaced(BlockPos pos, BlockState oldState) {
         if (this.world != null) {
             ItemScatterer.spawn(this.world, pos.getX(), pos.getY(), pos.getZ(), this.headStack);
         }
-    }
-
-    public ItemStack getHeadStack() {
-        return headStack;
     }
 
     public void setEditor(@Nullable UUID editor) {

@@ -1,8 +1,13 @@
 package net.pneumono.gravestones.content;
 
+import net.minecraft.block.SkullBlock;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
+import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.Text;
@@ -21,20 +26,20 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
     }
 
     @Override
-    public void renderGravestoneText(TechnicalGravestoneBlockEntity blockEntity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    public void renderGravestoneText(TechnicalGravestoneBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         for (int i = 0; i < 4; ++i) {
             matrices.translate(0, 2 * (1 / TEXT_SCALE), 0);
 
             Text message = Text.literal(switch (i) {
                 case 0 -> {
-                    ProfileComponent profileComponent = blockEntity.getGraveOwner();
+                    ProfileComponent profileComponent = entity.getGraveOwner();
                     if (profileComponent != null) {
                         yield profileComponent.name().orElse("???");
                     }
                     yield "???";
                 }
-                case 1 -> getGravestoneTimeLines(blockEntity,true);
-                case 2 -> getGravestoneTimeLines(blockEntity,false);
+                case 1 -> getGravestoneTimeLines(entity,true);
+                case 2 -> getGravestoneTimeLines(entity,false);
                 default -> "";
             });
 
@@ -73,5 +78,18 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
         if (GravestonesConfig.SHOW_HEADS.getValue()) {
             super.renderHead(entity, matrices, vertexConsumers, light);
         }
+    }
+
+    @Override
+    public void renderGravestoneHead(TechnicalGravestoneBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, float yaw, float pitch, int light) {
+        if (!GravestonesConfig.SHOW_HEADS.getValue()) return;
+
+        SkullBlockEntityModel model = this.models.apply(SkullBlock.Type.PLAYER);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
+                SkullBlockEntityRenderer.getRenderLayer(SkullBlock.Type.PLAYER, entity.getGraveOwner())
+        );
+
+        model.setHeadRotation(0.0F, yaw, pitch);
+        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
     }
 }
