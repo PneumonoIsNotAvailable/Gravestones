@@ -50,10 +50,6 @@ fabricApi {
 		modId = "${project.name}_tests"
 		eula = true
 	}
-
-	configureDataGeneration {
-		client = true
-	}
 }
 
 dependencies {
