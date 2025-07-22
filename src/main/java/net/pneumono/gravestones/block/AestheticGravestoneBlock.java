@@ -129,6 +129,14 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
             return ActionResult.PASS;
         }
         Item item = stack.getItem();
+
+        if (item instanceof PlayerHeadItem && gravestone.getHeadStack().isEmpty()) {
+            if (!world.isClient()) {
+                gravestone.setHeadStack(player, stack);
+            }
+            return ActionResult.SUCCESS;
+        }
+
         boolean waxed = gravestone.isWaxed();
 
         if (!world.isClient()) {
@@ -193,23 +201,30 @@ public class AestheticGravestoneBlock extends BlockWithEntity implements Waterlo
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity gravestoneBlockEntity) {
-            if (world.isClient) {
-                Util.getFatalOrPause(new IllegalStateException("Expected to only call this on server"));
-            }
+        if (!(world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity)) return ActionResult.PASS;
 
-            boolean ranCommand = gravestoneBlockEntity.runCommandClickEvent(player, world, pos);
-            if (gravestoneBlockEntity.isWaxed()) {
-                world.playSound(null, gravestoneBlockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, SoundCategory.BLOCKS);
-                return ActionResult.SUCCESS_SERVER;
-            } else if (ranCommand) {
-                return ActionResult.SUCCESS_SERVER;
-            } else if (noOtherPlayerEditing(player, gravestoneBlockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, gravestoneBlockEntity)) {
-                this.openEditScreen(player, gravestoneBlockEntity);
-                return ActionResult.SUCCESS_SERVER;
-            } else {
-                return ActionResult.PASS;
+        if (world.isClient()) {
+            Util.getFatalOrPause(new IllegalStateException("Expected to only call this on server"));
+        }
+
+        ItemStack headStack = blockEntity.getHeadStack();
+        if (!headStack.isEmpty()) {
+            if (!player.giveItemStack(headStack)) {
+                player.dropItem(headStack, false);
             }
+            blockEntity.setHeadStack(player, ItemStack.EMPTY);
+            return ActionResult.SUCCESS;
+        }
+
+        boolean ranCommand = blockEntity.runCommandClickEvent(player, world, pos);
+        if (blockEntity.isWaxed()) {
+            world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, SoundCategory.BLOCKS);
+            return ActionResult.SUCCESS_SERVER;
+        } else if (ranCommand) {
+            return ActionResult.SUCCESS_SERVER;
+        } else if (noOtherPlayerEditing(player, blockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, blockEntity)) {
+            this.openEditScreen(player, blockEntity);
+            return ActionResult.SUCCESS_SERVER;
         } else {
             return ActionResult.PASS;
         }
