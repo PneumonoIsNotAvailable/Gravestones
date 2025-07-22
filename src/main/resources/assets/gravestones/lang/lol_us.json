@@ -34,11 +34,12 @@
   "commands.gravestones.getdata.player.grave_data": "%1$s haz die boxz arund: %2$s, %3$s, %4$s",
   "commands.gravestones.getuuid": "%1$s haz cat ID %2$s",
 
+  "configs.gravestones.screen_title": "Die box settinz",
+
   "configs.category.gravestones.decay": "Die box oldin",
   "configs.category.gravestones.experience": "Kewlness",
   "configs.category.gravestones.multiplayer": "Wiv othr catz",
-
-  "configs.gravestones.screen_title": "Die box settinz",
+  "configs.category.gravestones.clientside": "up 2 each kitteh",
 
   "configs.gravestones.decay_with_deaths": "Die box ouchy when u die",
   "configs.gravestones.decay_with_deaths.tooltip": "If die boxz ouchy more when u die agen",

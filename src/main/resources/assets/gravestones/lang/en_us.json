@@ -34,11 +34,12 @@
   "commands.gravestones.getdata.player.grave_data": "%1$s has graves at the following locations: %2$s, %3$s, %4$s",
   "commands.gravestones.getuuid": "%1$s has UUID %2$s",
 
+  "configs.gravestones.screen_title": "Gravestones Configs",
+
   "configs.category.gravestones.decay": "Gravestone Decay",
   "configs.category.gravestones.experience": "Experience Storage",
   "configs.category.gravestones.multiplayer": "Multiplayer",
-
-  "configs.gravestones.screen_title": "Gravestones Configs",
+  "configs.category.gravestones.clientside": "Client-Side",
 
   "configs.gravestones.decay_with_deaths": "Death Decay",
   "configs.gravestones.decay_with_deaths.tooltip": "Whether or not gravestones are damaged from further deaths",

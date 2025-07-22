@@ -22,9 +22,9 @@ public class GravestonesConfig {
 
     public static final BooleanConfiguration AESTHETIC_GRAVESTONES = new BooleanConfiguration(Gravestones.MOD_ID, "aesthetic_gravestones", ConfigEnv.SERVER, true);
     public static final BooleanConfiguration SPAWN_GRAVESTONE_SKELETONS = new BooleanConfiguration(Gravestones.MOD_ID, "spawn_gravestone_skeletons", ConfigEnv.SERVER, false);
-    public static final BooleanConfiguration CONSOLE_INFO = new BooleanConfiguration(Gravestones.MOD_ID, "console_info", ConfigEnv.CLIENT, false);
     public static final BooleanConfiguration SHOW_HEADS = new BooleanConfiguration(Gravestones.MOD_ID, "show_heads", ConfigEnv.CLIENT, true);
     public static final EnumConfiguration<TimeFormat> TIME_FORMAT = new EnumConfiguration<>(Gravestones.MOD_ID, "time_format", ConfigEnv.CLIENT, TimeFormat.MMDDYYYY);
+    public static final BooleanConfiguration CONSOLE_INFO = new BooleanConfiguration(Gravestones.MOD_ID, "console_info", ConfigEnv.CLIENT, false);
 
     public static void registerGravestonesConfigs() {
         Configs.register(Gravestones.MOD_ID,
@@ -62,6 +62,11 @@ public class GravestonesConfig {
                         GRAVESTONE_ACCESSIBLE_OWNER_ONLY,
                         BROADCAST_COLLECT_IN_CHAT,
                         BROADCAST_COORDINATES_IN_CHAT
+                ),
+                new ConfigCategory(Gravestones.MOD_ID, "clientside",
+                        SHOW_HEADS,
+                        TIME_FORMAT,
+                        CONSOLE_INFO
                 )
         );
     }
