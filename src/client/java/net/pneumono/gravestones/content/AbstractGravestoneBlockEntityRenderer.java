@@ -19,6 +19,8 @@ import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
 import net.pneumono.gravestones.block.AbstractGravestoneBlockEntity;
 
+import java.util.UUID;
+
 public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGravestoneBlockEntity> implements BlockEntityRenderer<T> {
     protected static final float TEXT_SCALE = 1f / 7f;
     protected final TextRenderer textRenderer;
@@ -71,15 +73,20 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
 
         matrices.push();
 
-        matrices.translate(0F, -0.125F, 0F);
+        matrices.translate(0F, -0.0625F, 0F);
 
         BlockPos pos = entity.getPos();
-        Random random = new CheckedRandom(pos.toString().hashCode());
+        // Slightly overcomplicated, but whatever
+        long seed = (
+                "Pos: " + pos.toString() +
+                ", UUID: " + profile.uuid().map(UUID::toString).orElse("???")
+        ).hashCode();
+        Random random = new CheckedRandom(seed);
 
-        float yaw = random.nextFloat() * 90F - 45F;
-        float pitch = random.nextFloat() * 30F - 15F;
+        float yaw = random.nextFloat() * 70F - 35F;
+        float pitch = random.nextFloat() * -30F;
 
-        matrices.translate(0.5F, 0.0F, 0.5F);
+        matrices.translate(0.5F, 0.0F, 0.475F);
 
         matrices.scale(-1.0F, -1.0F, 1.0F);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(SkullBlockEntityRenderer.getRenderLayer(SkullBlock.Type.PLAYER, profile));
