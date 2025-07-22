@@ -66,6 +66,8 @@
   "configs.gravestones.experience_kept.tooltip": "How ur levlz kept gets knowed. Kan use frakshuns or da normal numberz (7 * currnt lvelz)",
   "configs.gravestones.experience_decay": "Expee gets old 2!??",
   "configs.gravestones.experience_decay.tooltip": "If die box olding takes away som of ur levz. Normly dropz 100%, but wen ouchied dropz 50%, and wen almost dyin dropz 33%)",
+  "configs.gravestones.drop_experience": "drop ur levlz",
+  "configs.gravestones.drop_experience.tooltip": "If die boxz drop ur xp on da grund or giv it 2 u",
   "configs.gravestones.gravestone_accessible_owner_only": "STEALINGG",
   "configs.gravestones.gravestone_accessible_owner_only.tooltip": "If othr kittehz kan steel ur stuffs!!",
   "configs.gravestones.broadcast_collect_in_chat": "evry1 sees collekt",

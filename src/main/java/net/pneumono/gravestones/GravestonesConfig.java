@@ -15,6 +15,7 @@ public class GravestonesConfig {
     public static final BooleanConfiguration EXPERIENCE_CAP = new BooleanConfiguration(Gravestones.MOD_ID, "experience_cap", ConfigEnv.SERVER, true);
     public static final EnumConfiguration<ExperienceKeptCalculation> EXPERIENCE_KEPT = new EnumConfiguration<>(Gravestones.MOD_ID, "experience_kept", ConfigEnv.SERVER, ExperienceKeptCalculation.VANILLA);
     public static final BooleanConfiguration EXPERIENCE_DECAY = new BooleanConfiguration(Gravestones.MOD_ID, "experience_decay", ConfigEnv.SERVER, false);
+    public static final BooleanConfiguration DROP_EXPERIENCE = new BooleanConfiguration(Gravestones.MOD_ID, "drop_experience", ConfigEnv.SERVER, false);
 
     public static final BooleanConfiguration GRAVESTONE_ACCESSIBLE_OWNER_ONLY = new BooleanConfiguration(Gravestones.MOD_ID, "gravestone_accessible_owner_only", ConfigEnv.SERVER, true);
     public static final BooleanConfiguration BROADCAST_COLLECT_IN_CHAT = new BooleanConfiguration(Gravestones.MOD_ID, "broadcast_collect_in_chat", ConfigEnv.SERVER, false);
@@ -36,6 +37,7 @@ public class GravestonesConfig {
                 EXPERIENCE_CAP,
                 EXPERIENCE_KEPT,
                 EXPERIENCE_DECAY,
+                DROP_EXPERIENCE,
                 GRAVESTONE_ACCESSIBLE_OWNER_ONLY,
                 BROADCAST_COLLECT_IN_CHAT,
                 BROADCAST_COORDINATES_IN_CHAT,
@@ -56,7 +58,8 @@ public class GravestonesConfig {
                         STORE_EXPERIENCE,
                         EXPERIENCE_CAP,
                         EXPERIENCE_KEPT,
-                        EXPERIENCE_DECAY
+                        EXPERIENCE_DECAY,
+                        DROP_EXPERIENCE
                 ),
                 new ConfigCategory(Gravestones.MOD_ID, "multiplayer",
                         GRAVESTONE_ACCESSIBLE_OWNER_ONLY,

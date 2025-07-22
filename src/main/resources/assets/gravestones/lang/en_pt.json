@@ -66,6 +66,8 @@
     "configs.gravestones.experience_kept.tooltip": "How th' knowledge ye bury be figured out. Either no knowledge be lost, a fraction be kept, or it makes use o' th' vanilla calculation (7 * current level)",
     "configs.gravestones.experience_decay": "Knowledge Weatherin'",
     "configs.gravestones.experience_decay.tooltip": "If th' weatherin' o' yer Dead Man's Chest also weathers th' knowledge within. If so, th' knowledge unburied be partitioned by th' weatherin' stage (stage 1 'as 100%, stage 2 'as 50%, and stage 3 'as 33%)",
+    "configs.gravestones.drop_experience": "Drop Knowledge",
+    "configs.gravestones.drop_experience.tooltip": "Whether Dead Man's Chests leave yer knowledge points on th' ground, or grant ye yer knowledge directly",
     "configs.gravestones.gravestone_accessible_owner_only": "Owner-Only Unburyin'",
     "configs.gravestones.gravestone_accessible_owner_only.tooltip": "If sailors other than th' Dead Man's Chest's owner be prohibited from unburyin' th' chest",
     "configs.gravestones.broadcast_collect_in_chat": "Gossip unburyin'",

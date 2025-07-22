@@ -66,6 +66,8 @@
   "configs.gravestones.experience_kept.tooltip": "How experience kept on death is calculated. Either no experience is lost, a fraction is kept, or it uses the vanilla calculation (7 * current level)",
   "configs.gravestones.experience_decay": "Experience Decay",
   "configs.gravestones.experience_decay.tooltip": "Whether grave decay affects the experience stored in the grave (if enabled). If so, experience dropped is divided by the decay stage (stage 1 drops 100%, stage 2 drops 50%, and stage 3 drops 33%)",
+  "configs.gravestones.drop_experience": "Drop Experience",
+  "configs.gravestones.drop_experience.tooltip": "Whether gravestones drop experience on the ground when collected, or give it directly to the player",
   "configs.gravestones.gravestone_accessible_owner_only": "Owner-Only Access",
   "configs.gravestones.gravestone_accessible_owner_only.tooltip": "Whether players who aren't the owner are prevented from accessing a grave's items",
   "configs.gravestones.broadcast_collect_in_chat": "Broadcast Collection",
