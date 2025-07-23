@@ -27,6 +27,7 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestonesRegistry;
+import net.pneumono.gravestones.gravestones.GravestoneManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -78,7 +79,7 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
             uuid = " (" + player.getGameProfile().getId() + ")";
         }
         if (isOwner) {
-            Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, pos.toString());
+            Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, GravestoneManager.posToString(pos));
         } else {
             Gravestones.LOGGER.info("{}{} has found {}{}'s grave at {}",
                     player.getName().getString(), uuid,
@@ -96,9 +97,9 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
             MutableText text;
             if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
                 if (isOwner) {
-                    text = Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), pos.toString());
+                    text = Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneManager.posToString(pos));
                 } else {
-                    text = Text.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), graveOwner.name().orElse("???"), pos.toString());
+                    text = Text.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), graveOwner.name().orElse("???"), GravestoneManager.posToString(pos));
                 }
             } else {
                 if (isOwner) {
