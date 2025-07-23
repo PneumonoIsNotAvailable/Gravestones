@@ -1,6 +1,6 @@
 ---
 name: Feature Suggestion
-about: Suggest new features for the mod.
+about: Suggest new features for the mod
 title: "[Suggestion]"
 labels: ''
 assignees: PneumonoIsNotAvailable

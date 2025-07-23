@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report issues with the mod.
+about: Report issues with the mod
 title: "[Bug]"
 labels: ''
 assignees: PneumonoIsNotAvailable
@@ -28,4 +28,4 @@ Mod Version:
 Mod List:
 
 **Additional context**
-Add any other context about the problem here.
+Any other context related to the issue.
