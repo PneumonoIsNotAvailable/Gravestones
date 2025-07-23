@@ -31,6 +31,8 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     private ProfileComponent graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
+    private int deathDamage;
+    private int ageDamage;
 
     public TechnicalGravestoneBlockEntity(BlockPos pos, BlockState state) {
         super(GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, pos, state);
@@ -48,6 +50,8 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         if (this.spawnDateTicks != 0) {
             view.putLong("spawnDateTicks", this.spawnDateTicks);
         }
+        view.putInt("deathDamage", this.deathDamage);
+        view.putInt("ageDamage", this.ageDamage);
     }
 
     @Override
@@ -58,6 +62,8 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         this.setGraveOwner(view.read("owner", ProfileComponent.CODEC).orElse(null));
         this.spawnDateTime = view.getString("spawnDateTime", null);
         this.spawnDateTicks = view.getLong("spawnDateTicks", 0);
+        this.deathDamage = view.getInt("deathDamage", 0);
+        this.ageDamage = view.getInt("ageDamage", 0);
     }
 
     @Override
@@ -198,6 +204,28 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         } else {
             this.markDirty();
         }
+    }
+
+    public int getTotalDamage() {
+        return this.ageDamage + this.deathDamage;
+    }
+
+    public int getAgeDamage() {
+        return this.ageDamage;
+    }
+
+    public void setAgeDamage(int ageDamage) {
+        this.ageDamage = ageDamage;
+        this.markDirty();
+    }
+
+    public int getDeathDamage() {
+        return this.deathDamage;
+    }
+
+    public void setDeathDamage(int deathDamage) {
+        this.deathDamage = deathDamage;
+        this.markDirty();
     }
 
     @Nullable

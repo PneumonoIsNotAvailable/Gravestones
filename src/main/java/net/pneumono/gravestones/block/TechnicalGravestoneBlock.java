@@ -35,8 +35,6 @@ import java.util.function.BiConsumer;
 public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
     public static final IntProperty DAMAGE = IntProperty.of("damage", 0, 2);
-    public static final IntProperty AGE_DAMAGE = IntProperty.of("age_damage", 0, 2);
-    public static final IntProperty DEATH_DAMAGE = IntProperty.of("death_damage", 0, 2);
 
     public TechnicalGravestoneBlock(Settings settings) {
         super(settings);
@@ -51,8 +49,6 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
         builder.add(DAMAGE);
-        builder.add(AGE_DAMAGE);
-        builder.add(DEATH_DAMAGE);
     }
 
     @Override

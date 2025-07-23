@@ -8,7 +8,6 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.enums.DecayTimeType;
@@ -37,22 +36,19 @@ public class GravestoneDecay extends GravestoneManager {
         }
 
         long timeUnit = GravestonesConfig.DECAY_TIME.getValue();
-        int ageDamage = state.get(TechnicalGravestoneBlock.AGE_DAMAGE);
+        int ageDamage = entity.getAgeDamage();
 
         if (difference > (timeUnit * 3)) {
-            if (GravestonesApi.shouldDecayAffectGameplay()) {
-                world.breakBlock(pos, true);
-                return;
-            }
+            entity.setAgeDamage(3);
 
         } else if (difference > (timeUnit * 2) && ageDamage != 2) {
-            world.setBlockState(pos, state.with(TechnicalGravestoneBlock.AGE_DAMAGE, 2));
+            entity.setAgeDamage(2);
 
         } else if (difference > timeUnit && ageDamage != 1) {
-            world.setBlockState(pos, state.with(TechnicalGravestoneBlock.AGE_DAMAGE, 1));
+            entity.setAgeDamage(1);
         }
 
-        updateTotalGravestoneDamage(world, pos, state);
+        updateTotalGravestoneDamage(world, pos, state, entity);
     }
 
     protected static void deathDamageOldGravestones(ServerWorld serverWorld, List<GlobalPos> oldGravePositions, GlobalPos newPos) {
@@ -74,23 +70,18 @@ public class GravestoneDecay extends GravestoneManager {
 
     public static void incrementDeathDamage(ServerWorld world, GlobalPos globalPos) {
         BlockPos pos = globalPos.pos();
-        BlockState state = world.getBlockState(pos);
-        if (!state.isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL)) return;
 
-        int ageDamage = state.get(TechnicalGravestoneBlock.DEATH_DAMAGE) + 1;
+        if (
+                !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) ||
+                entity.getGraveOwner() == null
+        ) return;
 
-        if (ageDamage >= 3) {
-            if (GravestonesApi.shouldDecayAffectGameplay()) {
-                world.breakBlock(pos, true);
-            }
-        } else {
-            world.setBlockState(pos, state.with(TechnicalGravestoneBlock.DEATH_DAMAGE, ageDamage));
-            updateTotalGravestoneDamage(world, pos, world.getBlockState(pos));
-        }
+        entity.setDeathDamage(entity.getDeathDamage() + 1);
+        updateTotalGravestoneDamage(world, pos, world.getBlockState(pos), entity);
     }
 
-    public static void updateTotalGravestoneDamage(World world, BlockPos pos, BlockState state) {
-        int totalDamage = state.get(TechnicalGravestoneBlock.AGE_DAMAGE) + state.get(TechnicalGravestoneBlock.DEATH_DAMAGE);
+    public static void updateTotalGravestoneDamage(World world, BlockPos pos, BlockState state, TechnicalGravestoneBlockEntity entity) {
+        int totalDamage = entity.getTotalDamage();
         if (totalDamage == state.get(TechnicalGravestoneBlock.DAMAGE)) return;
 
         if (totalDamage >= 3) {
@@ -99,12 +90,10 @@ public class GravestoneDecay extends GravestoneManager {
             } else {
                 return;
             }
-        } else {
+        } else if (totalDamage >= 0) {
             world.setBlockState(pos, state.with(TechnicalGravestoneBlock.DAMAGE, totalDamage));
         }
 
-        if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
-            entity.markDirty();
-        }
+        entity.markDirty();
     }
 }
