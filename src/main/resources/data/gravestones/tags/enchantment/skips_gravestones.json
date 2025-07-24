@@ -5,6 +5,10 @@
             "required": false
         },
         {
+            "id": "enderzoology:soulbound",
+            "required": false
+        },
+        {
             "id": "soulbound:soulbound",
             "required": false
         },
