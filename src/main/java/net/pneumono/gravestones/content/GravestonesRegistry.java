@@ -2,21 +2,23 @@ package net.pneumono.gravestones.content;
 
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.filter.FilteredMessage;
@@ -35,7 +37,6 @@ import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
 import net.pneumono.gravestones.block.*;
-import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 
 import java.util.List;
@@ -54,13 +55,13 @@ public class GravestonesRegistry {
             AestheticGravestoneBlock::new, AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool());
 
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("technical_gravestone"), BlockEntityType.Builder.create(
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("technical_gravestone"), FabricBlockEntityTypeBuilder.create(
                     TechnicalGravestoneBlockEntity::new,
                     GRAVESTONE_TECHNICAL
             ).build()
     );
     public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("aesthetic_gravestone"), BlockEntityType.Builder.create(
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(
                     AestheticGravestoneBlockEntity::new,
                     GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED
             ).build()
@@ -70,13 +71,12 @@ public class GravestonesRegistry {
             Registries.ENTITY_TYPE,
             Gravestones.id("gravestone_skeleton"),
             EntityType.Builder.<GravestoneSkeletonEntity>create(GravestoneSkeletonEntity::new, SpawnGroup.MISC)
-                    .dimensions(0.6F, 1.99F)
+                    .setDimensions(0.6F, 1.99F)
                     .maxTrackingRange(8)
                     .build("gravestone_skeleton")
     );
 
     public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ITEM, Gravestones.id("skips_gravestones"));
-    public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.id("skips_gravestones"));
     public static final TagKey<Block> BLOCK_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, Gravestones.id("gravestone_irreplaceable"));
 
     public static final SoundEvent SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL = waxedInteractFailSound();
@@ -120,13 +120,11 @@ public class GravestonesRegistry {
         Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
         Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
 
-        PayloadTypeRegistry.playS2C().register(GravestoneEditorOpenS2CPayload.ID, GravestoneEditorOpenS2CPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(UpdateGravestoneC2SPayload.ID, UpdateGravestoneC2SPayload.CODEC);
-
-        ServerPlayNetworking.registerGlobalReceiver(UpdateGravestoneC2SPayload.ID, (payload, context) -> {
+        ServerPlayNetworking.registerGlobalReceiver(UpdateGravestoneC2SPayload.ID, (server, player, handler, buf, sender) -> {
+            UpdateGravestoneC2SPayload payload = UpdateGravestoneC2SPayload.fromBuf(buf);
             List<String> list = Stream.of(payload.getText()).map(Formatting::strip).collect(Collectors.toList());
-            context.player().networkHandler.filterTexts(list).thenAcceptAsync(texts ->
-                    onSignUpdate(context.player(), payload, texts), context.server()
+            handler.filterTexts(list).thenAcceptAsync(texts ->
+                    onSignUpdate(player, payload, texts), server
             );
         });
     }
@@ -137,15 +135,34 @@ public class GravestonesRegistry {
 
         InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
                 itemStack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
-                EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
+                hasEnchantment(Identifier.of("enchantery", "soulbound"), itemStack) ||
+                hasEnchantment(Identifier.of("enderzoology", "soulbound"), itemStack) ||
+                hasEnchantment(Identifier.of("soulbound", "soulbound"), itemStack) ||
+                hasEnchantment(Identifier.of("soulbound_enchantment", "soulbound"), itemStack)
         );
         InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
-                EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
+                EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, itemStack) > 0
         );
 
         CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
                 world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)
         );
+    }
+
+    public static boolean hasEnchantment(Identifier identifier, ItemStack stack) {
+        if (stack.isEmpty()) return false;
+
+        NbtList nbtList = stack.getEnchantments();
+
+        for (int i = 0; i < nbtList.size(); i++) {
+            NbtCompound nbtCompound = nbtList.getCompound(i);
+            Identifier identifier2 = EnchantmentHelper.getIdFromNbt(nbtCompound);
+            if (identifier2 != null && identifier2.equals(identifier)) {
+                return EnchantmentHelper.getLevelFromNbt(nbtCompound) > 0;
+            }
+        }
+
+        return false;
     }
 
     @SuppressWarnings("deprecation")

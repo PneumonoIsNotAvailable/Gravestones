@@ -1,14 +1,12 @@
 package net.pneumono.gravestones.block;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
@@ -18,11 +16,10 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestonesApi;
@@ -31,19 +28,12 @@ import net.pneumono.gravestones.gravestones.GravestoneManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
-import java.util.function.BiConsumer;
 
 public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
-    public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
     public static final IntProperty DAMAGE = IntProperty.of("damage", 0, 2);
 
     public TechnicalGravestoneBlock(Settings settings) {
         super(settings);
-    }
-
-    @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
     }
 
     @Override
@@ -52,8 +42,9 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         builder.add(DAMAGE);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player instanceof FakePlayer || !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone)) {
             return ActionResult.FAIL;
         }
@@ -62,15 +53,18 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
 
         createSoulParticles(world, pos);
 
-        ProfileComponent graveOwner = gravestone.getGraveOwner();
+        GameProfile graveOwner = gravestone.getGraveOwner();
         if (graveOwner == null) {
             player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
             return ActionResult.SUCCESS;
         }
 
-        boolean isOwner = graveOwner.gameProfile().getId().equals(player.getGameProfile().getId());
+        String ownerName = graveOwner.getName();
+        if (ownerName == null) ownerName = "???";
+
+        boolean isOwner = graveOwner.getId().equals(player.getGameProfile().getId());
         if (!isOwner && GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
-            player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.name().orElse("???")), true);
+            player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", ownerName), true);
             return ActionResult.SUCCESS;
         }
 
@@ -83,7 +77,7 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         } else {
             Gravestones.LOGGER.info("{}{} has found {}{}'s grave at {}",
                     player.getName().getString(), uuid,
-                    graveOwner.name().orElse("???"), graveOwner.id().orElse(null),
+                    ownerName, graveOwner.getId(),
                     pos.toString()
             );
         }
@@ -99,13 +93,13 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
                 if (isOwner) {
                     text = Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneManager.posToString(pos));
                 } else {
-                    text = Text.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), graveOwner.name().orElse("???"), GravestoneManager.posToString(pos));
+                    text = Text.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), ownerName, GravestoneManager.posToString(pos));
                 }
             } else {
                 if (isOwner) {
                     text = Text.translatable("gravestones.player_collected_grave", player.getName().getString());
                 } else {
-                    text = Text.translatable("gravestones.player_collected_others_grave", player.getName().getString(), graveOwner.name().orElse("???"));
+                    text = Text.translatable("gravestones.player_collected_others_grave", player.getName().getString(), ownerName);
                 }
             }
             server.getPlayerManager().broadcast(text, false);
@@ -115,9 +109,10 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         return ActionResult.SUCCESS;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        ItemScatterer.onStateReplaced(state, newState, world, pos);
+        world.updateComparators(pos, this);
 
         if (state.getBlock() != world.getBlockState(pos).getBlock()) {
             createSoulParticles(world, pos);
@@ -138,11 +133,6 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
-    @Override
-    protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-        super.onExploded(state, world, pos, explosion, stackMerger);
-    }
-
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
@@ -152,6 +142,6 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return TechnicalGravestoneBlock.validateTicker(type, GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
+        return checkType(type, GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
     }
 }

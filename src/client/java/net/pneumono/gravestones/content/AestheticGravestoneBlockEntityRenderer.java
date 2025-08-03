@@ -1,8 +1,10 @@
 package net.pneumono.gravestones.content;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.SignText;
+import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.OverlayTexture;
@@ -13,9 +15,11 @@ import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.OrderedText;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 
@@ -84,11 +88,23 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
 
         SkullBlock.SkullType type = skullBlock.getSkullType();
 
+        GameProfile profile = null;
+        NbtCompound stackNbt = headStack.getNbt();
+        if (stackNbt != null) {
+            if (stackNbt.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
+                profile = NbtHelper.toGameProfile(stackNbt.getCompound("SkullOwner"));
+            } else if (stackNbt.contains("SkullOwner", NbtElement.STRING_TYPE)) {
+                profile = new GameProfile(null, stackNbt.getString("SkullOwner"));
+                stackNbt.remove("SkullOwner");
+                SkullBlockEntity.loadProperties(profile, gameProfile -> stackNbt.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile)));
+            }
+        }
+
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
-                SkullBlockEntityRenderer.getRenderLayer(type, headStack.get(DataComponentTypes.PROFILE))
+                SkullBlockEntityRenderer.getRenderLayer(type, profile)
         );
         SkullBlockEntityModel model = this.models.apply(type);
         model.setHeadRotation(0.0F, yaw, pitch);
-        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

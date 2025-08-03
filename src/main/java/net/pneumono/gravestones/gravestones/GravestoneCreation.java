@@ -2,7 +2,6 @@ package net.pneumono.gravestones.gravestones;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.FluidTags;
@@ -34,7 +33,7 @@ public class GravestoneCreation extends GravestoneManager {
     }
 
     public static void handle(ServerWorld deathWorld, PlayerEntity player) {
-        GlobalPos deathPos = new GlobalPos(deathWorld.getRegistryKey(), player.getBlockPos());
+        GlobalPos deathPos = GlobalPos.create(deathWorld.getRegistryKey(), player.getBlockPos());
 
         // Callbacks
         if (CancelGravestonePlacementCallback.EVENT.invoker().shouldCancel(
@@ -49,11 +48,11 @@ public class GravestoneCreation extends GravestoneManager {
         // Placement
         GlobalPos gravestonePos = placeGravestone(deathWorld, player, deathPos);
 
-        if (gravestonePos != null && deathWorld.getServer().getWorld(gravestonePos.dimension()) instanceof ServerWorld graveWorld) {
-            Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", player.getGameProfile().getName(), posToString(gravestonePos.pos()));
+        if (gravestonePos != null && deathWorld.getServer().getWorld(gravestonePos.getDimension()) instanceof ServerWorld graveWorld) {
+            Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", player.getGameProfile().getName(), posToString(gravestonePos.getPos()));
         } else {
             Gravestones.LOGGER.info("Failed to place {}'s Gravestone! Dropping contents...", player.getGameProfile().getName());
-            GravestonesApi.onBreak(deathWorld, deathPos.pos(), 0, contents == null ? new NbtCompound() : contents);
+            GravestonesApi.onBreak(deathWorld, deathPos.getPos(), 0, contents == null ? new NbtCompound() : contents);
             return;
         }
 
@@ -65,7 +64,7 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Broadcast
         if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-            deathWorld.getServer().getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", player.getGameProfile().getName(), posToString(gravestonePos.pos())), false);
+            deathWorld.getServer().getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", player.getGameProfile().getName(), posToString(gravestonePos.getPos())), false);
         }
 
         // Callbacks
@@ -87,33 +86,33 @@ public class GravestoneCreation extends GravestoneManager {
     }
 
     private static void insertGravestoneData(ServerWorld world, PlayerEntity player, GlobalPos gravestonePos, NbtCompound contents) {
-        if (!(world.getBlockEntity(gravestonePos.pos()) instanceof TechnicalGravestoneBlockEntity gravestone)) return;
+        if (!(world.getBlockEntity(gravestonePos.getPos()) instanceof TechnicalGravestoneBlockEntity gravestone)) return;
 
         gravestone.setContents(contents);
-        gravestone.setGraveOwner(new ProfileComponent(player.getGameProfile()));
+        gravestone.setGraveOwner(player.getGameProfile());
         gravestone.setSpawnDate(GravestoneTime.READABLE.format(new Date()), world.getTime());
 
-        world.updateListeners(gravestonePos.pos(), gravestone.getCachedState(), gravestone.getCachedState(), Block.NOTIFY_LISTENERS);
+        world.updateListeners(gravestonePos.getPos(), gravestone.getCachedState(), gravestone.getCachedState(), Block.NOTIFY_LISTENERS);
     }
 
     protected static GlobalPos placeGravestone(ServerWorld deathWorld, PlayerEntity player, GlobalPos deathPos) {
         DimensionType dimension = deathWorld.getDimension();
-        GlobalPos clampedDeathPos = new GlobalPos(deathPos.dimension(), deathPos.pos().withY(
-                MathHelper.clamp(deathPos.pos().getY(), dimension.minY(), dimension.minY() + dimension.height())
+        GlobalPos clampedDeathPos = GlobalPos.create(deathPos.getDimension(), deathPos.getPos().withY(
+                MathHelper.clamp(deathPos.getPos().getY(), dimension.minY(), dimension.minY() + dimension.height())
         ));
         GlobalPos validPos = GravestonePlacement.getRedirectableValidPos(deathWorld, player, clampedDeathPos);
 
         if (validPos == null) return null;
-        World validWorld = deathWorld.getServer().getWorld(validPos.dimension());
+        World validWorld = deathWorld.getServer().getWorld(validPos.getDimension());
         if (validWorld == null) return null;
 
         BlockState gravestoneBlock = GravestonesRegistry.GRAVESTONE_TECHNICAL.getDefaultState();
-        if (validWorld.getBlockState(validPos.pos()).getFluidState().isIn(FluidTags.WATER)) {
+        if (validWorld.getBlockState(validPos.getPos()).getFluidState().isIn(FluidTags.WATER)) {
             gravestoneBlock = gravestoneBlock.with(Properties.WATERLOGGED, true);
         }
 
-        validWorld.breakBlock(validPos.pos(), true);
-        validWorld.setBlockState(validPos.pos(), gravestoneBlock);
+        validWorld.breakBlock(validPos.getPos(), true);
+        validWorld.setBlockState(validPos.getPos(), gravestoneBlock);
 
         return validPos;
     }

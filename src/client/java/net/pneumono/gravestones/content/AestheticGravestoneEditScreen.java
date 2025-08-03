@@ -122,11 +122,6 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-        this.renderInGameBackground(context);
-    }
-
-    @Override
     public void close() {
         this.finishEditing();
     }
@@ -134,7 +129,7 @@ public class AestheticGravestoneEditScreen extends Screen {
     @Override
     public void removed() {
         UpdateGravestoneC2SPayload payload = new UpdateGravestoneC2SPayload(this.blockEntity.getPos(), this.messages[0], this.messages[1], this.messages[2], this.messages[3]);
-        ClientPlayNetworking.send(payload);
+        ClientPlayNetworking.send(UpdateGravestoneC2SPayload.ID, payload.toBuf());
     }
 
     @Override
@@ -201,7 +196,7 @@ public class AestheticGravestoneEditScreen extends Screen {
                     int widthEnd = this.textRenderer.getWidth(message.substring(0, end)) - this.textRenderer.getWidth(message) / 2;
                     int idk = Math.min(widthStart, widthEnd);
                     int idk2 = Math.max(widthStart, widthEnd);
-                    context.fill(idk, adjustedY, idk2, adjustedY + TEXT_LINE_HEIGHT, Colors.BLUE);
+                    context.fill(idk, adjustedY, idk2, adjustedY + TEXT_LINE_HEIGHT, -16776961);
                 }
             }
         }

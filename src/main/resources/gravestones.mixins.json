@@ -1,11 +1,12 @@
 {
-	"required": true,
-	"package": "net.pneumono.gravestones.mixin",
-	"compatibilityLevel": "JAVA_17",
-	"mixins": [
+    "required": true,
+    "package": "net.pneumono.gravestones.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "ExplosionMixin",
         "LivingEntityMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
+    ],
+    "injectors": {
+        "defaultRequire": 1
 	}
 }

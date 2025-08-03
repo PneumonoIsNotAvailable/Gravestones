@@ -12,7 +12,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
@@ -28,8 +27,8 @@ public class PlayerInventoryDataType extends GravestoneDataType {
             ItemStack itemStack = inventory.getStack(i);
             if (!GravestonesApi.shouldSkipItem(player, itemStack) && !itemStack.isEmpty()) {
                 DataResult<NbtElement> element = StackWithSlot.CODEC.encodeStart(NbtOps.INSTANCE, new StackWithSlot(i, inventory.removeStack(i)));
-                if (element.isSuccess()) {
-                    list.add(element.getOrThrow());
+                if (element.result().isPresent()) {
+                    list.add(element.result().orElseThrow());
                 }
             }
         }
@@ -43,8 +42,8 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         list.stream()
                 .map(element -> StackWithSlot.CODEC.decode(NbtOps.INSTANCE, element))
-                .filter(DataResult::isSuccess)
-                .map(result -> result.getOrThrow().getFirst())
+                .filter(result -> result.result().isPresent())
+                .map(result -> result.result().orElseThrow().getFirst())
                 .map(StackWithSlot::stack)
                 .forEach(stack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack));
     }
@@ -56,8 +55,8 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         list.stream()
                 .map(element -> StackWithSlot.CODEC.decode(NbtOps.INSTANCE, element))
-                .filter(DataResult::isSuccess)
-                .map(result -> result.getOrThrow().getFirst())
+                .filter(result -> result.result().isPresent())
+                .map(result -> result.result().orElseThrow().getFirst())
                 .filter(stackWithSlot -> {
                     int slot = stackWithSlot.slot();
                     if (stackWithSlot.isValidSlot(inventory.size())) {
@@ -86,8 +85,10 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
     public record StackWithSlot(int slot, ItemStack stack) {
         public static final Codec<StackWithSlot> CODEC = RecordCodecBuilder.create(
-                instance -> instance.group(Codecs.UNSIGNED_BYTE.fieldOf("Slot").orElse(0).forGetter(StackWithSlot::slot), ItemStack.CODEC.fieldOf("ItemStack").forGetter(StackWithSlot::stack))
-                        .apply(instance, StackWithSlot::new)
+                instance -> instance.group(
+                        Codec.INT.fieldOf("Slot").forGetter(StackWithSlot::slot),
+                        ItemStack.CODEC.fieldOf("ItemStack").forGetter(StackWithSlot::stack)
+                ).apply(instance, StackWithSlot::new)
         );
 
         public boolean isValidSlot(int slots) {

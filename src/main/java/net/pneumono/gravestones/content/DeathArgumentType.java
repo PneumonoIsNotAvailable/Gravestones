@@ -10,7 +10,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.pneumono.gravestones.Gravestones;
@@ -81,7 +80,7 @@ public class DeathArgumentType implements ArgumentType<String> {
 
         NbtCompound nbt;
         try {
-            nbt = NbtIo.readCompressed(deathFile.toPath(), NbtSizeTracker.ofUnlimitedBytes());
+            nbt = NbtIo.readCompressed(deathFile);
         } catch (IOException e) {
             throw COULD_NOT_READ.create(file);
         }

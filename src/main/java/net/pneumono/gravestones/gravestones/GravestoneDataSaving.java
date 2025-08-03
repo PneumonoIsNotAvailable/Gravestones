@@ -33,7 +33,7 @@ public class GravestoneDataSaving extends GravestoneManager {
         deathData.put("contents", contents);
 
         try {
-            NbtIo.writeCompressed(deathData, path);
+            NbtIo.writeCompressed(deathData, path.toFile());
         } catch (IOException e) {
             error("Failed to write Gravestone Contents Data", e);
         }
@@ -67,14 +67,14 @@ public class GravestoneDataSaving extends GravestoneManager {
 
         NbtCompound compound = new NbtCompound();
         try {
-            compound = NbtIo.readCompressed(path, NbtSizeTracker.ofUnlimitedBytes());
+            compound = NbtIo.readCompressed(path.toFile());
         } catch (IOException e) {
             error("Failed to read Gravestone Data", e);
         }
 
         DataResult<Pair<List<RecentGraveHistory>, NbtElement>> result = RecentGraveHistory.CODEC.listOf().decode(NbtOps.INSTANCE, compound.getList("data", NbtElement.COMPOUND_TYPE));
-        if (result.isSuccess()) {
-            return result.getOrThrow().getFirst();
+        if (result.result().isPresent()) {
+            return result.result().orElseThrow().getFirst();
         } else {
             return new ArrayList<>();
         }
@@ -86,14 +86,14 @@ public class GravestoneDataSaving extends GravestoneManager {
         DataResult<NbtElement> result = RecentGraveHistory.CODEC.listOf().encodeStart(NbtOps.INSTANCE, histories);
 
         NbtCompound compound = new NbtCompound();
-        if (result.isSuccess()) {
-            compound.put("data", result.getOrThrow());
+        if (result.result().isPresent()) {
+            compound.put("data", result.result().orElseThrow());
         } else {
             compound.put("data", new NbtCompound());
         }
 
         try {
-            NbtIo.writeCompressed(compound, path);
+            NbtIo.writeCompressed(compound, path.toFile());
         } catch (IOException e) {
             error("Failed to write Gravestone Data", e);
         }

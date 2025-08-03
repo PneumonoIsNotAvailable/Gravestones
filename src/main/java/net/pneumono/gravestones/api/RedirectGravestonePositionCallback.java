@@ -46,7 +46,7 @@ public interface RedirectGravestonePositionCallback {
 
                 for (RedirectGravestonePositionCallback listener : listeners) {
                     placementPos = listener.redirectPosition(world, player, deathPos);
-                    if (GravestonePlacement.isInvalid(world.getBlockState(placementPos.pos()))) placementPos = null;
+                    if (GravestonePlacement.isInvalid(world.getBlockState(placementPos.getPos()))) placementPos = null;
                     if (placementPos != null) break;
                 }
 

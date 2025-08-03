@@ -1,5 +1,6 @@
 package net.pneumono.gravestones.content;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.OverlayTexture;
@@ -9,7 +10,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.pneumono.gravestones.GravestonesConfig;
@@ -32,9 +32,9 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
 
             Text message = Text.literal(switch (i) {
                 case 0 -> {
-                    ProfileComponent profileComponent = entity.getGraveOwner();
-                    if (profileComponent != null) {
-                        yield profileComponent.name().orElse("???");
+                    GameProfile profile = entity.getGraveOwner();
+                    if (profile != null && profile.getName() != null) {
+                        yield profile.getName();
                     }
                     yield "???";
                 }
@@ -90,6 +90,6 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
         );
 
         model.setHeadRotation(0.0F, yaw, pitch);
-        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

@@ -21,7 +21,7 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     }
 
     @Override
-    protected void drop(ServerWorld world, DamageSource damageSource) {}
+    protected void drop(DamageSource damageSource) {}
 
     @Override
     public void tick() {

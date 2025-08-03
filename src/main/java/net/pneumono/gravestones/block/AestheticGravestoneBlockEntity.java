@@ -6,16 +6,12 @@ import com.mojang.serialization.DataResult;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SignText;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
@@ -56,48 +52,29 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void writeNbt(NbtCompound view, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(view, registryLookup);
+    public void writeNbt(NbtCompound view) {
+        super.writeNbt(view);
         if (!this.headStack.isEmpty()) {
-            view.put("head", this.headStack.encode(registryLookup));
+            view.put("head", this.headStack.writeNbt(new NbtCompound()));
         }
         DataResult<NbtElement> element = SignText.CODEC.encodeStart(NbtOps.INSTANCE, this.text);
-        if (element.isSuccess()) {
-            view.put("text", element.getOrThrow());
+        if (element.result().isPresent()) {
+            view.put("text", element.result().orElseThrow());
         }
         view.putBoolean("is_waxed", this.waxed);
     }
 
     @Override
-    protected void readNbt(NbtCompound view, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(view, registryLookup);
-        this.headStack = ItemStack.fromNbtOrEmpty(registryLookup, view.getCompound("head"));
+    public void readNbt(NbtCompound view) {
+        super.readNbt(view);
+        this.headStack = ItemStack.fromNbt(view.getCompound("head"));
         DataResult<Pair<SignText, NbtElement>> result = SignText.CODEC.decode(NbtOps.INSTANCE, view.getCompound("text"));
-        if (result.isSuccess()) {
-            this.text = this.parseLines(result.getOrThrow().getFirst());
+        if (result.result().isPresent()) {
+            this.text = this.parseLines(result.result().orElseThrow().getFirst());
         } else {
             this.text = new SignText();
         }
         this.waxed = view.getBoolean("is_waxed");
-    }
-
-    @Override
-    protected void addComponents(ComponentMap.Builder builder) {
-        super.addComponents(builder);
-        builder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(List.of(this.headStack)));
-    }
-
-    @Override
-    protected void readComponents(ComponentsAccess components) {
-        super.readComponents(components);
-        this.headStack = components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyFirstStack();
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void removeFromCopiedStackNbt(NbtCompound view) {
-        super.removeFromCopiedStackNbt(view);
-        view.remove("head");
     }
 
     private SignText parseLines(SignText signText) {
@@ -172,7 +149,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             return true;
         }
         PlayerEntity playerEntity = this.world.getPlayerByUuid(uuid);
-        return playerEntity == null || !playerEntity.canInteractWithBlockAt(this.getPos(), 4.0);
+        return playerEntity == null || playerEntity.squaredDistanceTo(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) > 64.0;
     }
 
     @Override
@@ -188,7 +165,11 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public void setHeadStack(@Nullable LivingEntity entity, ItemStack headStack) {
-        this.headStack = headStack.splitUnlessCreative(1, entity);
+        if (entity instanceof PlayerEntity player && player.isCreative()) {
+            this.headStack = headStack.copyWithCount(1);
+        } else {
+            this.headStack = headStack.split(1);
+        }
         this.updateListeners();
         Objects.requireNonNull(this.getWorld()).emitGameEvent(
                 GameEvent.BLOCK_CHANGE, getPos(), GameEvent.Emitter.of(entity, getCachedState())

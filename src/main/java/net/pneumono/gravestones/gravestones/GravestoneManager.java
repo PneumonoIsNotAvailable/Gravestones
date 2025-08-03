@@ -39,7 +39,7 @@ public abstract class GravestoneManager {
     }
 
     public static Text posToText(GlobalPos global) {
-        BlockPos pos = global.pos();
-        return Text.translatable("gravestones.position", pos.getX(), pos.getY(), pos.getZ(), global.dimension().getValue().toString());
+        BlockPos pos = global.getPos();
+        return Text.translatable("gravestones.position", pos.getX(), pos.getY(), pos.getZ(), global.getDimension().getValue().toString());
     }
 }

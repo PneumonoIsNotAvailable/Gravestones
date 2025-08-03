@@ -6,7 +6,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.emi.trinkets.api.*;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -46,8 +45,8 @@ public class TrinketsDataType extends GravestoneDataType {
         });
 
         DataResult<NbtElement> result = SLOT_CODEC.listOf().encodeStart(NbtOps.INSTANCE, storedTrinkets);
-        if (result.isSuccess()) {
-            view.put("trinkets", result.getOrThrow());
+        if (result.result().isPresent()) {
+            view.put("trinkets", result.result().orElseThrow());
         }
     }
 
@@ -65,7 +64,7 @@ public class TrinketsDataType extends GravestoneDataType {
         }
 
         if (dropRule == TrinketEnums.DropRule.DEFAULT) {
-            if (EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
+            if (EnchantmentHelper.hasVanishingCurse(stack)) {
                 dropRule = TrinketEnums.DropRule.DESTROY;
             } else {
                 dropRule = TrinketEnums.DropRule.DROP;
@@ -120,8 +119,8 @@ public class TrinketsDataType extends GravestoneDataType {
 
     private List<Pair<SlotReferencePrimitive, ItemStack>> deserialize(NbtCompound view) {
         DataResult<Pair<List<Pair<SlotReferencePrimitive, ItemStack>>, NbtElement>> result = SLOT_CODEC.listOf().decode(NbtOps.INSTANCE, view.getList("trinkets", NbtElement.COMPOUND_TYPE));
-        if (result.isSuccess()) {
-            return result.getOrThrow().getFirst();
+        if (result.result().isPresent()) {
+            return result.result().orElseThrow().getFirst();
         } else {
             return new ArrayList<>();
         }

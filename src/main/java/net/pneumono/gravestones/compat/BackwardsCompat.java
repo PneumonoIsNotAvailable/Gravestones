@@ -63,7 +63,7 @@ public class BackwardsCompat {
 
     private record GravestonePosition(Identifier dimension, int posX, int posY, int posZ) {
         private Optional<GlobalPos> convert() {
-            return Optional.of(new GlobalPos(RegistryKey.of(RegistryKeys.WORLD, dimension()), new BlockPos(this.posX, this.posY, this.posZ)));
+            return Optional.of(GlobalPos.create(RegistryKey.of(RegistryKeys.WORLD, dimension()), new BlockPos(this.posX, this.posY, this.posZ)));
         }
     }
 }

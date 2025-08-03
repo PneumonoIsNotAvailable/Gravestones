@@ -69,7 +69,7 @@ public class GravestoneDecay extends GravestoneManager {
     }
 
     public static void incrementDeathDamage(ServerWorld world, GlobalPos globalPos) {
-        BlockPos pos = globalPos.pos();
+        BlockPos pos = globalPos.getPos();
 
         if (
                 !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) ||

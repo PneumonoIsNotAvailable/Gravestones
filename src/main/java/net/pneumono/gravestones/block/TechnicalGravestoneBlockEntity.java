@@ -1,10 +1,8 @@
 package net.pneumono.gravestones.block;
 
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.DataResult;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -12,7 +10,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -28,7 +25,7 @@ import java.util.*;
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
     private NbtCompound contents = new NbtCompound();
     @Nullable
-    private ProfileComponent graveOwner;
+    private GameProfile graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
     private int deathDamage;
@@ -39,15 +36,14 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void writeNbt(NbtCompound view, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(view, registryLookup);
+    protected void writeNbt(NbtCompound view) {
+        super.writeNbt(view);
         // Scuffed, will move away from NBT in future if possible
         view.put("contents", this.contents);
         if (this.graveOwner != null) {
-            DataResult<NbtElement> result = ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.graveOwner);
-            if (result.isSuccess()) {
-                view.put("owner", result.getOrThrow());
-            }
+            NbtCompound nbtCompound = new NbtCompound();
+            NbtHelper.writeGameProfile(nbtCompound, this.graveOwner);
+            view.put("owner", nbtCompound);
         }
         if (this.spawnDateTime != null) {
             view.putString("spawnDateTime", this.spawnDateTime);
@@ -60,15 +56,12 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    public void readNbt(NbtCompound view, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(view, registryLookup);
+    public void readNbt(NbtCompound view) {
+        super.readNbt(view);
         // Scuffed, will move away from NBT in future if possible
         this.contents = view.getCompound("contents");
-        DataResult<Pair<ProfileComponent, NbtElement>> result = ProfileComponent.CODEC.decode(NbtOps.INSTANCE, view.getCompound("owner"));
-        if (result.isSuccess()) {
-            this.setGraveOwner(result.getOrThrow().getFirst());
-        } else {
-            this.setGraveOwner(null);
+        if (view.contains("owner", NbtElement.COMPOUND_TYPE)) {
+            this.setGraveOwner(NbtHelper.toGameProfile(view.getCompound("owner")));
         }
         this.spawnDateTime = view.getString("spawnDateTime");
         this.spawnDateTicks = view.getLong("spawnDateTicks");
@@ -89,14 +82,14 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     private static boolean isOwnerNearby(World world, TechnicalGravestoneBlockEntity entity, BlockPos blockPos) {
-        ProfileComponent profileComponent = entity.getGraveOwner();
-        if (profileComponent == null) {
+        GameProfile profile = entity.getGraveOwner();
+        if (profile == null) {
             return false;
         }
 
-        Box box = Box.enclosing(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
+        Box box = new Box(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
         for (Entity nearbyEntity : world.getOtherEntities(null, box)) {
-            if (nearbyEntity instanceof PlayerEntity player && player.getGameProfile().getId() == profileComponent.gameProfile().getId()) {
+            if (nearbyEntity instanceof PlayerEntity player && player.getGameProfile().getId() == profile.getId()) {
                 return true;
             }
         }
@@ -168,7 +161,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     private int countEntities(World world) {
-        Box box = Box.enclosing(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
+        Box box = new Box(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
         List<Entity> entities = world.getOtherEntities(null, box);
         int entityCount = 0;
         for (Entity nearbyEntity : entities) {
@@ -195,19 +188,19 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         this.contents = contents;
     }
 
-    public void setGraveOwner(ProfileComponent graveOwner) {
+    public void setGraveOwner(GameProfile graveOwner) {
         synchronized (this) {
             this.graveOwner = graveOwner;
         }
 
-        if (this.graveOwner != null && !this.graveOwner.isCompleted()) {
-            this.graveOwner.getFuture().thenAcceptAsync(owner -> {
-                this.graveOwner = owner;
-                this.markDirty();
-            }, SkullBlockEntity.EXECUTOR);
-        } else {
+        loadOwnerProperties();
+    }
+
+    private void loadOwnerProperties() {
+        SkullBlockEntity.loadProperties(this.graveOwner, owner -> {
+            this.graveOwner = owner;
             this.markDirty();
-        }
+        });
     }
 
     public int getTotalDamage() {
@@ -233,7 +226,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Nullable
-    public ProfileComponent getGraveOwner() {
+    public GameProfile getGraveOwner() {
         return this.graveOwner;
     }
 
