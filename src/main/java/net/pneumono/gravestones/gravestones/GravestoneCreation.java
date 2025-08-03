@@ -53,7 +53,7 @@ public class GravestoneCreation extends GravestoneManager {
             Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", player.getGameProfile().getName(), posToString(gravestonePos.pos()));
         } else {
             Gravestones.LOGGER.info("Failed to place {}'s Gravestone! Dropping contents...", player.getGameProfile().getName());
-            GravestonesApi.onBreak(deathWorld, deathPos.pos(), 0, contents == null ? new NbtCompound() : contents, player.getErrorReporterContext());
+            GravestonesApi.onBreak(deathWorld, deathPos.pos(), 0, contents == null ? new NbtCompound() : contents);
             return;
         }
 

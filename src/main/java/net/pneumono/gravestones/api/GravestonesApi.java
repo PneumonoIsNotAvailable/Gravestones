@@ -3,14 +3,9 @@ package net.pneumono.gravestones.api;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.storage.NbtReadView;
-import net.minecraft.storage.NbtWriteView;
-import net.minecraft.storage.ReadView;
-import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 
@@ -68,18 +63,14 @@ public class GravestonesApi {
     public static NbtCompound getDataToInsert(PlayerEntity player) {
         NbtCompound contents = new NbtCompound();
 
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
-            ErrorReporter reporter = logging.makeChild(player.getErrorReporterContext());
+        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+            NbtCompound view = new NbtCompound();
+            entry.getValue().writeData(view, player);
 
-            for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-                NbtWriteView view = NbtWriteView.create(reporter, player.getRegistryManager());
-                entry.getValue().writeData(view, player);
-
-                contents.put(
-                        entry.getKey().toString(),
-                        view.getNbt()
-                );
-            }
+            contents.put(
+                    entry.getKey().toString(),
+                    view
+            );
         }
 
         return contents;
@@ -89,25 +80,19 @@ public class GravestonesApi {
      * Called when gravestones are broken, including when collected.
      */
     public static void onBreak(World world, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
-        onBreak(world, pos, decay, entity.getContents(), entity.getReporterContext());
+        onBreak(world, pos, decay, entity.getContents());
     }
 
-    public static void onBreak(World world, BlockPos pos, int decay, NbtCompound contents, ErrorReporter.Context reporterContext) {
+    public static void onBreak(World world, BlockPos pos, int decay, NbtCompound contents) {
         if (contents.isEmpty()) return;
 
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
-            ErrorReporter reporter = logging.makeChild(reporterContext);
-
-            for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-                ReadView view = NbtReadView.create(reporter, world.getRegistryManager(), contents);
-
-                entry.getValue().onBreak(
-                        view.getReadView(entry.getKey().toString()),
-                        world,
-                        pos,
-                        decay
-                );
-            }
+        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+            entry.getValue().onBreak(
+                    contents.getCompound(entry.getKey().toString()),
+                    world,
+                    pos,
+                    decay
+            );
         }
     }
 
@@ -115,20 +100,14 @@ public class GravestonesApi {
      * Called when gravestones are collected.
      */
     public static void onCollect(World world, BlockPos pos, PlayerEntity player, int decay, NbtCompound contents) {
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
-            ErrorReporter reporter = logging.makeChild(player.getErrorReporterContext());
-
-            for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-                ReadView view = NbtReadView.create(reporter, world.getRegistryManager(), contents);
-
-                entry.getValue().onCollect(
-                        view.getReadView(entry.getKey().toString()),
-                        world,
-                        pos,
-                        player,
-                        decay
-                );
-            }
+        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+            entry.getValue().onCollect(
+                    contents.getCompound(entry.getKey().toString()),
+                    world,
+                    pos,
+                    player,
+                    decay
+            );
         }
     }
 

@@ -1,8 +1,7 @@
 package net.pneumono.gravestones.api;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.content.ExperienceDataType;
@@ -31,7 +30,7 @@ public abstract class GravestoneDataType {
      *
      * @param player The player who has died.
      */
-    public abstract void writeData(WriteView view, PlayerEntity player);
+    public abstract void writeData(NbtCompound view, PlayerEntity player);
 
     /**
      * Called when a gravestone is broken, unless it was broken by a player collecting it.
@@ -50,7 +49,7 @@ public abstract class GravestoneDataType {
      * @param pos The position of the gravestone.
      * @param decay The decay stage of the gravestone being collected.
      */
-    public abstract void onBreak(ReadView view, World world, BlockPos pos, int decay);
+    public abstract void onBreak(NbtCompound view, World world, BlockPos pos, int decay);
 
     /**
      * Called when a player collects a gravestone.
@@ -67,5 +66,5 @@ public abstract class GravestoneDataType {
      * @param player The player collecting the gravestone.
      * @param decay The decay stage of the gravestone being collected.
      */
-    public abstract void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay);
+    public abstract void onCollect(NbtCompound view, World world, BlockPos pos, PlayerEntity player, int decay);
 }

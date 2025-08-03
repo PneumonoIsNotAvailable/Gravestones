@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -30,6 +29,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
@@ -54,16 +54,16 @@ public class GravestonesRegistry {
             AestheticGravestoneBlock::new, AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool());
 
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("technical_gravestone"), FabricBlockEntityTypeBuilder.create(
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("technical_gravestone"), BlockEntityType.Builder.create(
                     TechnicalGravestoneBlockEntity::new,
                     GRAVESTONE_TECHNICAL
             ).build()
     );
     public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(
+            Registries.BLOCK_ENTITY_TYPE, Gravestones.id("aesthetic_gravestone"), BlockEntityType.Builder.create(
                     AestheticGravestoneBlockEntity::new,
                     GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED
-            ).canPotentiallyExecuteCommands(true).build()
+            ).build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
@@ -72,7 +72,7 @@ public class GravestonesRegistry {
             EntityType.Builder.<GravestoneSkeletonEntity>create(GravestoneSkeletonEntity::new, SpawnGroup.MISC)
                     .dimensions(0.6F, 1.99F)
                     .maxTrackingRange(8)
-                    .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Gravestones.id("gravestone_skeleton")))
+                    .build("gravestone_skeleton")
     );
 
     public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ITEM, Gravestones.id("skips_gravestones"));
@@ -85,16 +85,12 @@ public class GravestonesRegistry {
 
     private static Block registerAestheticGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Block block = registerGravestone(name, factory, settings);
-        Registry.register(Registries.ITEM, Gravestones.id(name), new AestheticGravestoneBlockItem(block,
-                new Item.Settings().useBlockPrefixedTranslationKey().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.id(name)))
-        ));
+        Registry.register(Registries.ITEM, Gravestones.id(name), new AestheticGravestoneBlockItem(block, new Item.Settings()));
         return block;
     }
 
     private static Block registerGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
-        return Registry.register(Registries.BLOCK, Gravestones.id(name),
-                factory.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.id(name))))
-        );
+        return Registry.register(Registries.BLOCK, Gravestones.id(name), factory.apply(settings));
     }
 
     private static SoundEvent waxedInteractFailSound() {
@@ -154,8 +150,10 @@ public class GravestonesRegistry {
 
     @SuppressWarnings("deprecation")
     private static void onSignUpdate(ServerPlayerEntity player, UpdateGravestoneC2SPayload payload, List<FilteredMessage> signText) {
+        World world = player.getWorld();
+        if (!(world instanceof ServerWorld serverWorld)) return;
+
         player.updateLastActionTime();
-        ServerWorld serverWorld = player.getWorld();
         BlockPos blockPos = payload.pos();
         if (serverWorld.isChunkLoaded(blockPos)) {
             if (!(serverWorld.getBlockEntity(blockPos) instanceof AestheticGravestoneBlockEntity blockEntity)) {

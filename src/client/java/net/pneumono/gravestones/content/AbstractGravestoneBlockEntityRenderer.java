@@ -7,12 +7,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
-import net.minecraft.client.render.entity.model.LoadedEntityModels;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
 import net.pneumono.gravestones.block.AbstractGravestoneBlockEntity;
@@ -26,12 +24,11 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
 
     public AbstractGravestoneBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
-        LoadedEntityModels loadedEntityModels = ctx.getLoadedEntityModels();
-        this.models = Util.memoize(type -> SkullBlockEntityRenderer.getModels(loadedEntityModels, type));
+        this.models = Util.memoize(type -> SkullBlockEntityRenderer.getModels(ctx.getLayerRenderDispatcher()).get(type));
     }
 
     @Override
-    public void render(T entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
+    public void render(T entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
 
         matrices.translate(0.5F, 0.0F, 0.5F);

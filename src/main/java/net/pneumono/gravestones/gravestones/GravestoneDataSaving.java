@@ -1,9 +1,9 @@
 package net.pneumono.gravestones.gravestones;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.GlobalPos;
@@ -72,14 +72,25 @@ public class GravestoneDataSaving extends GravestoneManager {
             error("Failed to read Gravestone Data", e);
         }
 
-        return compound.get("data", RecentGraveHistory.CODEC.listOf()).orElse(new ArrayList<>());
+        DataResult<Pair<List<RecentGraveHistory>, NbtElement>> result = RecentGraveHistory.CODEC.listOf().decode(NbtOps.INSTANCE, compound.getCompound("data"));
+        if (result.isSuccess()) {
+            return result.getOrThrow().getFirst();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public static void writeData(MinecraftServer server, List<RecentGraveHistory> histories) {
         Path path = getOrCreateGravestonesDataFile(server);
 
+        DataResult<NbtElement> result = RecentGraveHistory.CODEC.listOf().encodeStart(NbtOps.INSTANCE, histories);
+
         NbtCompound compound = new NbtCompound();
-        compound.put("data", RecentGraveHistory.CODEC.listOf(), histories);
+        if (result.isSuccess()) {
+            compound.put("data", result.getOrThrow());
+        } else {
+            compound.put("data", new NbtCompound());
+        }
 
         try {
             NbtIo.writeCompressed(compound, path);

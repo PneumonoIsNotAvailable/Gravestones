@@ -44,7 +44,7 @@ public class GravestonesCommands {
                                                     } else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
                                                         ProfileComponent owner = entity.getGraveOwner();
                                                         if (owner != null) {
-                                                            context.getSource().sendFeedback(() -> Text.stringifiedTranslatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), owner.name().orElse("???"), owner.uuid().orElse(null)).formatted(Formatting.GREEN), false);
+                                                            context.getSource().sendFeedback(() -> Text.stringifiedTranslatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), owner.name().orElse("???"), owner.id().orElse(null)).formatted(Formatting.GREEN), false);
                                                         } else {
                                                             context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.no_grave_owner", entity.getSpawnDateTime()).formatted(Formatting.RED), false);
                                                         }
@@ -97,7 +97,7 @@ public class GravestonesCommands {
 
                                                     NbtCompound nbt = DeathArgumentType.getDeath(context, "death");
 
-                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(nbt.getCompoundOrEmpty("contents"))), false);
+                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(nbt.getCompound("contents"))), false);
                                                     return 1;
                                                 })
                                         )
@@ -130,7 +130,7 @@ public class GravestonesCommands {
     }
 
     private static int recoverDeath(CommandContext<ServerCommandSource> context, NbtCompound nbt, ServerPlayerEntity player) {
-        GravestonesApi.onCollect(context.getSource().getWorld(), player.getBlockPos(), player, 0, nbt.getCompoundOrEmpty("contents"));
+        GravestonesApi.onCollect(context.getSource().getWorld(), player.getBlockPos(), player, 0, nbt.getCompound("contents"));
         context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.deaths.recover"), true);
         return 1;
     }

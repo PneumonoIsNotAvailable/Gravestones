@@ -1,5 +1,7 @@
 package net.pneumono.gravestones.block;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.component.type.ProfileComponent;
@@ -10,14 +12,12 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
@@ -39,11 +39,16 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void writeData(WriteView view) {
-        super.writeData(view);
+    protected void writeNbt(NbtCompound view, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(view, registryLookup);
         // Scuffed, will move away from NBT in future if possible
-        view.put("contents", NbtCompound.CODEC, this.contents);
-        view.putNullable("owner", ProfileComponent.CODEC, this.graveOwner);
+        view.put("contents", this.contents);
+        if (this.graveOwner != null) {
+            DataResult<NbtElement> result = ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.graveOwner);
+            if (result.isSuccess()) {
+                view.put("owner", result.getOrThrow());
+            }
+        }
         if (this.spawnDateTime != null) {
             view.putString("spawnDateTime", this.spawnDateTime);
         }
@@ -55,21 +60,20 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    public void readData(ReadView view) {
-        super.readData(view);
+    public void readNbt(NbtCompound view, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(view, registryLookup);
         // Scuffed, will move away from NBT in future if possible
-        this.contents = view.read("contents", NbtCompound.CODEC).orElse(new NbtCompound());
-        this.setGraveOwner(view.read("owner", ProfileComponent.CODEC).orElse(null));
-        this.spawnDateTime = view.getString("spawnDateTime", null);
-        this.spawnDateTicks = view.getLong("spawnDateTicks", 0);
-        this.deathDamage = view.getInt("deathDamage", 0);
-        this.ageDamage = view.getInt("ageDamage", 0);
-    }
-
-    @Override
-    public void onBlockReplaced(BlockPos pos, BlockState oldState) {
-        GravestonesApi.onBreak(getWorld(), pos, getDecay(oldState), this);
-        super.onBlockReplaced(pos, oldState);
+        this.contents = view.getCompound("contents");
+        DataResult<Pair<ProfileComponent, NbtElement>> result = ProfileComponent.CODEC.decode(NbtOps.INSTANCE, view.getCompound("owner"));
+        if (result.isSuccess()) {
+            this.setGraveOwner(result.getOrThrow().getFirst());
+        } else {
+            this.setGraveOwner(null);
+        }
+        this.spawnDateTime = view.getString("spawnDateTime");
+        this.spawnDateTicks = view.getLong("spawnDateTicks");
+        this.deathDamage = view.getInt("deathDamage");
+        this.ageDamage = view.getInt("ageDamage");
     }
 
     public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {

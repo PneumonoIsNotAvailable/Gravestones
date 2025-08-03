@@ -8,8 +8,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -30,9 +30,9 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
         SignText signText = entity.getText();
 
         boolean glowing = signText.isGlowing();
-        int textColor = AbstractSignBlockEntityRenderer.getTextColor(signText);
+        int textColor = SignBlockEntityRenderer.getColor(signText);
         int color = glowing ? signText.getColor().getSignColor() : textColor;
-        boolean renderOutline = glowing && AbstractSignBlockEntityRenderer.shouldRenderTextOutline(entity.getPos(), color);
+        boolean renderOutline = glowing && SignBlockEntityRenderer.shouldRender(entity.getPos(), color);
         int light = glowing ? 15728880 : worldLight;
 
         for (int i = 0; i < 4; ++i) {

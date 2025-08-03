@@ -3,17 +3,15 @@ package net.pneumono.gravestones.content;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.SignText;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
@@ -145,23 +143,22 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     private void renderSign(DrawContext context) {
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(this.width / 2.0F, 125.0F);
-        context.getMatrices().pushMatrix();
+        context.getMatrices().push();
+        context.getMatrices().translate(this.width / 2.0F, 125.0F, 50F);
+        context.getMatrices().push();
         this.renderSignBackground(context);
-        context.getMatrices().popMatrix();
+        context.getMatrices().pop();
         this.renderSignText(context);
-        context.getMatrices().popMatrix();
+        context.getMatrices().pop();
     }
 
     protected void renderSignBackground(DrawContext context) {
-        context.getMatrices().scale(7.0F, 7.0F);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, this.texture, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
+        context.getMatrices().scale(7.0F, 7.0F, 1.0F);
+        context.drawTexture(this.texture, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
     }
 
     private void renderSignText(DrawContext context) {
-        context.getMatrices().scale(1.0F, 1.0F);
-        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : AbstractSignBlockEntityRenderer.getTextColor(this.text);
+        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : SignBlockEntityRenderer.getColor(this.text);
         boolean shouldFlashCursor = this.ticksSinceOpened / 6 % 2 == 0;
         Objects.requireNonNull(this.selectionManager);
         int selectionStart = this.selectionManager.getSelectionStart();
@@ -194,7 +191,7 @@ public class AestheticGravestoneEditScreen extends Screen {
                 int substringWidth = this.textRenderer.getWidth(message.substring(0, Math.min(selectionStart, message.length())));
                 int adjustedX = substringWidth - this.textRenderer.getWidth(message) / 2;
                 if (shouldFlashCursor && selectionStart < message.length()) {
-                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, ColorHelper.fullAlpha(color));
+                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, color | Colors.BLACK);
                 }
 
                 if (selectionEnd != selectionStart) {
@@ -204,7 +201,7 @@ public class AestheticGravestoneEditScreen extends Screen {
                     int widthEnd = this.textRenderer.getWidth(message.substring(0, end)) - this.textRenderer.getWidth(message) / 2;
                     int idk = Math.min(widthStart, widthEnd);
                     int idk2 = Math.max(widthStart, widthEnd);
-                    context.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, idk, adjustedY, idk2, adjustedY + TEXT_LINE_HEIGHT, Colors.BLUE);
+                    context.fill(idk, adjustedY, idk2, adjustedY + TEXT_LINE_HEIGHT, Colors.BLUE);
                 }
             }
         }

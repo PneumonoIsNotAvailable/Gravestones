@@ -2,9 +2,8 @@ package net.pneumono.gravestones.content;
 
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -14,7 +13,7 @@ import net.pneumono.gravestones.api.GravestonesApi;
 
 public class ExperienceDataType extends GravestoneDataType {
     @Override
-    public void writeData(WriteView view, PlayerEntity player) {
+    public void writeData(NbtCompound view, PlayerEntity player) {
         if (!GravestonesConfig.STORE_EXPERIENCE.getValue()) return;
 
         int experience = GravestonesConfig.EXPERIENCE_KEPT.getValue().calculateExperienceKept(player);
@@ -30,7 +29,7 @@ public class ExperienceDataType extends GravestoneDataType {
     }
 
     @Override
-    public void onBreak(ReadView view, World world, BlockPos pos, int decay) {
+    public void onBreak(NbtCompound view, World world, BlockPos pos, int decay) {
         if (world instanceof ServerWorld serverWorld) {
             ExperienceOrbEntity.spawn(
                     serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()),
@@ -40,7 +39,7 @@ public class ExperienceDataType extends GravestoneDataType {
     }
 
     @Override
-    public void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay) {
+    public void onCollect(NbtCompound view, World world, BlockPos pos, PlayerEntity player, int decay) {
         if (GravestonesConfig.DROP_EXPERIENCE.getValue()) {
             onBreak(view, world, pos, decay);
         } else {
@@ -48,8 +47,8 @@ public class ExperienceDataType extends GravestoneDataType {
         }
     }
 
-    private static int getExperience(ReadView view, int decay) {
-        int experience = view.getInt("experience", 0);
+    private static int getExperience(NbtCompound view, int decay) {
+        int experience = view.getInt("experience");
         return GravestonesApi.getDecayedExperience(experience, decay);
     }
 }

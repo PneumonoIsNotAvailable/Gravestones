@@ -83,7 +83,7 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         } else {
             Gravestones.LOGGER.info("{}{} has found {}{}'s grave at {}",
                     player.getName().getString(), uuid,
-                    graveOwner.name().orElse("???"), graveOwner.uuid().orElse(null),
+                    graveOwner.name().orElse("???"), graveOwner.id().orElse(null),
                     pos.toString()
             );
         }
@@ -116,11 +116,14 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        ItemScatterer.onStateReplaced(state, world, pos);
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        ItemScatterer.onStateReplaced(state, newState, world, pos);
 
         if (state.getBlock() != world.getBlockState(pos).getBlock()) {
             createSoulParticles(world, pos);
+            if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity blockEntity) {
+                GravestonesApi.onBreak(world, pos, state.get(TechnicalGravestoneBlock.DAMAGE), blockEntity);
+            }
         }
     }
 
@@ -134,8 +137,8 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     }
 
     @Override
-    protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-
+    protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+        super.onExploded(state, world, pos, explosion, stackMerger);
     }
 
     @Nullable
