@@ -47,8 +47,8 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Placement
         GlobalPos gravestonePos = placeGravestone(deathWorld, player, deathPos);
-
-        if (gravestonePos != null && deathWorld.getServer().getWorld(gravestonePos.getDimension()) instanceof ServerWorld graveWorld) {
+        ServerWorld graveWorld = gravestonePos == null ? null : deathWorld.getServer().getWorld(gravestonePos.getDimension());
+        if (graveWorld != null) {
             Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", player.getGameProfile().getName(), posToString(gravestonePos.getPos()));
         } else {
             Gravestones.LOGGER.info("Failed to place {}'s Gravestone! Dropping contents...", player.getGameProfile().getName());

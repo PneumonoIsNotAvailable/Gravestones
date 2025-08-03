@@ -44,7 +44,7 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
 
             OrderedText[] messages = signText.getOrderedMessages(MinecraftClient.getInstance().shouldFilterText(), text -> {
                 List<OrderedText> list = this.textRenderer.wrapLines(text, AestheticGravestoneEditScreen.TEXT_WIDTH);
-                return list.isEmpty() ? OrderedText.EMPTY : list.getFirst();
+                return list.isEmpty() ? OrderedText.EMPTY : list.get(0);
             });
             OrderedText message = messages[i];
 
