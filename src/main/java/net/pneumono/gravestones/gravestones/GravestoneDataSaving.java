@@ -72,7 +72,7 @@ public class GravestoneDataSaving extends GravestoneManager {
             error("Failed to read Gravestone Data", e);
         }
 
-        DataResult<Pair<List<RecentGraveHistory>, NbtElement>> result = RecentGraveHistory.CODEC.listOf().decode(NbtOps.INSTANCE, compound.getCompound("data"));
+        DataResult<Pair<List<RecentGraveHistory>, NbtElement>> result = RecentGraveHistory.CODEC.listOf().decode(NbtOps.INSTANCE, compound.getList("data", NbtElement.COMPOUND_TYPE));
         if (result.isSuccess()) {
             return result.getOrThrow().getFirst();
         } else {
