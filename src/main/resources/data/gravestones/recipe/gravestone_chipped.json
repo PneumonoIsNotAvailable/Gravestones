@@ -12,7 +12,9 @@
   "cookingtime": 200,
   "experience": 0.1,
   "group": "gravestone_cracking",
-  "ingredient": "gravestones:gravestone",
+  "ingredient": {
+    "item": "gravestones:gravestone"
+  },
   "result": {
     "id": "gravestones:gravestone_chipped"
   }

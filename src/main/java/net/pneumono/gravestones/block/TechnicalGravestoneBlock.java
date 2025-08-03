@@ -125,6 +125,8 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
                 GravestonesApi.onBreak(world, pos, state.get(TechnicalGravestoneBlock.DAMAGE), blockEntity);
             }
         }
+
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     public static void createSoulParticles(World world, BlockPos pos) {
