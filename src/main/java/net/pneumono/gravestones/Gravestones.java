@@ -8,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
 import net.pneumono.gravestones.compat.BackwardsCompat;
+import net.pneumono.gravestones.compat.TrinketsCompat;
 import net.pneumono.gravestones.content.GravestonesCommands;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
@@ -34,6 +35,10 @@ public class Gravestones implements ModInitializer {
 
 		if (FabricLoader.getInstance().isModLoaded("spelunkery")) {
 			InsertGravestoneItemCallback.EVENT.register((player, itemStack) -> itemStack.isOf(Items.RECOVERY_COMPASS));
+		}
+
+		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
+			TrinketsCompat.register();
 		}
 	}
 
