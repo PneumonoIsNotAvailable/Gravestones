@@ -31,7 +31,7 @@ public class GravestonesClient implements ClientModInitializer {
             BlockPos pos = buf.readBlockPos();
             BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof AestheticGravestoneBlockEntity gravestone) {
-                client.setScreen(new AestheticGravestoneEditScreen(gravestone, client.shouldFilterText()));
+                client.execute(() -> client.setScreen(new AestheticGravestoneEditScreen(gravestone, client.shouldFilterText())));
             }
         });
     }
