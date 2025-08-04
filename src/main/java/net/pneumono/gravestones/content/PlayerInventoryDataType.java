@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,7 +27,10 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack itemStack = inventory.getStack(i);
             if (!GravestonesApi.shouldSkipItem(player, itemStack) && !itemStack.isEmpty()) {
-                DataResult<NbtElement> element = StackWithSlot.CODEC.encodeStart(NbtOps.INSTANCE, new StackWithSlot(i, inventory.removeStack(i)));
+                DataResult<NbtElement> element = StackWithSlot.CODEC.encodeStart(
+                        RegistryOps.of(NbtOps.INSTANCE, player.getWorld().getRegistryManager()),
+                        new StackWithSlot(i, inventory.removeStack(i))
+                );
                 if (element.result().isPresent()) {
                     list.add(element.result().orElseThrow());
                 }
@@ -41,7 +45,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         NbtList list = view.getList("inventory", NbtElement.COMPOUND_TYPE);
 
         list.stream()
-                .map(element -> StackWithSlot.CODEC.decode(NbtOps.INSTANCE, element))
+                .map(element -> StackWithSlot.CODEC.decode(RegistryOps.of(NbtOps.INSTANCE, world.getRegistryManager()), element))
                 .filter(result -> result.result().isPresent())
                 .map(result -> result.result().orElseThrow().getFirst())
                 .map(StackWithSlot::stack)
@@ -54,7 +58,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         NbtList list = view.getList("inventory", NbtElement.COMPOUND_TYPE);
 
         list.stream()
-                .map(element -> StackWithSlot.CODEC.decode(NbtOps.INSTANCE, element))
+                .map(element -> StackWithSlot.CODEC.decode(RegistryOps.of(NbtOps.INSTANCE, world.getRegistryManager()), element))
                 .filter(result -> result.result().isPresent())
                 .map(result -> result.result().orElseThrow().getFirst())
                 .filter(stackWithSlot -> {

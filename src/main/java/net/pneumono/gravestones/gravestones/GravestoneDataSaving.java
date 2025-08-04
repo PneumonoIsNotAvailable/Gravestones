@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.GlobalPos;
@@ -72,7 +73,10 @@ public class GravestoneDataSaving extends GravestoneManager {
             error("Failed to read Gravestone Data", e);
         }
 
-        DataResult<Pair<List<RecentGraveHistory>, NbtElement>> result = RecentGraveHistory.CODEC.listOf().decode(NbtOps.INSTANCE, compound.getList("data", NbtElement.COMPOUND_TYPE));
+        DataResult<Pair<List<RecentGraveHistory>, NbtElement>> result = RecentGraveHistory.CODEC.listOf().decode(
+                RegistryOps.of(NbtOps.INSTANCE, server.getRegistryManager()),
+                compound.getList("data", NbtElement.COMPOUND_TYPE)
+        );
         if (result.result().isPresent()) {
             return result.result().orElseThrow().getFirst();
         } else {
@@ -83,7 +87,10 @@ public class GravestoneDataSaving extends GravestoneManager {
     public static void writeData(MinecraftServer server, List<RecentGraveHistory> histories) {
         Path path = getOrCreateGravestonesDataFile(server);
 
-        DataResult<NbtElement> result = RecentGraveHistory.CODEC.listOf().encodeStart(NbtOps.INSTANCE, histories);
+        DataResult<NbtElement> result = RecentGraveHistory.CODEC.listOf().encodeStart(
+                RegistryOps.of(NbtOps.INSTANCE, server.getRegistryManager()),
+                histories
+        );
 
         NbtCompound compound = new NbtCompound();
         if (result.result().isPresent()) {
