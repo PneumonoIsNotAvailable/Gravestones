@@ -72,7 +72,7 @@ public class GravestoneDataSaving extends GravestoneManager {
             error("Failed to read Gravestone Data", e);
         }
 
-        DataResult<Pair<List<RecentGraveHistory>, NbtElement>> result = RecentGraveHistory.CODEC.listOf().decode(NbtOps.INSTANCE, compound.getList("data", NbtElement.COMPOUND_TYPE));
+        DataResult<Pair<List<RecentGraveHistory>, NbtElement>> result = RecentGraveHistory.CODEC.listOf().decode(server.getRegistryManager().getOps(NbtOps.INSTANCE), compound.getList("data", NbtElement.COMPOUND_TYPE));
         if (result.isSuccess()) {
             return result.getOrThrow().getFirst();
         } else {
@@ -83,7 +83,7 @@ public class GravestoneDataSaving extends GravestoneManager {
     public static void writeData(MinecraftServer server, List<RecentGraveHistory> histories) {
         Path path = getOrCreateGravestonesDataFile(server);
 
-        DataResult<NbtElement> result = RecentGraveHistory.CODEC.listOf().encodeStart(NbtOps.INSTANCE, histories);
+        DataResult<NbtElement> result = RecentGraveHistory.CODEC.listOf().encodeStart(server.getRegistryManager().getOps(NbtOps.INSTANCE), histories);
 
         NbtCompound compound = new NbtCompound();
         if (result.isSuccess()) {

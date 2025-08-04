@@ -27,7 +27,9 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack itemStack = inventory.getStack(i);
             if (!GravestonesApi.shouldSkipItem(player, itemStack) && !itemStack.isEmpty()) {
-                DataResult<NbtElement> element = StackWithSlot.CODEC.encodeStart(NbtOps.INSTANCE, new StackWithSlot(i, inventory.removeStack(i)));
+                DataResult<NbtElement> element = StackWithSlot.CODEC.encodeStart(
+                        player.getRegistryManager().getOps(NbtOps.INSTANCE), new StackWithSlot(i, inventory.removeStack(i))
+                );
                 if (element.isSuccess()) {
                     list.add(element.getOrThrow());
                 }
@@ -42,7 +44,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         NbtList list = view.getList("inventory", NbtElement.COMPOUND_TYPE);
 
         list.stream()
-                .map(element -> StackWithSlot.CODEC.decode(NbtOps.INSTANCE, element))
+                .map(element -> StackWithSlot.CODEC.decode(world.getRegistryManager().getOps(NbtOps.INSTANCE), element))
                 .filter(DataResult::isSuccess)
                 .map(result -> result.getOrThrow().getFirst())
                 .map(StackWithSlot::stack)
@@ -55,7 +57,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         NbtList list = view.getList("inventory", NbtElement.COMPOUND_TYPE);
 
         list.stream()
-                .map(element -> StackWithSlot.CODEC.decode(NbtOps.INSTANCE, element))
+                .map(element -> StackWithSlot.CODEC.decode(player.getRegistryManager().getOps(NbtOps.INSTANCE), element))
                 .filter(DataResult::isSuccess)
                 .map(result -> result.getOrThrow().getFirst())
                 .filter(stackWithSlot -> {

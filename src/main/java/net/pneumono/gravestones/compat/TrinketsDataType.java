@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -45,7 +46,7 @@ public class TrinketsDataType extends GravestoneDataType {
             reference.inventory().removeStack(reference.index());
         });
 
-        DataResult<NbtElement> result = SLOT_CODEC.listOf().encodeStart(NbtOps.INSTANCE, storedTrinkets);
+        DataResult<NbtElement> result = SLOT_CODEC.listOf().encodeStart(player.getRegistryManager().getOps(NbtOps.INSTANCE), storedTrinkets);
         if (result.isSuccess()) {
             view.put("trinkets", result.getOrThrow());
         }
@@ -77,7 +78,7 @@ public class TrinketsDataType extends GravestoneDataType {
 
     @Override
     public void onBreak(NbtCompound view, World world, BlockPos pos, int decay) {
-        deserialize(view).stream()
+        deserialize(view, world.getRegistryManager()).stream()
                 .map(Pair::getSecond)
                 .forEach(stack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack));
     }
@@ -92,7 +93,7 @@ public class TrinketsDataType extends GravestoneDataType {
             trinketInventories = trinketComponent.getInventory();
         }
 
-        deserialize(view).stream()
+        deserialize(view, world.getRegistryManager()).stream()
                 .filter(pair -> {
                     if (trinketInventories == null) return true;
 
@@ -118,8 +119,8 @@ public class TrinketsDataType extends GravestoneDataType {
                 });
     }
 
-    private List<Pair<SlotReferencePrimitive, ItemStack>> deserialize(NbtCompound view) {
-        DataResult<Pair<List<Pair<SlotReferencePrimitive, ItemStack>>, NbtElement>> result = SLOT_CODEC.listOf().decode(NbtOps.INSTANCE, view.getList("trinkets", NbtElement.COMPOUND_TYPE));
+    private List<Pair<SlotReferencePrimitive, ItemStack>> deserialize(NbtCompound view, DynamicRegistryManager registryManager) {
+        DataResult<Pair<List<Pair<SlotReferencePrimitive, ItemStack>>, NbtElement>> result = SLOT_CODEC.listOf().decode(registryManager.getOps(NbtOps.INSTANCE), view.getList("trinkets", NbtElement.COMPOUND_TYPE));
         if (result.isSuccess()) {
             return result.getOrThrow().getFirst();
         } else {
