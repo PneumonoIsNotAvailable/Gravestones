@@ -39,11 +39,7 @@
 		]
 	},
 	"mixins": [
-		"gravestones.mixins.json",
-		{
-			"config": "gravestones.client.mixins.json",
-			"environment": "client"
-		}
+		"gravestones.mixins.json"
 	],
 	"accessWidener": "gravestones.accesswidener",
 	"depends": {
