@@ -22,6 +22,8 @@
     "stat.gravestones.gravestones_collected": "Dead Man's Chests unburied",
 
     "subtitles.gravestones.block.gravestone.waxed_interact_fail": "Dead Man's Chest thumps",
+    "subtitles.gravestones.block.gravestone.add_skull": "Skull placed",
+    "subtitles.gravestones.block.gravestone.remove_skull": "Skull plundered",
 
     "commands.gravestones.deaths.recover": "Recovered yer booty from Davy Jones' Locker",
     "commands.gravestones.deaths.view": "Booty: %s",

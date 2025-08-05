@@ -79,7 +79,9 @@ public class GravestonesRegistry {
     public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.id("skips_gravestones"));
     public static final TagKey<Block> BLOCK_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, Gravestones.id("gravestone_irreplaceable"));
 
-    public static final SoundEvent SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL = waxedInteractFailSound();
+    public static final SoundEvent SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL = registerSoundEvent("block.gravestone.waxed_interact_fail");
+    public static final SoundEvent SOUND_BLOCK_GRAVESTONE_ADD_SKULL = registerSoundEvent("block.gravestone.add_skull");
+    public static final SoundEvent SOUND_BLOCK_GRAVESTONE_REMOVE_SKULL = registerSoundEvent("block.gravestone.remove_skull");
 
     public static final Identifier GRAVESTONES_COLLECTED = Gravestones.id("gravestones_collected");
 
@@ -97,8 +99,8 @@ public class GravestonesRegistry {
         );
     }
 
-    private static SoundEvent waxedInteractFailSound() {
-        Identifier id = Gravestones.id("block.gravestone.waxed_interact_fail");
+    private static SoundEvent registerSoundEvent(String name) {
+        Identifier id = Gravestones.id(name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 
