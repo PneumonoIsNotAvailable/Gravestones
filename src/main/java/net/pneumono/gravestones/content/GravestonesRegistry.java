@@ -137,6 +137,7 @@ public class GravestonesRegistry {
 
         InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
                 itemStack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
+                hasEnchantment(Identifier.of("alessandrvenchantments", "soulbound"), itemStack) ||
                 hasEnchantment(Identifier.of("enchantery", "soulbound"), itemStack) ||
                 hasEnchantment(Identifier.of("enderzoology", "soulbound"), itemStack) ||
                 hasEnchantment(Identifier.of("soulbound", "soulbound"), itemStack) ||
