@@ -1,6 +1,10 @@
 {
     "values": [
         {
+            "id": "alessandrvenchantments:soulbound",
+            "required": false
+        },
+        {
             "id": "enchantery:soulbound",
             "required": false
         },
