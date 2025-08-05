@@ -22,6 +22,8 @@
   "stat.gravestones.gravestones_collected": "Die boxz got bak",
 
   "subtitles.gravestones.block.gravestone.waxed_interact_fail": "Die box go thump",
+  "subtitles.gravestones.block.gravestone.add_skull": "Skul put ther",
+  "subtitles.gravestones.block.gravestone.remove_skull": "Skul taked",
 
   "commands.gravestones.deaths.recover": "Got stuffs bak",
   "commands.gravestones.deaths.view": "Itemz: %s",

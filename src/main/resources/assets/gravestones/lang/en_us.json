@@ -22,6 +22,8 @@
   "stat.gravestones.gravestones_collected": "Gravestones Collected",
 
   "subtitles.gravestones.block.gravestone.waxed_interact_fail": "Gravestone thumps",
+  "subtitles.gravestones.block.gravestone.add_skull": "Skull placed",
+  "subtitles.gravestones.block.gravestone.remove_skull": "Skull taken",
 
   "commands.gravestones.deaths.recover": "Recovered inventory from death",
   "commands.gravestones.deaths.view": "Inventory: %s",

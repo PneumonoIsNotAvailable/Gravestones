@@ -53,6 +53,7 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
 
         if (!waxed && item instanceof BlockItem blockItem && blockItem.getBlock() instanceof AbstractSkullBlock && gravestone.getHeadStack().isEmpty()) {
             if (!world.isClient()) {
+                world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_GRAVESTONE_ADD_SKULL, SoundCategory.BLOCKS);
                 gravestone.setHeadStack(player, stack);
             }
             return ItemActionResult.SUCCESS;
@@ -128,6 +129,7 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
 
         ItemStack headStack = blockEntity.getHeadStack();
         if (!blockEntity.isWaxed() && !headStack.isEmpty()) {
+            world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_GRAVESTONE_REMOVE_SKULL, SoundCategory.BLOCKS);
             if (!player.giveItemStack(headStack)) {
                 player.dropItem(headStack, false);
             }

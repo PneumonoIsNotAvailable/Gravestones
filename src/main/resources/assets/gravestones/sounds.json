@@ -24,5 +24,23 @@
             }
         ],
         "subtitle": "subtitles.gravestones.block.gravestone.waxed_interact_fail"
+    },
+    "block.gravestone.add_skull": {
+        "sounds": [
+            "entity/itemframe/add_item1",
+            "entity/itemframe/add_item2",
+            "entity/itemframe/add_item3",
+            "entity/itemframe/add_item4"
+        ],
+        "subtitle": "subtitles.gravestones.block.gravestone.add_skull"
+    },
+    "block.gravestone.remove_skull": {
+        "sounds": [
+            "entity/itemframe/remove_item1",
+            "entity/itemframe/remove_item2",
+            "entity/itemframe/remove_item3",
+            "entity/itemframe/remove_item4"
+        ],
+        "subtitle": "subtitles.gravestones.block.gravestone.remove_skull"
     }
 }
