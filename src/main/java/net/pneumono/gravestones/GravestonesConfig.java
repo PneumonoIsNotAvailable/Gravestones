@@ -16,29 +16,29 @@ public class GravestonesConfig {
             true, new ConfigSettings().category("decay").loadType(LoadType.INSTANT)
     ));
     public static final TimeConfiguration DECAY_TIME = register("decay_time", new TimeConfiguration(
-            8L * TimeUnit.HOURS.getDivision(), new ConfigSettings().category("decay").loadType(LoadType.INSTANT).parent(DECAY_WITH_TIME, value -> value)
+            8L * TimeUnit.HOURS.getDivision(), new ConfigSettings().category("decay").loadType(LoadType.INSTANT)
     ));
     public static final EnumConfiguration<DecayTimeType> DECAY_TIME_TYPE = register("decay_time_type", new EnumConfiguration<>(
-            DecayTimeType.TICKS, new ConfigSettings().category("decay").loadType(LoadType.INSTANT).parent(DECAY_WITH_TIME, value -> value)
+            DecayTimeType.TICKS, new ConfigSettings().category("decay").loadType(LoadType.INSTANT)
     ));
     public static final BooleanConfiguration AESTHETIC_DECAY = register("aesthetic_decay", new BooleanConfiguration(
-            false, new ConfigSettings().category("decay").loadType(LoadType.INSTANT).parent(DECAY_WITH_TIME, value -> value)
+            false, new ConfigSettings().category("decay").loadType(LoadType.INSTANT)
     ));
 
     public static final BooleanConfiguration STORE_EXPERIENCE = register("store_experience", new BooleanConfiguration(
             true, new ConfigSettings().category("experience").loadType(LoadType.INSTANT)
     ));
     public static final BooleanConfiguration EXPERIENCE_CAP = register("experience_cap", new BooleanConfiguration(
-            true, new ConfigSettings().category("experience").loadType(LoadType.INSTANT).parent(STORE_EXPERIENCE, value -> value)
+            true, new ConfigSettings().category("experience").loadType(LoadType.INSTANT)
     ));
     public static final EnumConfiguration<ExperienceKeptCalculation> EXPERIENCE_KEPT = register("experience_kept", new EnumConfiguration<>(
-            ExperienceKeptCalculation.VANILLA, new ConfigSettings().category("experience").loadType(LoadType.INSTANT).parent(STORE_EXPERIENCE, value -> value)
+            ExperienceKeptCalculation.VANILLA, new ConfigSettings().category("experience").loadType(LoadType.INSTANT)
     ));
     public static final BooleanConfiguration EXPERIENCE_DECAY = register("experience_decay", new BooleanConfiguration(
-            false, new ConfigSettings().category("experience").loadType(LoadType.INSTANT).parent(STORE_EXPERIENCE, value -> value)
+            false, new ConfigSettings().category("experience").loadType(LoadType.INSTANT)
     ));
     public static final BooleanConfiguration DROP_EXPERIENCE = register("drop_experience", new BooleanConfiguration(
-            false, new ConfigSettings().category("experience").loadType(LoadType.INSTANT).parent(STORE_EXPERIENCE, value -> value)
+            false, new ConfigSettings().category("experience").loadType(LoadType.INSTANT)
     ));
 
     public static final BooleanConfiguration GRAVESTONE_ACCESSIBLE_OWNER_ONLY = register("gravestone_accessible_owner_only", new BooleanConfiguration(
