@@ -7,6 +7,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
+import net.pneumono.gravestones.compat.AccessoriesCompat;
 import net.pneumono.gravestones.compat.BackwardsCompat;
 import net.pneumono.gravestones.compat.TrinketsCompat;
 import net.pneumono.gravestones.content.GravestonesCommands;
@@ -33,13 +34,25 @@ public class Gravestones implements ModInitializer {
 		GravestonesRegistry.registerModContent();
 		GravestonesCommands.registerCommands();
 
-		if (FabricLoader.getInstance().isModLoaded("spelunkery")) {
+		if (isModLoaded("spelunkery")) {
 			InsertGravestoneItemCallback.EVENT.register((player, itemStack) -> itemStack.isOf(Items.RECOVERY_COMPASS));
 		}
 
-		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
+		// Accessories' Compat Layers exist, so to prevent issues Gravestones will prioritize other equipment mods
+		boolean supportAccessories = true;
+
+		if (isModLoaded("trinkets")) {
 			TrinketsCompat.register();
+			supportAccessories = false;
 		}
+
+		if (supportAccessories && isModLoaded("accessories")) {
+			AccessoriesCompat.register();
+		}
+	}
+
+	private static boolean isModLoaded(String id) {
+		return FabricLoader.getInstance().isModLoaded(id);
 	}
 
 	public static Identifier id(String path) {
