@@ -28,6 +28,10 @@ repositories {
 		name = "Ladysnake Libs"
 		url = 'https://maven.ladysnake.org/releases'
 	}
+
+	maven { url 'https://maven.wispforest.io/releases' }
+	maven { url 'https://maven.su5ed.dev/releases' }
+	maven { url 'https://maven.shedaniel.me/' }
 }
 
 loom {
@@ -69,6 +73,10 @@ dependencies {
 
 	// Trinkets - Removed - Not updated
 	// modImplementation "dev.emi:trinkets:${project.trinkets_version}"
+
+	// Accessories
+	modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
+	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
 }
 
 processResources {
