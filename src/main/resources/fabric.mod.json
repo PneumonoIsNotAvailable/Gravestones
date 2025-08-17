@@ -20,7 +20,8 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.modrinth": "https://modrinth.com/project/Heh3BbSv"
+				"modmenu.modrinth": "https://modrinth.com/project/Heh3BbSv",
+				"modmenu.wiki": "https://github.com/PneumonoIsNotAvailable/Gravestones/wiki"
 			}
 		}
 	},
@@ -35,7 +36,7 @@
 			"net.pneumono.gravestones.GravestonesClient"
 		],
 		"modmenu": [
-			"net.pneumono.gravestones.GravestonesModMenu"
+			"net.pneumono.gravestones.compat.ModMenuCompat"
 		]
 	},
 	"mixins": [
