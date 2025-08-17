@@ -18,7 +18,7 @@ public class GravestoneTime extends GravestoneManager {
             Date aDate = formatter.parse(aTime);
             Date bDate = formatter.parse(bTime);
             long diffInMilli = aDate.getTime() - bDate.getTime();
-            return TimeUnit.SECONDS.convert(diffInMilli, TimeUnit.MILLISECONDS);
+            return TimeUnit.SECONDS.convert(Math.abs(diffInMilli), TimeUnit.MILLISECONDS);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

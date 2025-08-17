@@ -20,7 +20,7 @@ public class GravestoneDecay extends GravestoneManager {
     public static void timeDecayGravestone(World world, BlockPos pos, BlockState state) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (
-                GravestonesConfig.DECAY_WITH_TIME.getValue() ||
+                !GravestonesConfig.DECAY_WITH_TIME.getValue() ||
                 !(blockEntity instanceof TechnicalGravestoneBlockEntity entity) ||
                 entity.getGraveOwner() == null
         ) return;
@@ -36,15 +36,14 @@ public class GravestoneDecay extends GravestoneManager {
         }
 
         long timeUnit = GravestonesConfig.DECAY_TIME.getValue();
-        int ageDamage = entity.getAgeDamage();
 
         if (difference > (timeUnit * 3)) {
             entity.setAgeDamage(3);
 
-        } else if (difference > (timeUnit * 2) && ageDamage != 2) {
+        } else if (difference > (timeUnit * 2)) {
             entity.setAgeDamage(2);
 
-        } else if (difference > timeUnit && ageDamage != 1) {
+        } else if (difference > timeUnit) {
             entity.setAgeDamage(1);
         }
 

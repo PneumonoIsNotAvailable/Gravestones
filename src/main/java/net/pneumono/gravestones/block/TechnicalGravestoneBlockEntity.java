@@ -31,8 +31,8 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     private ProfileComponent graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
-    private int deathDamage;
-    private int ageDamage;
+    private int deathDamage = 0;
+    private int ageDamage = 0;
 
     public TechnicalGravestoneBlockEntity(BlockPos pos, BlockState state) {
         super(GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, pos, state);
@@ -215,8 +215,10 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public void setAgeDamage(int ageDamage) {
-        this.ageDamage = ageDamage;
-        this.markDirty();
+        if (this.ageDamage != ageDamage) {
+            this.ageDamage = ageDamage;
+            this.markDirty();
+        }
     }
 
     public int getDeathDamage() {
