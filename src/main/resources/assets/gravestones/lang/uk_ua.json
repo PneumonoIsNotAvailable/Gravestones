@@ -1,10 +1,10 @@
 {
   "block.gravestones.gravestone": "Могила",
-  "block.gravestones.gravestone_chipped": "Надщерблений могильний камінь",
-  "block.gravestones.gravestone_damaged": "Пошкоджений могильний камінь",
+  "block.gravestones.gravestone_chipped": "Надщерблена могила",
+  "block.gravestones.gravestone_damaged": "Пошкоджена могила",
   "block.gravestones.gravestone_technical": "Могила",
 
-  "gravestones.cannot_open_no_owner": "Цей могильний камінь не має власника!",
+  "gravestones.cannot_open_no_owner": "Ця могила не має власника!",
   "gravestones.cannot_open_wrong_player": "З цією могилою може взаємодіяти лише її власник, %s!",
   "gravestones.edit_text": "Редагувати повідомлення могили",
   "gravestones.grave_spawned": "Могила %1$s знаходиться на %2$s",
