@@ -54,11 +54,13 @@ A more detailed explanation of this can be found
 [here](https://github.com/PneumonoIsNotAvailable/Gravestones/wiki/Developers).
 
 ### Translations
-At the time of writing, Gravestones currently only has full translations for English.
+At the time of writing, Gravestones currently only has full translations for English and several joke languages.
 Slightly outdated translations for simplified and traditional Chinese are available.
 
 If you're able to translate Gravestones into a different language, please create a pull request and do so!
-Create a copy of the `en_us.json` file in the mod's asset folder, and rename it to the appropriate locale code
+Create a copy of the `en_us.json` file
+[here](https://github.com/PneumonoIsNotAvailable/Gravestones/blob/master/src/main/resources/assets/gravestones/lang/en_us.json),
+and rename it to the appropriate locale code
 (viewable on the [Minecraft Wiki](https://minecraft.wiki/w/Language)).
 Then simply go through all the English phrases and translate them.
 
