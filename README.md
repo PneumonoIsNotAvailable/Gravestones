@@ -54,8 +54,8 @@ A more detailed explanation of this can be found
 [here](https://github.com/PneumonoIsNotAvailable/Gravestones/wiki/Developers).
 
 ### Translations
-At the time of writing, Gravestones currently only has full translations for English and several joke languages.
-Slightly outdated translations for simplified and traditional Chinese are available.
+Information about what languages the mod supports can be found
+[here](https://github.com/PneumonoIsNotAvailable/Gravestones/wiki#translations).
 
 If you're able to translate Gravestones into a different language, please create a pull request and do so!
 Create a copy of the `en_us.json` file
