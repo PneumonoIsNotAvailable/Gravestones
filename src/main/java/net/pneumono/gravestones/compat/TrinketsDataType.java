@@ -18,7 +18,6 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 
@@ -39,7 +38,6 @@ public class TrinketsDataType extends GravestoneDataType {
 
         List<Pair<SlotReferencePrimitive, ItemStack>> storedTrinkets = new ArrayList<>();
         component.forEach((reference, stack) -> {
-            Gravestones.LOGGER.info("fuck");
             if (shouldSkipTrinket(player, reference, stack)) return;
 
             storedTrinkets.add(new Pair<>(new SlotReferencePrimitive(reference), stack));
