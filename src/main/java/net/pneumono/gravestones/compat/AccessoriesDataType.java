@@ -2,6 +2,7 @@ package net.pneumono.gravestones.compat;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.wispforest.accessories.Accessories;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import io.wispforest.accessories.api.core.Accessory;
@@ -11,6 +12,7 @@ import io.wispforest.accessories.api.slot.SlotReference;
 import io.wispforest.accessories.impl.core.ExpandedContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.ItemScatterer;
@@ -24,8 +26,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class AccessoriesDataType extends GravestoneDataType {
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void writeData(WriteView view, PlayerEntity player) {
+        MinecraftServer server = player.getServer();
+        if (server != null && server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)) {
+            return;
+        }
+
         AccessoriesCapability capability = AccessoriesCapability.get(player);
         if (capability == null) return;
 
