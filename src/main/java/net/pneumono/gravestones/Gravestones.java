@@ -38,16 +38,16 @@ public class Gravestones implements ModInitializer {
 			InsertGravestoneItemCallback.EVENT.register((player, itemStack) -> itemStack.isOf(Items.RECOVERY_COMPASS));
 		}
 
-		// Accessories' Compat Layers exist, so to prevent issues Gravestones will prioritize other equipment mods
-		boolean supportAccessories = true;
+		// Accessories' Compat Layers exist, so to prevent issues Gravestones will prioritize Accessories directly over other mods
+		boolean usingAccessories = false;
 
-		if (isModLoaded("trinkets")) {
-			TrinketsCompat.register();
-			supportAccessories = false;
+		if (isModLoaded("accessories")) {
+			AccessoriesCompat.register();
+			usingAccessories = true;
 		}
 
-		if (supportAccessories && isModLoaded("accessories")) {
-			AccessoriesCompat.register();
+		if (!usingAccessories && isModLoaded("trinkets")) {
+			TrinketsCompat.register();
 		}
 	}
 
