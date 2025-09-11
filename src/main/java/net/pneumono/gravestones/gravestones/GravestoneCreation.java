@@ -101,7 +101,7 @@ public class GravestoneCreation extends GravestoneManager {
             // Damage existing gravestones
             RecentGraveHistory history = getHistory(new ArrayList<>(historiesFuture.get()), player.getUuid());
             if (history != null) {
-                GravestoneDecay.deathDamageOldGravestones(deathWorld, history.getList(), gravestonePos);
+                GravestoneDecay.deathDamageOldGravestones(server, history.getList(), gravestonePos);
             }
         } catch (ExecutionException | InterruptedException ignored) {}
 

@@ -51,7 +51,7 @@ public class GravestoneDecay extends GravestoneManager {
         updateTotalGravestoneDamage(world, pos, state, entity);
     }
 
-    protected static void deathDamageOldGravestones(ServerWorld serverWorld, List<GlobalPos> oldGravePositions, GlobalPos newPos) {
+    protected static void deathDamageOldGravestones(MinecraftServer server, List<GlobalPos> oldGravePositions, GlobalPos newPos) {
         if (!GravestonesConfig.DECAY_WITH_DEATHS.getValue()) {
             return;
         }
@@ -63,15 +63,17 @@ public class GravestoneDecay extends GravestoneManager {
                 continue;
             }
 
-            GravestoneDecay.incrementDeathDamage(serverWorld, oldPos);
+            GravestoneDecay.incrementDeathDamage(server, oldPos);
             checkedPositions.add(oldPos);
         }
     }
 
-    public static void incrementDeathDamage(ServerWorld world, GlobalPos globalPos) {
+    public static void incrementDeathDamage(MinecraftServer server, GlobalPos globalPos) {
+        ServerWorld world = server.getWorld(globalPos.dimension());
         BlockPos pos = globalPos.pos();
 
         if (
+                world == null ||
                 !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) ||
                 entity.getGraveOwner() == null
         ) return;
