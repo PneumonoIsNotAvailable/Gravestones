@@ -9,33 +9,46 @@ import org.slf4j.LoggerFactory;
 
 public abstract class GravestoneManager {
     protected static final Logger LOGGER = LoggerFactory.getLogger("Gravestones Debug");
+    private static boolean consoleInfo = false;
+
+    public static void checkConsoleInfoConfig() {
+        consoleInfo = GravestonesConfig.CONSOLE_INFO.getValue();
+    }
+
+    public static boolean isUsingDebug() {
+        return consoleInfo;
+    }
 
     public static void info(String string) {
-        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+        if (consoleInfo) {
             LOGGER.info(string);
         }
     }
 
     public static void warn(String string) {
-        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+        if (consoleInfo) {
             LOGGER.warn(string);
         }
     }
 
     public static void error(String string) {
-        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+        if (consoleInfo) {
             LOGGER.error(string);
         }
     }
 
     public static void error(String string, Throwable t) {
-        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+        if (consoleInfo) {
             LOGGER.error(string, t);
         }
     }
 
     public static String posToString(BlockPos pos) {
         return "(" + pos.toShortString() + ")";
+    }
+
+    public static String posToString(GlobalPos global) {
+        return posToString(global.pos()) + " in " + global.dimension().getValue().toString();
     }
 
     public static Text posToText(GlobalPos global) {

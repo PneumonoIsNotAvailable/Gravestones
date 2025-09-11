@@ -58,7 +58,7 @@ public class GravestonesCommands {
                                 .then(literal("player")
                                         .then(argument("player", EntityArgumentType.player())
                                                 .executes(context -> {
-                                                    List<RecentGraveHistory> histories = GravestoneDataSaving.readData(context.getSource().getServer());
+                                                    List<RecentGraveHistory> histories = GravestoneDataSaving.readHistories(context.getSource().getServer());
 
                                                     UUID uuid = EntityArgumentType.getPlayer(context, "player").getGameProfile().getId();
                                                     List<GlobalPos> positions = null;

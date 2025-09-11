@@ -189,6 +189,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     public void setContents(NbtCompound contents) {
         this.contents = contents;
+        this.markDirty();
     }
 
     public void setGraveOwner(ProfileComponent graveOwner) {
@@ -215,7 +216,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public void setAgeDamage(int ageDamage) {
-        if (this.ageDamage != ageDamage) {
+        if (this.getAgeDamage() != ageDamage) {
             this.ageDamage = ageDamage;
             this.markDirty();
         }

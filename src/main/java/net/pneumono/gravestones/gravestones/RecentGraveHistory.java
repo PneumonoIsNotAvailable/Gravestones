@@ -18,6 +18,10 @@ public record RecentGraveHistory(UUID owner, Optional<GlobalPos> first, Optional
             GlobalPos.CODEC.optionalFieldOf("third").forGetter(RecentGraveHistory::third)
     ).apply(builder, RecentGraveHistory::new));
 
+    public RecentGraveHistory(UUID owner, GlobalPos first) {
+        this(owner, Optional.ofNullable(first), Optional.empty(), Optional.empty());
+    }
+
     public RecentGraveHistory(UUID owner) {
         this(owner, Optional.empty(), Optional.empty(), Optional.empty());
     }

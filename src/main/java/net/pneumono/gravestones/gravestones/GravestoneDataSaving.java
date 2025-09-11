@@ -6,7 +6,6 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.math.GlobalPos;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +13,11 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class GravestoneDataSaving extends GravestoneManager {
-    protected static void saveDeathData(NbtCompound contents, PlayerEntity player, Date date) {
+    protected static void saveBackup(NbtCompound contents, PlayerEntity player) {
+        saveBackup(contents, player, new Date());
+    }
+
+    protected static void saveBackup(NbtCompound contents, PlayerEntity player, Date date) {
         String uuidString = player.getGameProfile().getId().toString();
         File deathsFile = new File(
                 getOrCreateGravestonesFolder(Objects.requireNonNull(player.getServer())), uuidString
@@ -39,30 +42,7 @@ public class GravestoneDataSaving extends GravestoneManager {
         }
     }
 
-    protected static List<GlobalPos> readAndWriteData(MinecraftServer server, UUID uuid, GlobalPos newPos) {
-        // Read Data
-        List<RecentGraveHistory> histories = new ArrayList<>(readData(server));
-
-        // Process Data
-        RecentGraveHistory history = new RecentGraveHistory(uuid);
-        for (int i = 0; i < histories.size(); ++i) {
-            RecentGraveHistory checkedHistory = histories.get(i);
-            if (checkedHistory.owner().equals(uuid)) {
-                history = histories.remove(i);
-                break;
-            }
-        }
-
-        List<GlobalPos> posList = history.getList();
-        histories.add(history.getShifted(newPos));
-
-        // Write data
-        writeData(server, histories);
-
-        return posList;
-    }
-
-    public static List<RecentGraveHistory> readData(MinecraftServer server) {
+    public static List<RecentGraveHistory> readHistories(MinecraftServer server) {
         Path path = getOrCreateGravestonesDataFile(server);
 
         NbtCompound compound = new NbtCompound();
