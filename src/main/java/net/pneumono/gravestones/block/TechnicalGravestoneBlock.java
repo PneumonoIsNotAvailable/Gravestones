@@ -54,7 +54,11 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (player instanceof FakePlayer || !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone)) {
+        if (
+                player instanceof FakePlayer ||
+                player.isDead() ||
+                !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone)
+        ) {
             return ActionResult.FAIL;
         }
 
