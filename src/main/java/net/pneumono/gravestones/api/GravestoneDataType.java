@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.content.ExperienceDataType;
 import net.pneumono.gravestones.content.PlayerInventoryDataType;
+import net.pneumono.gravestones.gravestones.GravestoneManager;
 
 /**
  * Represents a type of data that a gravestone can store.
@@ -18,7 +19,7 @@ import net.pneumono.gravestones.content.PlayerInventoryDataType;
  * <p>See {@link PlayerInventoryDataType}
  * and {@link ExperienceDataType} for examples.
  */
-public abstract class GravestoneDataType {
+public abstract class GravestoneDataType extends GravestoneManager {
     /**
      * Called when a new grave is created.
      *

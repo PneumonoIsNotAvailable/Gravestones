@@ -27,39 +27,51 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class GravestoneCreation extends GravestoneManager {
-    public static void handleGravestones(PlayerEntity player) {
+    public static void create(PlayerEntity player) {
         World world = player.getWorld();
         if (!(world instanceof ServerWorld serverWorld)) {
             return;
         }
 
-        handle(serverWorld, player);
+        info("----- Beginning Gravestone Creation -----");
+        info("If you don't want to see this, disable 'Console Info' in the configs!");
+        create(serverWorld, player);
+        info("----- Finishing Gravestone Creation -----");
     }
 
-    public static void handle(ServerWorld deathWorld, PlayerEntity player) {
+    private static void create(ServerWorld deathWorld, PlayerEntity player) {
         checkConsoleInfoConfig();
 
         GlobalPos deathPos = new GlobalPos(deathWorld.getRegistryKey(), player.getBlockPos());
         MinecraftServer server = deathWorld.getServer();
 
         // Check if placement should be cancelled
+        info("Checking if Gravestone Placement should be cancelled...");
         if (CancelGravestonePlacementCallback.EVENT.invoker().shouldCancel(
                 deathWorld, player, deathPos
         )) {
+            info("Placement cancelled!");
             return;
         }
+        info("Placement not cancelled");
 
         // Read gravestone history
-        CompletableFuture<List<RecentGraveHistory>> historiesFuture = CompletableFuture.supplyAsync(
-                () -> GravestoneDataSaving.readHistories(server)
-        );
+        CompletableFuture<List<RecentGraveHistory>> historiesFuture = CompletableFuture.supplyAsync(() -> {
+            info("Reading gravestone history...");
+            return GravestoneDataSaving.readHistories(server);
+        });
 
         // Create contents data
+        info("Creating gravestone contents data...");
         NbtCompound contents = createContentsData(player);
         // Backup contents data
-        CompletableFuture.runAsync(() -> GravestoneDataSaving.saveBackup(contents, player));
+        CompletableFuture.runAsync(() -> {
+            info("Backing up gravestone contents data...");
+            GravestoneDataSaving.saveBackup(contents, player);
+        });
 
         // Calculate placement position
+        info("Calculating gravestone placement position...");
         GlobalPos gravestonePos = getPlacementPos(deathWorld, player, deathPos);
 
         historiesFuture.thenAccept(histories -> {
@@ -67,6 +79,7 @@ public class GravestoneCreation extends GravestoneManager {
             RecentGraveHistory history = getHistory(histories, player.getUuid());
 
             // Create new gravestone history
+            info("Updating gravestone history...");
             RecentGraveHistory newHistory;
             if (history == null) {
                 newHistory = new RecentGraveHistory(player.getUuid(), gravestonePos);
@@ -76,10 +89,12 @@ public class GravestoneCreation extends GravestoneManager {
             histories.add(newHistory);
 
             // Write new gravestone history
+            info("Writing updated gravestone history...");
             GravestoneDataSaving.writeData(server, histories);
         });
 
         // Place gravestone
+        info("Placing gravestone...");
         if (gravestonePos != null && server.getWorld(gravestonePos.dimension()) instanceof ServerWorld graveWorld) {
             placeGravestone(server, gravestonePos);
             Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", player.getGameProfile().getName(), posToString(gravestonePos));
@@ -90,22 +105,28 @@ public class GravestoneCreation extends GravestoneManager {
         }
 
         // Insert gravestone contents
+        info("Inserting contents into gravestone...");
         insertGravestoneContents(graveWorld, player, gravestonePos, contents);
 
         // Broadcast chat message
+        info("Broadcasting chat message... (if enabled)");
         if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
             server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", player.getGameProfile().getName(), posToString(gravestonePos.pos())), false);
         }
 
+        info("Damaging existing gravestones... (if enabled)");
         try {
             // Damage existing gravestones
             RecentGraveHistory history = getHistory(new ArrayList<>(historiesFuture.get()), player.getUuid());
             if (history != null) {
                 GravestoneDecay.deathDamageOldGravestones(server, history.getList(), gravestonePos);
             }
-        } catch (ExecutionException | InterruptedException ignored) {}
+        } catch (ExecutionException | InterruptedException e) {
+            error("Failed to damage existing gravestones", e);
+        }
 
         // Callbacks
+        info("Invoking GravestonePlacedCallbacks");
         GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(deathWorld, player, deathPos, gravestonePos);
     }
 

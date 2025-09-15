@@ -35,7 +35,10 @@ public class AccessoriesDataType extends GravestoneDataType {
         }
 
         AccessoriesCapability capability = AccessoriesCapability.get(player);
-        if (capability == null) return;
+        if (capability == null) {
+            warn("Player {} does not have an AccessoriesCapability", player.getName().getString());
+            return;
+        }
 
         List<SlotReferencePrimitive> list = capability.getAllEquipped().stream()
                 .filter(reference -> !GravestonesApi.shouldSkipItem(player, reference.stack()))
@@ -67,7 +70,11 @@ public class AccessoriesDataType extends GravestoneDataType {
         if (list == null || list.isEmpty()) return;
 
         AccessoriesCapability capability = AccessoriesCapability.get(player);
-        if (capability == null) return;
+        if (capability == null) {
+            warn("Player {} does not have an AccessoriesCapability. Any accessories will be dropped on the ground", player.getName().getString());
+            dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack));
+            return;
+        }
 
         List<ItemStack> remaining = new ArrayList<>();
 

@@ -25,15 +25,33 @@ public abstract class GravestoneManager {
         }
     }
 
+    public static void info(String string, Object... objects) {
+        if (consoleInfo) {
+            LOGGER.info(string, objects);
+        }
+    }
+
     public static void warn(String string) {
         if (consoleInfo) {
             LOGGER.warn(string);
         }
     }
 
+    public static void warn(String string, Object... objects) {
+        if (consoleInfo) {
+            LOGGER.warn(string, objects);
+        }
+    }
+
     public static void error(String string) {
         if (consoleInfo) {
             LOGGER.error(string);
+        }
+    }
+
+    public static void error(String string, Object... objects) {
+        if (consoleInfo) {
+            LOGGER.error(string, objects);
         }
     }
 

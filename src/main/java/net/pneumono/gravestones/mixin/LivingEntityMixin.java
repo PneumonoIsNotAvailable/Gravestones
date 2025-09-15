@@ -15,7 +15,7 @@ public abstract class LivingEntityMixin {
     @Inject(method = "drop", at = @At("HEAD"))
     public void spawnGravestone(ServerWorld world, DamageSource damageSource, CallbackInfo ci) {
         if ((Object)this instanceof PlayerEntity player) {
-            GravestoneCreation.handleGravestones(player);
+            GravestoneCreation.create(player);
         }
     }
 }
