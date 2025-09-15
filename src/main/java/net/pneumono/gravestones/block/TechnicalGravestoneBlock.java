@@ -1,33 +1,24 @@
 package net.pneumono.gravestones.block;
 
 import com.mojang.serialization.MapCodec;
-import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
-import net.pneumono.gravestones.Gravestones;
-import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestonesRegistry;
-import net.pneumono.gravestones.gravestones.GravestoneManager;
+import net.pneumono.gravestones.gravestones.GravestoneCollection;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -54,69 +45,18 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (
-                player instanceof FakePlayer ||
-                player.isDead() ||
-                !(world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone)
-        ) {
+        if (!(world instanceof ServerWorld serverWorld)) {
             return ActionResult.FAIL;
         }
 
-        if (world.isClient()) return ActionResult.SUCCESS;
-
         createSoulParticles(world, pos);
 
-        ProfileComponent graveOwner = gravestone.getGraveOwner();
-        if (graveOwner == null) {
-            player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
+        if (GravestoneCollection.collect(serverWorld, player, pos)) {
+            player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
             return ActionResult.SUCCESS;
-        }
-
-        boolean isOwner = graveOwner.gameProfile().getId().equals(player.getGameProfile().getId());
-        if (!isOwner && GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
-            player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.name().orElse("???")), true);
-            return ActionResult.SUCCESS;
-        }
-
-        String uuid = "";
-        if (GravestonesConfig.CONSOLE_INFO.getValue()) {
-            uuid = " (" + player.getGameProfile().getId() + ")";
-        }
-        if (isOwner) {
-            Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, GravestoneManager.posToString(pos));
         } else {
-            Gravestones.LOGGER.info("{}{} has found {}{}'s grave at {}",
-                    player.getName().getString(), uuid,
-                    graveOwner.name().orElse("???"), graveOwner.uuid().orElse(null),
-                    pos.toString()
-            );
+            return ActionResult.FAIL;
         }
-
-        GravestonesApi.onCollect(world, pos, player, gravestone.getDecay(), gravestone.getContents());
-        gravestone.setContents(new NbtCompound());
-
-        player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
-        MinecraftServer server = world.getServer();
-        if (server != null && GravestonesConfig.BROADCAST_COLLECT_IN_CHAT.getValue()) {
-            MutableText text;
-            if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-                if (isOwner) {
-                    text = Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneManager.posToString(pos));
-                } else {
-                    text = Text.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), graveOwner.name().orElse("???"), GravestoneManager.posToString(pos));
-                }
-            } else {
-                if (isOwner) {
-                    text = Text.translatable("gravestones.player_collected_grave", player.getName().getString());
-                } else {
-                    text = Text.translatable("gravestones.player_collected_others_grave", player.getName().getString(), graveOwner.name().orElse("???"));
-                }
-            }
-            server.getPlayerManager().broadcast(text, false);
-        }
-        world.breakBlock(pos, true);
-
-        return ActionResult.SUCCESS;
     }
 
     @Override
