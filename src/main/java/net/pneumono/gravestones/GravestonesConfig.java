@@ -57,6 +57,10 @@ public class GravestonesConfig {
     public static final BooleanConfiguration SPAWN_GRAVESTONE_SKELETONS = register("spawn_gravestone_skeletons", new BooleanConfiguration(
             false, new ConfigSettings().loadType(LoadType.INSTANT)
     ));
+    public static final BooleanConfiguration SPAWN_GRAVESTONES_IN_CREATIVE = register("spawn_gravestones_in_creative", new BooleanConfiguration(
+            false, new ConfigSettings().loadType(LoadType.INSTANT)
+    ));
+
     public static final BooleanConfiguration SHOW_HEADS = register("show_heads", new BooleanConfiguration(
             true, new ConfigSettings().clientSide().category("clientside").loadType(LoadType.INSTANT)
     ));

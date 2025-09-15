@@ -31,6 +31,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.pneumono.gravestones.Gravestones;
+import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
@@ -151,6 +152,9 @@ public class GravestonesRegistry {
 
         CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
                 world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)
+        );
+        CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
+                player.isCreative() && !GravestonesConfig.SPAWN_GRAVESTONES_IN_CREATIVE.getValue()
         );
     }
 
