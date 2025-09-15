@@ -121,13 +121,15 @@ public class GravestonesApi {
             for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
                 ReadView view = NbtReadView.create(reporter, world.getRegistryManager(), contents);
 
+                String key = entry.getKey().toString();
                 entry.getValue().onCollect(
-                        view.getReadView(entry.getKey().toString()),
+                        view.getReadView(key),
                         world,
                         pos,
                         player,
                         decay
                 );
+                contents.remove(key);
             }
         }
     }

@@ -130,7 +130,7 @@ public class GravestonesCommands {
     }
 
     private static int recoverDeath(CommandContext<ServerCommandSource> context, NbtCompound nbt, ServerPlayerEntity player) {
-        GravestonesApi.onCollect(context.getSource().getWorld(), player.getBlockPos(), player, 0, nbt.getCompoundOrEmpty("contents"));
+        GravestonesApi.onCollect(context.getSource().getWorld(), player.getBlockPos(), player, 0, nbt.getCompoundOrEmpty("contents").copy());
         context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.deaths.recover"), true);
         return 1;
     }
