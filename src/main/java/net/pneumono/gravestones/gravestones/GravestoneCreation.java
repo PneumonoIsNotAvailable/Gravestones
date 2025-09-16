@@ -33,6 +33,8 @@ public class GravestoneCreation extends GravestoneManager {
             return;
         }
 
+        checkConsoleInfoConfig();
+
         info("----- Beginning Gravestone Creation -----");
         info("If you don't want to see this, disable 'Console Info' in the configs!");
         create(serverWorld, player);
@@ -40,8 +42,6 @@ public class GravestoneCreation extends GravestoneManager {
     }
 
     private static void create(ServerWorld deathWorld, PlayerEntity player) {
-        checkConsoleInfoConfig();
-
         GlobalPos deathPos = new GlobalPos(deathWorld.getRegistryKey(), player.getBlockPos());
         MinecraftServer server = deathWorld.getServer();
 
@@ -74,7 +74,7 @@ public class GravestoneCreation extends GravestoneManager {
         info("Calculating gravestone placement position...");
         GlobalPos gravestonePos = getPlacementPos(deathWorld, player, deathPos);
 
-        historiesFuture.thenAccept(histories -> {
+        historiesFuture.thenAcceptAsync(histories -> {
             histories = new ArrayList<>(histories);
             RecentGraveHistory history = getHistory(histories, player.getUuid());
 
@@ -126,7 +126,7 @@ public class GravestoneCreation extends GravestoneManager {
         }
 
         // Callbacks
-        info("Invoking GravestonePlacedCallbacks");
+        info("Invoking GravestonePlacedCallbacks...");
         GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(deathWorld, player, deathPos, gravestonePos);
     }
 
