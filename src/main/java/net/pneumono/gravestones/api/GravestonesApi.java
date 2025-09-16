@@ -33,7 +33,7 @@ import java.util.function.BiPredicate;
  * {@link InsertGravestoneItemCallback} (for items with different behavior on death)
  * and {@link #registerDataType} (for custom data that also needs to be saved on death).
  *
- * <p>There is a page on the <a href="https://github.com/PneumonoIsNotAvailable/Gravestones/wiki/Compatibility">Gravestones Wiki</a>
+ * <p>There is a page on the <a href="https://github.com/PneumonoIsNotAvailable/Gravestones/wiki">Gravestones Wiki</a>
  * for Gravestones' API features, however the documentation here is more detailed and up-to-date.
  *
  * @see GravestoneDataType
