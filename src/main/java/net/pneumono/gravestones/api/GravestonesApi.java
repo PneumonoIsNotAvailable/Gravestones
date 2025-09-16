@@ -42,6 +42,7 @@ import java.util.function.BiPredicate;
  * @see PositionValidationCallback
  * @see InsertGravestoneItemCallback
  * @see GravestonePlacedCallback
+ * @see GravestoneCollectedCallback
  */
 public class GravestonesApi {
     private static final Map<Identifier, GravestoneDataType> DATA_TYPES = new HashMap<>();
