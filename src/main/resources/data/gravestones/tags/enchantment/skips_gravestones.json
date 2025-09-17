@@ -1,6 +1,10 @@
 {
     "values": [
         {
+            "id": "enderio:soulbound",
+            "required": false
+        },
+        {
             "id": "alessandrvenchantments:soulbound",
             "required": false
         },
