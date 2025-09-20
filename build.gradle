@@ -61,14 +61,14 @@ dependencies {
 	modImplementation "com.github.PneumonoIsNotAvailable:PneumonoCore:${project.core_version}"
 
 	// ModMenu
-	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+	modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 
 	// Trinkets - Removed - Not updated
-	// modImplementation "dev.emi:trinkets:${project.trinkets_version}"
+	// modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
 
 	// Accessories
-	modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
-	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
+	modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
+	modCompileOnly "io.wispforest:owo-lib:${project.owo_version}"
 }
 
 processResources {
