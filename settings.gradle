@@ -6,5 +6,23 @@ pluginManagement {
 		}
 		mavenCentral()
 		gradlePluginPortal()
+		maven {
+			name = 'KikuGie Snapshots'
+			url = 'https://maven.kikugie.dev/snapshots'
+		}
+	}
+}
+
+plugins {
+	id("dev.kikugie.stonecutter") version "0.7.10"
+}
+
+stonecutter {
+	kotlinController = false
+	centralScript = "build.gradle"
+
+	create(getRootProject()) {
+		versions "1.20.1", "1.21.1", "1.21.8"
+		vcsVersion = "1.21.8"
 	}
 }

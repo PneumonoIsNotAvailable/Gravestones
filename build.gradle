@@ -46,41 +46,48 @@ loom {
 		}
 	}
 
+	runConfigs.all {
+		ideConfigGenerated true
+	}
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	mappings "net.fabricmc:yarn:${property("yarn_mappings")}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${property("loader_version")}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}"
 
 	// Core mod
-	modImplementation "com.github.PneumonoIsNotAvailable:PneumonoCore:${project.core_version}"
+	modImplementation "com.github.PneumonoIsNotAvailable:PneumonoCore:${property("core_version")}"
 
 	// ModMenu
-	modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+	modCompileOnly "com.terraformersmc:modmenu:${property("modmenu_version")}"
 
 	// Trinkets - Removed - Not updated
 	// modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
 
 	// Accessories
-	modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
-	modCompileOnly "io.wispforest:owo-lib:${project.owo_version}"
+	modCompileOnly "io.wispforest:accessories-fabric:${property("accessories_version")}"
+	modCompileOnly "io.wispforest:owo-lib:${property("owo_version")}"
 }
 
 processResources {
-	inputs.property "version", project.version
+	inputs.property "version", stonecutter.current.version
+	inputs.property "supported", project.property("supported_versions")
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand(
+				"version": stonecutter.current.version,
+				"supported": project.property("supported_versions")
+		)
 	}
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
+	it.options.release = stonecutter.eval(stonecutter.current.version, ">=1.20.5") ? 21 : 17
 }
 
 java {
@@ -89,8 +96,10 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	def java = stonecutter.eval(stonecutter.current.version, ">=1.20.5")
+			? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
+	targetCompatibility = java
+	sourceCompatibility = java
 }
 
 jar {
