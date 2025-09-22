@@ -151,7 +151,7 @@ public class GravestonesRegistry {
         );
 
         CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
-                world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)
+                world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !GravestonesConfig.SPAWN_GRAVESTONES_WITH_KEEPINV.getValue()
         );
         CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
                 player.isCreative() && !GravestonesConfig.SPAWN_GRAVESTONES_IN_CREATIVE.getValue()

@@ -84,6 +84,8 @@
   "configs.gravestones.spawn_gravestone_skeletons.tooltip": "Whether gravestones spawn skeletons when their owner is near",
   "configs.gravestones.spawn_gravestones_in_creative": "Spawn Gravestones in Creative",
   "configs.gravestones.spawn_gravestones_in_creative.tooltip": "Whether gravestones still appear for players in Creative Mode",
+  "configs.gravestones.spawn_gravestones_with_keepinv": "Spawn Gravestones with Keep Inventory",
+  "configs.gravestones.spawn_gravestones_with_keepinv.tooltip": "Whether gravestones still appear when Keep Inventory is enabled. The gravestones will still take items from the player inventories if this is enabled, this config exists for compatibility with any mods that change Keep Inventory",
   "configs.gravestones.console_info": "Console Info",
   "configs.gravestones.console_info.tooltip": "Whether highly detailed information about graves is recorded in console. This is mostly just for debugging!",
   "configs.gravestones.show_heads": "Show Heads",

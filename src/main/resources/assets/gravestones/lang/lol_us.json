@@ -84,6 +84,8 @@
   "configs.gravestones.spawn_gravestone_skeletons.tooltip": "If die boxz make skeletun frends sometiems",
   "configs.gravestones.spawn_gravestones_in_creative": "hav die boxs in hax mod",
   "configs.gravestones.spawn_gravestones_in_creative.tooltip": "If u still haz die boxs when ur in hax mod",
+  "configs.gravestones.spawn_gravestones_with_keepinv": "hav die boxs wit keep stufz",
+  "configs.gravestones.spawn_gravestones_with_keepinv.tooltip": "If u still haz die boxs wen ur stuffz gets kept aftr u die. THIS BREAKS UR STUF KEEPIN!!",
   "configs.gravestones.console_info": "Clevr knowings",
   "configs.gravestones.console_info.tooltip": "Putz smart kitteh knowings in ur consol. FOR CLEVR COED CATS ONLY!!",
   "configs.gravestones.show_heads": "haz hed",

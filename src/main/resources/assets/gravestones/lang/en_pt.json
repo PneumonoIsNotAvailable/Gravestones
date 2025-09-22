@@ -84,6 +84,8 @@
     "configs.gravestones.spawn_gravestone_skeletons.tooltip": "If Dead Man's Chests release Dead Man's Bags o' Bones when their owners be approachin'",
     "configs.gravestones.spawn_gravestones_in_creative": "Bury Dead Man's Chests when Aimlessly Sailin'",
     "configs.gravestones.spawn_gravestones_in_creative.tooltip": "If yer Dead Man's Chests be buried while Aimlessly Sailin' with yer unlimited booty",
+    "configs.gravestones.spawn_gravestones_with_keepinv": "Bury Dead Man's Chests while Keepin' Booty",
+    "configs.gravestones.spawn_gravestones_with_keepinv.tooltip": "If yer Dead Man's Chests be buried even while Keepin' Booty. This will result in yer booty bein' buried too, and should only be used fer fixin' issues!",
     "configs.gravestones.console_info": "Ship's Log",
     "configs.gravestones.console_info.tooltip": "If arcane knowledge about yer Dead Man's Chests be recorded in the Ship's Log. This be a tool fer Poseidon!",
     "configs.gravestones.show_heads": "Show Heads",
