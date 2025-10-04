@@ -11,21 +11,37 @@ java.sourceCompatibility = javaVersion
 base.archivesName.set(project.property("mod_id") as String)
 version = "${project.property("mod_version")}+${stonecutter.current.project}"
 
+val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
+val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
+
 repositories {
 	// Mod Menu
 	maven("https://maven.terraformersmc.com/")
-	maven("https://maven.nucleoid.xyz/")
+	if (stonecutter.current.project == "1.20.4") {
+		maven("https://maven.nucleoid.xyz/")
+	}
 
 	// Trinkets
-	maven("https://maven.ladysnake.org/releases")
+	if (trinkets) {
+		maven("https://maven.ladysnake.org/releases")
+	}
 
-	// Accessories + owo
-	maven("https://maven.wispforest.io/releases")
-	maven("https://maven.su5ed.dev/releases")
-	maven("https://maven.shedaniel.me/")
+	// Accessories
+	if (accessories) {
+		maven("https://maven.wispforest.io/releases")
+		maven("https://maven.su5ed.dev/releases")
+		maven("https://maven.shedaniel.me/")
+	}
 
 	// Core
-	maven("https://jitpack.io")
+	exclusiveContent {
+		forRepository {
+			maven("https://api.modrinth.com/maven")
+		}
+		filter {
+			includeGroup("maven.modrinth")
+		}
+	}
 }
 
 loom {
@@ -55,16 +71,18 @@ dependencies {
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
 
 	// Core mod
-	// modImplementation("com.github.PneumonoIsNotAvailable:PneumonoCore:${property("core_version")}")
+	modImplementation("maven.modrinth:pneumono_core:${property("core_version")}")
 
 	// ModMenu
 	modCompileOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
-	// Trinkets - Removed - Not updated
-	// modCompileOnly("dev.emi:trinkets:${project.trinkets_version}")
+	// Trinkets
+	if (trinkets) {
+		modCompileOnly("dev.emi:trinkets:${property("trinkets_version")}")
+	}
 
 	// Accessories
-	if ("${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]") {
+	if (accessories) {
 		modCompileOnly("io.wispforest:accessories-fabric:${property("accessories_version")}")
 		modCompileOnly("io.wispforest:owo-lib:${property("owo_version")}")
 	}
