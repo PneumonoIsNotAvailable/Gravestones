@@ -55,14 +55,14 @@ public class GravestoneDataSaving extends GravestoneManager {
             error("Failed to read Gravestone Data", e);
         }
 
-        return compound.get("data", RecentGraveHistory.CODEC.listOf()).orElse(new ArrayList<>());
+        return VersionUtil.get(compound, "data", RecentGraveHistory.CODEC.listOf()).orElse(new ArrayList<>());
     }
 
     public static void writeData(MinecraftServer server, List<RecentGraveHistory> histories) {
         Path path = getOrCreateGravestonesDataFile(server);
 
         NbtCompound compound = new NbtCompound();
-        compound.put("data", RecentGraveHistory.CODEC.listOf(), histories);
+        VersionUtil.put(compound, "data", RecentGraveHistory.CODEC.listOf(), histories);
 
         try {
             NbtIo.writeCompressed(compound, path);

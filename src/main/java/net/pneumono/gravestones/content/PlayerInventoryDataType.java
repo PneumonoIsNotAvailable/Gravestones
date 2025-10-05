@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.StackWithSlot;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
     @Override
     public void onBreak(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, int decay) {
-        NbtList list = nbt.getListOrEmpty(KEY);
+        NbtList list = VersionUtil.getCompoundListOrEmpty(nbt, KEY);
 
         for (NbtElement element : list) {
             ItemStack stack = StackWithSlot.CODEC.decode(ops, element).getOrThrow().getFirst().stack();
@@ -50,7 +51,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
     @Override
     public void onCollect(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
         PlayerInventory inventory = player.getInventory();
-        NbtList list = nbt.getListOrEmpty(KEY);
+        NbtList list = VersionUtil.getCompoundListOrEmpty(nbt, KEY);
         List<StackWithSlot> stacks = new ArrayList<>();
         for (NbtElement element : list) {
             stacks.add(StackWithSlot.CODEC.decode(ops, element).getOrThrow().getFirst());

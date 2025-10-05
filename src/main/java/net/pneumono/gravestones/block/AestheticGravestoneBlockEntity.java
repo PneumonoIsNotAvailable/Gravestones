@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SignText;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.ComponentsAccess;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +19,6 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec2f;
@@ -41,12 +39,18 @@ import java.util.function.UnaryOperator;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 //?} else {
-/*import net.minecraft.registry.RegistryWrapper;
+/*import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 *///?}
 
-//? if <1.21.8 {
-/*import net.minecraft.nbt.NbtCompound;
-*///?}
+//? if >=1.21.5 {
+import net.minecraft.component.ComponentsAccess;
+import net.minecraft.util.ItemScatterer;
+//?}
 
 public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
     private ItemStack headStack = ItemStack.EMPTY;
@@ -85,19 +89,23 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     /*@Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.writeNbt(nbt, registries);
+        RegistryOps<NbtElement> ops = registries.getOps(NbtOps.INSTANCE);
+
         if (!this.headStack.isEmpty()) {
-            nbt.put("head", ItemStack.CODEC, this.headStack);
+            VersionUtil.put(ops, nbt, "head", ItemStack.CODEC, this.headStack);
         }
-        nbt.put("text", SignText.CODEC, this.text);
+        VersionUtil.put(ops, nbt, "text", SignText.CODEC, this.text);
         nbt.putBoolean("is_waxed", this.waxed);
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.readNbt(nbt, registries);
-        this.headStack = nbt.get("head", ItemStack.CODEC).orElse(ItemStack.EMPTY);
-        this.text = nbt.get("text", SignText.CODEC).map(this::parseLines).orElseGet(SignText::new);
-        this.waxed = nbt.getBoolean("is_waxed", false);
+        RegistryOps<NbtElement> ops = registries.getOps(NbtOps.INSTANCE);
+
+        this.headStack = VersionUtil.get(ops, nbt, "head", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+        this.text = VersionUtil.get(ops, nbt, "text", SignText.CODEC).map(this::parseLines).orElseGet(SignText::new);
+        this.waxed = nbt.getBoolean("is_waxed"/^? if >=1.21.5 {^/, false/^?}^/);
     }
     *///?}
 
@@ -179,8 +187,14 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
         for (Text text : this.getText().getMessages(player.shouldFilterText())) {
             Style style = text.getStyle();
-            if (style.getClickEvent() instanceof ClickEvent.RunCommand(String var14)) {
-                Objects.requireNonNull(MultiVersionUtil.getWorld(player).getServer()).getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), var14);
+            //? if >=1.21.5 {
+            if (style.getClickEvent() instanceof ClickEvent.RunCommand(String value)) {
+            //?} else {
+            /*ClickEvent clickEvent = style.getClickEvent();
+            if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
+                String value = clickEvent.getValue();
+            *///?}
+                Objects.requireNonNull(MultiVersionUtil.getWorld(player).getServer()).getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), value);
                 hasRunCommand = true;
             }
         }
@@ -226,12 +240,14 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return headStack;
     }
 
+    //? if >=1.21.5 {
     @Override
     public void onBlockReplaced(BlockPos pos, BlockState oldState) {
         if (this.world != null) {
             ItemScatterer.spawn(this.world, pos.getX(), pos.getY(), pos.getZ(), this.headStack);
         }
     }
+    //?}
 
     public void setEditor(@Nullable UUID editor) {
         this.editor = editor;

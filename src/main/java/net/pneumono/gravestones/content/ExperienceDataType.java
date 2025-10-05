@@ -52,7 +52,7 @@ public class ExperienceDataType extends GravestoneDataType {
     }
 
     private static int getExperience(NbtCompound nbt, int decay) {
-        int experience = nbt.getInt(KEY, 0);
+        int experience = nbt.getInt(KEY/*? if >=1.21.5 {*/, 0/*?}*/);
         return GravestonesApi.getDecayedExperience(experience, decay);
     }
 }

@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,7 +101,7 @@ public class GravestonesApi {
             String key = entry.getKey().toString();
             try {
                 entry.getValue().onBreak(
-                        contents.getCompoundOrEmpty(key),
+                        VersionUtil.getCompoundOrEmpty(contents, key),
                         world.getRegistryManager().getOps(NbtOps.INSTANCE),
                         world,
                         pos,
@@ -121,17 +122,17 @@ public class GravestonesApi {
             String key = entry.getKey().toString();
             try {
                 entry.getValue().onCollect(
-                        contents.getCompoundOrEmpty(key),
+                        VersionUtil.getCompoundOrEmpty(contents, key),
                         world.getRegistryManager().getOps(NbtOps.INSTANCE),
                         world,
                         pos,
                         player,
                         decay
                 );
+                contents.remove(key);
             } catch (Exception e) {
                 Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to return contents:", key, e);
             }
-            contents.remove(key);
         }
     }
 

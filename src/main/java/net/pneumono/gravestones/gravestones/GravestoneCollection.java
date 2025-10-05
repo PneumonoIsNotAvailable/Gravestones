@@ -47,14 +47,14 @@ public class GravestoneCollection extends GravestoneManager {
         if (graveOwner == null) {
             info("Player cannot collect gravestone because it has no owner");
             player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
-            return true;
+            return false;
         }
 
         boolean isOwner = graveOwner.getUuid().equals(VersionUtil.getId(player.getGameProfile()));
         if (!isOwner && GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
             info("Player cannot collect gravestone because they are not the owner");
             player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.getNotNullName()), true);
-            return true;
+            return false;
         }
         info("All checks passed");
 
@@ -64,6 +64,7 @@ public class GravestoneCollection extends GravestoneManager {
         NbtCompound contents = gravestone.getContents();
         if (!contents.isEmpty()) {
             warn("Some gravestone contents were not returned: {}", contents);
+            return false;
         }
         gravestone.setContents(new NbtCompound());
 

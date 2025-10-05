@@ -12,7 +12,6 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
 import net.pneumono.gravestones.block.AbstractGravestoneBlockEntity;
@@ -34,6 +33,10 @@ import org.jetbrains.annotations.Nullable;
 /*import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 *///?}
+
+//? if >=1.21.5 {
+import net.minecraft.util.math.Vec3d;
+//?}
 
 //? if >=1.21.9 {
 public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGravestoneBlockEntity, U extends AbstractGravestoneBlockEntityRenderer.RenderState> implements BlockEntityRenderer<T, U> {
@@ -68,7 +71,7 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
     //? if >=1.21.9 {
     public void render(U state, MatrixStack matrices, OrderedRenderCommandQueue queue, CameraRenderState cameraState) {
     //?} else {
-    /*public void render(T entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
+    /*public void render(T entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay/^? if >=1.21.5 {^/, Vec3d cameraPos/^?}^/) {
     *///?}
         matrices.push();
 

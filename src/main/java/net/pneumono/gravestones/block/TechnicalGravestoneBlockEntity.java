@@ -8,13 +8,11 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
@@ -32,8 +30,14 @@ import java.util.*;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 //?} else {
-/*import net.minecraft.registry.RegistryWrapper;
+/*import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 *///?}
+
+//? if >=1.21.5 {
+import net.minecraft.server.world.ServerWorld;
+import net.pneumono.gravestones.api.GravestonesApi;
+//?}
 
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
     private NbtCompound contents = new NbtCompound();
@@ -78,8 +82,12 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     /*@Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.writeNbt(nbt, registries);
-        nbt.put("contents", NbtCompound.CODEC, this.contents);
-        nbt.putNullable("owner", GraveOwner.CODEC, this.graveOwner);
+        RegistryOps<NbtElement> ops = registries.getOps(NbtOps.INSTANCE);
+
+        VersionUtil.put(ops, nbt, "contents", NbtCompound.CODEC, this.contents);
+        if (this.graveOwner != null) {
+            VersionUtil.put(ops, nbt, "owner", GraveOwner.CODEC, this.graveOwner);
+        }
         if (this.spawnDateTime != null) {
             nbt.putString("spawnDateTime", this.spawnDateTime);
         }
@@ -93,15 +101,18 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.readNbt(nbt, registries);
-        this.contents = nbt.get("contents", NbtCompound.CODEC).orElse(new NbtCompound());
-        this.setGraveOwner(nbt.get("owner", GraveOwner.CODEC).orElse(null));
-        this.spawnDateTime = nbt.getString("spawnDateTime", null);
-        this.spawnDateTicks = nbt.getLong("spawnDateTicks", 0);
-        this.deathDamage = nbt.getInt("deathDamage", 0);
-        this.ageDamage = nbt.getInt("ageDamage", 0);
+        RegistryOps<NbtElement> ops = registries.getOps(NbtOps.INSTANCE);
+
+        this.contents = VersionUtil.get(ops, nbt, "contents", NbtCompound.CODEC).orElse(new NbtCompound());
+        this.setGraveOwner(VersionUtil.get(ops, nbt, "owner", GraveOwner.CODEC).orElse(null));
+        this.spawnDateTime = nbt.getString("spawnDateTime"/^? if >=1.21.5 {^/, null/^?}^/);
+        this.spawnDateTicks = nbt.getLong("spawnDateTicks"/^? if >=1.21.5 {^/, 0/^?}^/);
+        this.deathDamage = nbt.getInt("deathDamage"/^? if >=1.21.5 {^/, 0/^?}^/);
+        this.ageDamage = nbt.getInt("ageDamage"/^? if >=1.21.5 {^/, 0/^?}^/);
     }
     *///?}
 
+    //? if >=1.21.5 {
     @Override
     public void onBlockReplaced(BlockPos pos, BlockState oldState) {
         if (getWorld() instanceof ServerWorld serverWorld) {
@@ -109,6 +120,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         }
         super.onBlockReplaced(pos, oldState);
     }
+    //?}
 
     public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
         if (world.isClient() || world.getTime() % 20 != 0) {

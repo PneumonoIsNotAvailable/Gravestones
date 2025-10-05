@@ -152,6 +152,16 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
+    //? if <1.21.5 {
+    /*@Override
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity) {
+            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), blockEntity.getHeadStack());
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+    *///?}
+
     public void openEditScreen(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
         blockEntity.setEditor(player.getUuid());
         if (player instanceof ServerPlayerEntity serverPlayer) {
