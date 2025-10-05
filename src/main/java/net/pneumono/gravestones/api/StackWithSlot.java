@@ -3,7 +3,6 @@ package net.pneumono.gravestones.api;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.dynamic.Codecs;
 
 /**
  * Similar to vanilla's {@code StackWithSlot}
@@ -12,7 +11,7 @@ import net.minecraft.util.dynamic.Codecs;
  */
 public record StackWithSlot(int slot, ItemStack stack) {
     public static final Codec<StackWithSlot> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-            Codecs.UNSIGNED_BYTE.fieldOf("slot").orElse(0).forGetter(StackWithSlot::slot),
+            Codec.INT.fieldOf("slot").orElse(0).forGetter(StackWithSlot::slot),
             ItemStack.CODEC.fieldOf("item").forGetter(StackWithSlot::stack)
     ).apply(instance, StackWithSlot::new));
 

@@ -28,6 +28,10 @@ import java.util.function.BiConsumer;
 /*import net.pneumono.gravestones.api.GravestonesApi;
 *///?}
 
+//? if <1.20.6 {
+/*import net.minecraft.util.Hand;
+*///?}
+
 public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
     public static final IntProperty DAMAGE = IntProperty.of("damage", 0, 2);
@@ -47,8 +51,11 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         builder.add(DAMAGE);
     }
 
+    //? <1.20.6 {
+    /*@SuppressWarnings("deprecation")
+    *///?}
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,/*? <1.20.6 {*//*Hand hand,*//*?}*/ BlockHitResult hit) {
         if (!(world instanceof ServerWorld serverWorld)) {
             return ActionResult.SUCCESS;
         }
@@ -72,7 +79,10 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
     //?} else {
-    /*@Override
+    /*//? <1.20.6 {
+    /^@SuppressWarnings("deprecation")
+    ^///?}
+    @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         ItemScatterer.onStateReplaced(state, newState, world, pos);
 
@@ -97,8 +107,11 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
+    //? <1.20.6 {
+    /*@SuppressWarnings("deprecation")
+    *///?}
     @Override
-    protected void onExploded(BlockState state, /*? if >=1.21.3 {*/ServerWorld/*?} else {*//*World*//*?}*/ world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+    public void onExploded(BlockState state, /*? if >=1.21.3 {*/ServerWorld/*?} else {*//*World*//*?}*/ world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 
     }
 

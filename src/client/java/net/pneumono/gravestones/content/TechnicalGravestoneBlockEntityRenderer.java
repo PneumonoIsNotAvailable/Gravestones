@@ -85,7 +85,7 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
     //? if >=1.21.9 {
     public void renderHead(TechnicalRenderState info, MatrixStack matrices, OrderedRenderCommandQueue queue, float yaw, float pitch) {
         RenderLayer layer;
-        ProfileComponent profileComponent = info.graveOwner.getProfileComponent();
+        ProfileComponent profileComponent = info.graveOwner.getProfile();
         if (profileComponent != null) {
             layer = this.skinCache.get(profileComponent).getRenderLayer();
         } else {
@@ -106,7 +106,7 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
     /*public void renderHead(TechnicalGravestoneBlockEntity info, MatrixStack matrices, VertexConsumerProvider vertexConsumers, float yaw, float pitch, int light) {
         GraveOwner graveOwner = info.getGraveOwner();
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
-                SkullBlockEntityRenderer.getRenderLayer(SkullBlock.Type.PLAYER, graveOwner == null ? null : graveOwner.getProfileComponent())
+                SkullBlockEntityRenderer.getRenderLayer(SkullBlock.Type.PLAYER, graveOwner == null ? null : graveOwner.getProfile())
         );
         renderHeadModel(matrices, this.models.apply(SkullBlock.Type.PLAYER), vertexConsumer, yaw, pitch, light);
     }

@@ -2,17 +2,24 @@ package net.pneumono.gravestones.multiversion;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
-import net.minecraft.component.type.ProfileComponent;
 
 import java.util.UUID;
 
+//? if >=1.20.6 {
+import net.minecraft.component.type.ProfileComponent;
+//?} else {
+/*import net.minecraft.util.dynamic.Codecs;
+*///?}
+
 public class GraveOwner {
-    public static final Codec<GraveOwner> CODEC = ProfileComponent.CODEC.xmap(GraveOwner::new, GraveOwner::getProfileComponent);
+    //? if >=1.20.6 {
+    public static final Codec<GraveOwner> CODEC = ProfileComponent.CODEC.xmap(GraveOwner::new, GraveOwner::getProfile);
     private ProfileComponent profile;
 
     public GraveOwner(ProfileComponent profile) {
         this.profile = profile;
     }
+
 
     public GraveOwner(GameProfile profile) {
         //? if >=1.21.9 {
@@ -22,11 +29,11 @@ public class GraveOwner {
         *///?}
     }
 
-    public ProfileComponent getProfileComponent() {
+    public ProfileComponent getProfile() {
         return profile;
     }
 
-    public void setProfileComponent(ProfileComponent profile) {
+    public void setProfile(ProfileComponent profile) {
         this.profile = profile;
     }
 
@@ -37,6 +44,31 @@ public class GraveOwner {
     public String getName() {
         return VersionUtil.getName(VersionUtil.getGameProfile(profile));
     }
+
+    //?} else {
+    /*public static final Codec<GraveOwner> CODEC = Codecs.GAME_PROFILE_WITH_PROPERTIES.xmap(GraveOwner::new, GraveOwner::getProfile);
+    private GameProfile profile;
+
+    public GraveOwner(GameProfile profile) {
+        this.profile = profile;
+    }
+
+    public GameProfile getProfile() {
+        return this.profile;
+    }
+
+    public void setProfile(GameProfile profile) {
+        this.profile = profile;
+    }
+
+    public UUID getUuid() {
+        return VersionUtil.getId(this.profile);
+    }
+
+    public String getName() {
+        return VersionUtil.getName(this.profile);
+    }
+    *///?}
 
     public String getNotNullName() {
         String name = getName();

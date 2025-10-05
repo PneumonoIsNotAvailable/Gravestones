@@ -1,9 +1,9 @@
 package net.pneumono.gravestones.api;
 
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.content.ExperienceDataType;
@@ -34,7 +34,7 @@ public abstract class GravestoneDataType extends GravestoneManager {
      *
      * @param player The player who has died.
      */
-    public abstract void writeData(NbtCompound nbt, RegistryOps<NbtElement> ops, PlayerEntity player) throws Exception;
+    public abstract void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception;
 
     /**
      * Called when a gravestone is broken, unless it was broken by a player collecting it.
@@ -53,7 +53,7 @@ public abstract class GravestoneDataType extends GravestoneManager {
      * @param pos The position of the gravestone.
      * @param decay The decay stage of the gravestone being collected.
      */
-    public abstract void onBreak(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, int decay) throws Exception;
+    public abstract void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) throws Exception;
 
     /**
      * Called when a player collects a gravestone.
@@ -70,5 +70,5 @@ public abstract class GravestoneDataType extends GravestoneManager {
      * @param player The player collecting the gravestone.
      * @param decay The decay stage of the gravestone being collected.
      */
-    public abstract void onCollect(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) throws Exception;
+    public abstract void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) throws Exception;
 }

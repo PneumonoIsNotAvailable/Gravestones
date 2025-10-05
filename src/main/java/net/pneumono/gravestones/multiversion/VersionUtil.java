@@ -3,11 +3,14 @@ package net.pneumono.gravestones.multiversion;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.World;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -15,6 +18,10 @@ import java.util.UUID;
 //? if <1.21.5 {
 /*import com.mojang.datafixers.util.Pair;
 *///?}
+
+//? if >1.20.6 {
+import net.minecraft.component.type.ProfileComponent;
+//?}
 
 public class VersionUtil {
     public static UUID getId(GameProfile profile) {
@@ -33,11 +40,37 @@ public class VersionUtil {
          *///?}
     }
 
+    //? if >=1.20.6 {
     public static GameProfile getGameProfile(ProfileComponent profile) {
         //? if >=1.21.9 {
         return profile.getGameProfile();
         //?} else {
         /*return profile.gameProfile();
+        *///?}
+    }
+    //?}
+
+    public static GlobalPos createGlobalPos(RegistryKey<World> dimension, BlockPos pos) {
+        //? if >=1.20.6 {
+        return new GlobalPos(dimension, pos);
+        //?} else {
+        /*return GlobalPos.create(dimension, pos);
+        *///?}
+    }
+
+    public static BlockPos getPos(GlobalPos pos) {
+        //? if >=1.20.6 {
+        return pos.pos();
+        //?} else {
+        /*return pos.getPos();
+        *///?}
+    }
+
+    public static RegistryKey<World> getDimension(GlobalPos pos) {
+        //? if >=1.20.6 {
+        return pos.dimension();
+        //?} else {
+        /*return pos.getDimension();
         *///?}
     }
 
@@ -50,7 +83,7 @@ public class VersionUtil {
         //? if >=1.21.5 {
         nbt.put(key, codec, object);
         //?} else {
-        /*nbt.put(key, codec.encodeStart(ops, object).getOrThrow());
+        /*nbt.put(key, codec.encodeStart(ops, object).result().orElseThrow());
         *///?}
     }
 
@@ -70,7 +103,7 @@ public class VersionUtil {
     public static NbtCompound getCompoundOrEmpty(NbtCompound nbt, String key) {
         //? if >=1.21.5 {
         return nbt.getCompoundOrEmpty(key);
-         //?} else {
+        //?} else {
         /*return nbt.getCompound(key);
         *///?}
     }
@@ -78,7 +111,7 @@ public class VersionUtil {
     public static NbtList getCompoundListOrEmpty(NbtCompound nbt, String key) {
         //? if >=1.21.5 {
         return nbt.getListOrEmpty(key);
-         //?} else {
+        //?} else {
         /*return nbt.getList(key, NbtElement.COMPOUND_TYPE);
         *///?}
     }

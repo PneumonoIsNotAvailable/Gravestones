@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.GlobalPos;
 import net.pneumono.gravestones.gravestones.GravestonePlacement;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 /**
  * Callback for changing the placement position of gravestones.
@@ -46,7 +47,7 @@ public interface RedirectGravestonePositionCallback {
 
                 for (RedirectGravestonePositionCallback listener : listeners) {
                     placementPos = listener.redirectPosition(world, player, deathPos);
-                    if (GravestonePlacement.isInvalid(world.getBlockState(placementPos.pos()))) placementPos = null;
+                    if (GravestonePlacement.isInvalid(world.getBlockState(VersionUtil.getPos(placementPos)))) placementPos = null;
                     if (placementPos != null) break;
                 }
 

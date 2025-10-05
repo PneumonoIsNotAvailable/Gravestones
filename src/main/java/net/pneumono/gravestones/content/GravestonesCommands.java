@@ -77,7 +77,7 @@ public class GravestonesCommands {
                                                     }
 
                                                     ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
-                                                    Text first = GravestoneManager.posToText(positions.getFirst());
+                                                    Text first = GravestoneManager.posToText(positions.get(0));
                                                     Text second = GravestoneManager.posToText(positions.get(1));
                                                     Text third = GravestoneManager.posToText(positions.get(2));
                                                     context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.grave_data",

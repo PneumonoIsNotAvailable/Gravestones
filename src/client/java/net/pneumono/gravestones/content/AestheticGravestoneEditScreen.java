@@ -194,7 +194,11 @@ public class AestheticGravestoneEditScreen extends Screen {
     @Override
     public void removed() {
         UpdateGravestoneC2SPayload payload = new UpdateGravestoneC2SPayload(this.blockEntity.getPos(), this.messages[0], this.messages[1], this.messages[2], this.messages[3]);
+        //? if >=1.20.6 {
         ClientPlayNetworking.send(payload);
+        //?} else {
+        /*ClientPlayNetworking.send(payload.id(), payload.write());
+        *///?}
     }
 
     @Override

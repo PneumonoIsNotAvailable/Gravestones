@@ -75,6 +75,7 @@ dependencies {
 
 	// ModMenu
 	modCompileOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
+	modRuntimeOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
 	// Trinkets
 	if (trinkets) {
@@ -114,7 +115,7 @@ tasks {
 
 	jar {
 		from("LICENSE") {
-			rename { "${it}_${base.archivesName.get()}"}
+			rename {"${it}_${base.archivesName.get()}"}
 		}
 	}
 }

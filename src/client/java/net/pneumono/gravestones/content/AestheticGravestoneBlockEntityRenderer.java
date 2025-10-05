@@ -6,7 +6,6 @@ import net.minecraft.block.entity.SignText;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
@@ -15,12 +14,23 @@ import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.command.ModelCommandRenderer;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 //?} else {
 /*import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import org.jetbrains.annotations.Nullable;
+*///?}
+
+//? if >=1.20.6 {
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
+//?} else {
+/*import com.mojang.authlib.GameProfile;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.Util;
 *///?}
 
 //? if >=1.21.9 {
@@ -73,11 +83,33 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
         );
         //?} else {
         /*VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
-                SkullBlockEntityRenderer.getRenderLayer(type, headStack.get(DataComponentTypes.PROFILE))
+                SkullBlockEntityRenderer.getRenderLayer(type, getStackProfile(headStack))
         );
         renderHeadModel(matrices, this.models.apply(type), vertexConsumer, yaw, pitch, light);
         *///?}
     }
+
+    //? if >=1.20.6 {
+    @Nullable
+    private static ProfileComponent getStackProfile(ItemStack stack) {
+        return stack.get(DataComponentTypes.PROFILE);
+    }
+    //?} else {
+    /*@Nullable
+    private static GameProfile getStackProfile(ItemStack stack) {
+        GameProfile gameProfile = null;
+        NbtCompound nbtCompound = stack.getNbt();
+        if (nbtCompound != null && !nbtCompound.isEmpty()) {
+            if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
+                gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+            } else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbtCompound.getString("SkullOwner"))) {
+                gameProfile = new GameProfile(Util.NIL_UUID, nbtCompound.getString("SkullOwner"));
+            }
+        }
+
+        return gameProfile;
+    }
+    *///?}
 
     //? if >=1.21.9 {
     @Override

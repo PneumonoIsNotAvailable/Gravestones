@@ -1,6 +1,7 @@
 package net.pneumono.gravestones.content;
 
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -8,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -24,7 +24,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
     private static final String KEY = "inventory";
 
     @Override
-    public void writeData(NbtCompound nbt, RegistryOps<NbtElement> ops, PlayerEntity player) {
+    public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) {
         NbtList list = new NbtList();
         PlayerInventory inventory = player.getInventory();
 
@@ -32,29 +32,29 @@ public class PlayerInventoryDataType extends GravestoneDataType {
             ItemStack itemStack = inventory.getStack(i);
             if (!GravestonesApi.shouldSkipItem(player, itemStack) && !itemStack.isEmpty()) {
                 DataResult<NbtElement> result = StackWithSlot.CODEC.encodeStart(ops, new StackWithSlot(i, inventory.removeStack(i)));
-                list.add(result.getOrThrow());
+                list.add(result.result().orElseThrow());
             }
         }
         nbt.put(KEY, list);
     }
 
     @Override
-    public void onBreak(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, int decay) {
+    public void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) {
         NbtList list = VersionUtil.getCompoundListOrEmpty(nbt, KEY);
 
         for (NbtElement element : list) {
-            ItemStack stack = StackWithSlot.CODEC.decode(ops, element).getOrThrow().getFirst().stack();
+            ItemStack stack = StackWithSlot.CODEC.decode(ops, element).result().orElseThrow().getFirst().stack();
             ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
         }
     }
 
     @Override
-    public void onCollect(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
+    public void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
         PlayerInventory inventory = player.getInventory();
         NbtList list = VersionUtil.getCompoundListOrEmpty(nbt, KEY);
         List<StackWithSlot> stacks = new ArrayList<>();
         for (NbtElement element : list) {
-            stacks.add(StackWithSlot.CODEC.decode(ops, element).getOrThrow().getFirst());
+            stacks.add(StackWithSlot.CODEC.decode(ops, element).result().orElseThrow().getFirst());
         }
 
         List<ItemStack> remainingStacks = new ArrayList<>();

@@ -12,6 +12,7 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.enums.DecayTimeType;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,8 +70,8 @@ public class GravestoneDecay extends GravestoneManager {
     }
 
     public static void incrementDeathDamage(MinecraftServer server, GlobalPos globalPos) {
-        ServerWorld world = server.getWorld(globalPos.dimension());
-        BlockPos pos = globalPos.pos();
+        ServerWorld world = server.getWorld(VersionUtil.getDimension(globalPos));
+        BlockPos pos = VersionUtil.getPos(globalPos);
 
         if (
                 world == null ||

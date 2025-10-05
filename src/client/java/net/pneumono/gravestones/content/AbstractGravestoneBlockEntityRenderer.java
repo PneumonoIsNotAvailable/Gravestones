@@ -123,7 +123,7 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
         int textColor = /*? if >=1.21.4 {*/AbstractSignBlockEntityRenderer.getTextColor(signText)/*?} else {*//*SignBlockEntityRenderer.getColor(signText)*//*?}*/;
         OrderedText[] orderedTexts = signText.getOrderedMessages(MinecraftClient.getInstance().shouldFilterText(), (text) -> {
             List<OrderedText> list = this.textRenderer.wrapLines(text, 120);
-            return list.isEmpty() ? OrderedText.EMPTY : list.getFirst();
+            return list.isEmpty() ? OrderedText.EMPTY : list.get(0);
         });
         int color;
         boolean renderOutline;

@@ -42,11 +42,32 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         return CODEC;
     }
 
+    //? if <1.20.6 {
+    /*@SuppressWarnings("deprecation")
     @Override
-    protected /*? if >=1.21.3 {*/ActionResult/*?} else {*//*ItemActionResult*//*?}*/ onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ActionResult result = onUseWithItem(player.getStackInHand(hand), state, world, pos, player, hand, hit);
+        if (result == ActionResult.PASS) {
+            return onUse(state, world, pos, player, hit);
+        } else {
+            return result;
+        }
+    }
+    *///?}
+
+    //? if >=1.20.6 {
+    @Override
+    //?}
+    protected /*? if >=1.21.3 {*/ActionResult/*?} else if >=1.20.6 {*//*ItemActionResult*//*?} else {*//*ActionResult*//*?}*/ onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof AestheticGravestoneBlockEntity gravestone)) {
-            return /*? if >=1.21.3 {*/ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION/*?} else {*//*ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION*//*?}*/;
+            //? if >=1.21.3 {
+            return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+            //?} else if >=1.20.6 {
+            /*return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            *///?} else {
+            /*return ActionResult.PASS;
+            *///?}
         }
         Item item = stack.getItem();
 
@@ -57,7 +78,13 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
                 world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_GRAVESTONE_ADD_SKULL, SoundCategory.BLOCKS);
                 gravestone.setHeadStack(player, stack);
             }
-            return /*? if >=1.21.3 {*/ActionResult/*?} else {*//*ItemActionResult*//*?}*/.SUCCESS;
+            //? if >=1.21.3 {
+            return ActionResult.SUCCESS;
+            //?} else if >=1.20.6 {
+            /*return ItemActionResult.SUCCESS;
+            *///?} else {
+            /*return ActionResult.SUCCESS;
+            *///?}
         }
 
         if (!world.isClient()) {
@@ -72,16 +99,47 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
                 gravestone.runCommandClickEvent(player, world, pos);
                 player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
                 world.emitGameEvent(GameEvent.BLOCK_CHANGE, gravestone.getPos(), GameEvent.Emitter.of(player, gravestone.getCachedState()));
+                //? if >=1.20.6 {
                 stack.decrementUnlessCreative(1, player);
-                return /*? if >=1.21.3 {*/ActionResult/*?} else {*//*ItemActionResult*//*?}*/.SUCCESS;
+                //?} else {
+                /*if (!player.isCreative()) {
+                    stack.decrement(1);
+                }
+                *///?}
+
+                //? if >=1.21.3 {
+                return ActionResult.SUCCESS;
+                //?} else if >=1.20.6 {
+                /*return ItemActionResult.SUCCESS;
+                *///?} else {
+                /*return ActionResult.SUCCESS;
+                *///?}
             } else {
-                return /*? if >=1.21.3 {*/ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION/*?} else {*//*ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION*//*?}*/;
+                //? if >=1.21.3 {
+                return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+                //?} else if >=1.20.6 {
+                /*return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                *///?} else {
+                /*return ActionResult.PASS;
+                *///?}
             }
         } else {
             if ((!(item instanceof SignChangingItem) || !player.canModifyBlocks()) && !waxed) {
-                return /*? if >=1.21.3 {*/ActionResult/*?} else {*//*ItemActionResult*//*?}*/.CONSUME;
+                //? if >=1.21.3 {
+                return ActionResult.CONSUME;
+                //?} else if >=1.20.6 {
+                /*return ItemActionResult.CONSUME;
+                *///?} else {
+                /*return ActionResult.CONSUME;
+                *///?}
             } else {
-                return /*? if >=1.21.3 {*/ActionResult/*?} else {*//*ItemActionResult*//*?}*/.SUCCESS;
+                //? if >=1.21.3 {
+                return ActionResult.SUCCESS;
+                //?} else if >=1.20.6 {
+                /*return ItemActionResult.SUCCESS;
+                *///?} else {
+                /*return ActionResult.SUCCESS;
+                *///?}
             }
         }
     }
@@ -120,8 +178,10 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         return false;
     }
 
+    //? >=1.20.6 {
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    //?}
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity)) return ActionResult.PASS;
 
         if (world.isClient()) {
@@ -152,9 +212,12 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
+    //? <1.20.6 {
+    /*@SuppressWarnings("deprecation")
+    *///?}
     //? if <1.21.5 {
     /*@Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity) {
             ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), blockEntity.getHeadStack());
         }
@@ -167,7 +230,12 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         if (player instanceof ServerPlayerEntity serverPlayer) {
             BlockPos pos = blockEntity.getPos();
             serverPlayer.networkHandler.sendPacket(new BlockUpdateS2CPacket(MultiVersionUtil.getWorld(serverPlayer), pos));
-            ServerPlayNetworking.send(serverPlayer, new GravestoneEditorOpenS2CPayload(pos));
+            GravestoneEditorOpenS2CPayload payload = new GravestoneEditorOpenS2CPayload(pos);
+            //? if >=1.20.6 {
+            ServerPlayNetworking.send(serverPlayer, payload);
+            //?} else {
+            /*ServerPlayNetworking.send(serverPlayer, payload.id(), payload.write());
+            *///?}
         }
     }
 

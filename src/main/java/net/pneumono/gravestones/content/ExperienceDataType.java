@@ -1,10 +1,10 @@
 package net.pneumono.gravestones.content;
 
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -17,7 +17,7 @@ public class ExperienceDataType extends GravestoneDataType {
     private static final String KEY = "experience";
 
     @Override
-    public void writeData(NbtCompound nbt, RegistryOps<NbtElement> ops, PlayerEntity player) {
+    public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) {
         if (!GravestonesConfig.STORE_EXPERIENCE.getValue()) return;
 
         int experience = GravestonesConfig.EXPERIENCE_KEPT.getValue().calculateExperienceKept(player);
@@ -33,7 +33,7 @@ public class ExperienceDataType extends GravestoneDataType {
     }
 
     @Override
-    public void onBreak(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, int decay) {
+    public void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) {
         if (world instanceof ServerWorld serverWorld) {
             ExperienceOrbEntity.spawn(
                     serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()),
@@ -43,7 +43,7 @@ public class ExperienceDataType extends GravestoneDataType {
     }
 
     @Override
-    public void onCollect(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
+    public void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
         if (GravestonesConfig.DROP_EXPERIENCE.getValue()) {
             onBreak(nbt, ops, world, pos, decay);
         } else {

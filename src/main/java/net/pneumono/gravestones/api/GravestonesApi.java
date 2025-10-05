@@ -1,8 +1,10 @@
 package net.pneumono.gravestones.api;
 
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -70,7 +72,8 @@ public class GravestonesApi {
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             NbtCompound data = new NbtCompound();
             try {
-                entry.getValue().writeData(data, player.getRegistryManager().getOps(NbtOps.INSTANCE), player);
+                DynamicOps<NbtElement> ops = /*? if >=1.20.6 {*/player.getRegistryManager().getOps(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
+                entry.getValue().writeData(data, ops, player);
             } catch (Exception e) {
                 Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to write data:", entry.getKey().toString(), e);
             }
@@ -100,9 +103,10 @@ public class GravestonesApi {
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String key = entry.getKey().toString();
             try {
+                DynamicOps<NbtElement> ops = /*? if >=1.20.6 {*/world.getRegistryManager().getOps(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().onBreak(
                         VersionUtil.getCompoundOrEmpty(contents, key),
-                        world.getRegistryManager().getOps(NbtOps.INSTANCE),
+                        ops,
                         world,
                         pos,
                         decay
@@ -121,9 +125,10 @@ public class GravestonesApi {
 
             String key = entry.getKey().toString();
             try {
+                DynamicOps<NbtElement> ops = /*? if >=1.20.6 {*/world.getRegistryManager().getOps(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().onCollect(
                         VersionUtil.getCompoundOrEmpty(contents, key),
-                        world.getRegistryManager().getOps(NbtOps.INSTANCE),
+                        ops,
                         world,
                         pos,
                         player,
