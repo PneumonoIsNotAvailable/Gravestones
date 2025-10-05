@@ -229,7 +229,14 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public void setHeadStack(@Nullable LivingEntity entity, ItemStack headStack) {
+        //? if >=1.21.1 {
         this.headStack = headStack.splitUnlessCreative(1, entity);
+        //?} else {
+        /*this.headStack = headStack.copyWithCount(1);
+        if (entity == null || !entity.isInCreativeMode()) {
+            headStack.decrement(1);
+        }
+        *///?}
         this.updateListeners();
         Objects.requireNonNull(this.getWorld()).emitGameEvent(
                 GameEvent.BLOCK_CHANGE, getPos(), GameEvent.Emitter.of(entity, getCachedState())

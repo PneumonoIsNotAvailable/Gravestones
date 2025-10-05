@@ -28,7 +28,7 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     *///?}
 
     @Override
-    protected void drop(ServerWorld world, DamageSource damageSource) {}
+    protected void drop(/*? if >=1.21.1 {*/ServerWorld world,/*?}*/ DamageSource damageSource) {}
 
     @Override
     public void tick() {

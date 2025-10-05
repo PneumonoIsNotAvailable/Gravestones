@@ -244,7 +244,11 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
     //?} else {
     /*public void renderHeadModel(MatrixStack matrices, SkullBlockEntityModel model, VertexConsumer vertexConsumer, float yaw, float pitch, int light) {
         model.setHeadRotation(0.0F, yaw, pitch);
+        //? if >=1.21.1 {
         model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+        //?} else {
+        /^model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+        ^///?}
     }
     *///?}
 

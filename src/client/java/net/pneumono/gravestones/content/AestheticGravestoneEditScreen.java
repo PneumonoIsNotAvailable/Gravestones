@@ -9,7 +9,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
@@ -38,6 +37,10 @@ import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 
 //? if >=1.21.3 {
 import net.minecraft.util.math.ColorHelper;
+//?}
+
+//? if >=1.21.1 {
+import net.minecraft.util.Colors;
 //?}
 
 import java.util.Objects;
@@ -285,7 +288,7 @@ public class AestheticGravestoneEditScreen extends Screen {
                             adjustedY,
                             endX,
                             adjustedY + TEXT_LINE_HEIGHT,
-                            Colors.BLUE
+                            /*? if >=1.21.1 {*/Colors.BLUE/*?} else {*//*-16776961*//*?}*/
                     );
                 }
             }

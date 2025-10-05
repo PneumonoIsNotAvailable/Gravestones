@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
@@ -44,6 +43,14 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+//? if >=1.21.1 {
+import net.minecraft.component.EnchantmentEffectComponentTypes;
+//?} else {
+/*import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
+*///?}
 
 public class GravestonesRegistry {
     public static final Block GRAVESTONE_TECHNICAL = registerGravestone("gravestone_technical",
@@ -154,11 +161,19 @@ public class GravestonesRegistry {
         GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
 
         InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
-                itemStack.isIn(GravestonesRegistry.ITEM_SKIPS_GRAVESTONES) ||
-                EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)
+                itemStack.isIn(ITEM_SKIPS_GRAVESTONES) ||
+                //? if >=1.21.1 {
+                EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, ENCHANTMENT_SKIPS_GRAVESTONES)
+                //?} else {
+                /*hasSkippableEnchantments(itemStack)
+                *///?}
         );
         InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
+                //? if >=1.21.1 {
                 EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
+                //?} else {
+                /*EnchantmentHelper.hasVanishingCurse(itemStack)
+                *///?}
         );
 
         CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
@@ -168,6 +183,18 @@ public class GravestonesRegistry {
                 player.isCreative() && !GravestonesConfig.SPAWN_GRAVESTONES_IN_CREATIVE.getValue()
         );
     }
+
+    //? if <1.21.1 {
+    /*private static boolean hasSkippableEnchantments(ItemStack stack) {
+        ItemEnchantmentsComponent component = stack.getEnchantments();
+        for (RegistryEntry<Enchantment> enchantment : component.getEnchantments()) {
+            if (enchantment.isIn(GravestonesRegistry.ENCHANTMENT_SKIPS_GRAVESTONES)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    *///?}
 
     @SuppressWarnings("deprecation")
     private static void onSignUpdate(ServerPlayerEntity player, UpdateGravestoneC2SPayload payload, List<FilteredMessage> signText) {
