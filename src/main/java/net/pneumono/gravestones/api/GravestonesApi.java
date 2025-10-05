@@ -3,13 +3,10 @@ package net.pneumono.gravestones.api;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.storage.NbtReadView;
-import net.minecraft.storage.NbtWriteView;
-import net.minecraft.storage.ReadView;
-import net.minecraft.util.ErrorReporter;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
@@ -69,18 +66,18 @@ public class GravestonesApi {
     public static NbtCompound getDataToInsert(PlayerEntity player) {
         NbtCompound contents = new NbtCompound();
 
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
-            ErrorReporter reporter = logging.makeChild(player.getErrorReporterContext());
-
-            for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-                NbtWriteView view = NbtWriteView.create(reporter, player.getRegistryManager());
-                entry.getValue().writeData(view, player);
-
-                contents.put(
-                        entry.getKey().toString(),
-                        view.getNbt()
-                );
+        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+            NbtCompound data = new NbtCompound();
+            try {
+                entry.getValue().writeData(data, player.getRegistryManager().getOps(NbtOps.INSTANCE), player);
+            } catch (Exception e) {
+                Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to write data:", entry.getKey().toString(), e);
             }
+
+            contents.put(
+                    entry.getKey().toString(),
+                    data
+            );
         }
 
         return contents;
@@ -89,25 +86,28 @@ public class GravestonesApi {
     /**
      * Called when gravestones are broken, including when collected.
      */
-    public static void onBreak(World world, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
-        onBreak(world, pos, decay, entity.getContents(), entity.getReporterContext());
+    public static void onBreak(ServerWorld world, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
+        onBreak(world, pos, decay, entity.getContents());
     }
 
-    public static void onBreak(World world, BlockPos pos, int decay, NbtCompound contents, ErrorReporter.Context reporterContext) {
+    /**
+     * Called when gravestones are broken, including when collected.
+     */
+    public static void onBreak(ServerWorld world, BlockPos pos, int decay, NbtCompound contents) {
         if (contents.isEmpty()) return;
 
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
-            ErrorReporter reporter = logging.makeChild(reporterContext);
-
-            for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-                ReadView view = NbtReadView.create(reporter, world.getRegistryManager(), contents);
-
+        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+            String key = entry.getKey().toString();
+            try {
                 entry.getValue().onBreak(
-                        view.getReadView(entry.getKey().toString()),
+                        contents.getCompoundOrEmpty(key),
+                        world.getRegistryManager().getOps(NbtOps.INSTANCE),
                         world,
                         pos,
                         decay
                 );
+            } catch (Exception e) {
+                Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to drop contents:", key, e);
             }
         }
     }
@@ -115,23 +115,23 @@ public class GravestonesApi {
     /**
      * Called when gravestones are collected.
      */
-    public static void onCollect(World world, BlockPos pos, PlayerEntity player, int decay, NbtCompound contents) {
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(Gravestones.LOGGER)) {
-            ErrorReporter reporter = logging.makeChild(player.getErrorReporterContext());
+    public static void onCollect(ServerWorld world, BlockPos pos, PlayerEntity player, int decay, NbtCompound contents) {
+        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
 
-            for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
-                ReadView view = NbtReadView.create(reporter, world.getRegistryManager(), contents);
-
-                String key = entry.getKey().toString();
+            String key = entry.getKey().toString();
+            try {
                 entry.getValue().onCollect(
-                        view.getReadView(key),
+                        contents.getCompoundOrEmpty(key),
+                        world.getRegistryManager().getOps(NbtOps.INSTANCE),
                         world,
                         pos,
                         player,
                         decay
                 );
-                contents.remove(key);
+            } catch (Exception e) {
+                Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to return contents:", key, e);
             }
+            contents.remove(key);
         }
     }
 

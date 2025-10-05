@@ -12,6 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
+    // The mod should really be injecting later (in dropInventory),
+    // but Accessories injects in dropEquipment for some reason,
+    // and we need to be sure this is called before any other mods do their inventory dropping independently
     @Inject(method = "drop", at = @At("HEAD"))
     public void spawnGravestone(ServerWorld world, DamageSource damageSource, CallbackInfo ci) {
         if ((Object)this instanceof PlayerEntity player) {

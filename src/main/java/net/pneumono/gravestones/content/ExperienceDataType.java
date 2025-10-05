@@ -2,9 +2,10 @@ package net.pneumono.gravestones.content;
 
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -13,8 +14,10 @@ import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 
 public class ExperienceDataType extends GravestoneDataType {
+    private static final String KEY = "experience";
+
     @Override
-    public void writeData(WriteView view, PlayerEntity player) {
+    public void writeData(NbtCompound nbt, RegistryOps<NbtElement> ops, PlayerEntity player) {
         if (!GravestonesConfig.STORE_EXPERIENCE.getValue()) return;
 
         int experience = GravestonesConfig.EXPERIENCE_KEPT.getValue().calculateExperienceKept(player);
@@ -26,30 +29,30 @@ public class ExperienceDataType extends GravestoneDataType {
         player.experienceLevel = 0;
         player.totalExperience = 0;
 
-        view.putInt("experience", experience);
+        nbt.putInt(KEY, experience);
     }
 
     @Override
-    public void onBreak(ReadView view, World world, BlockPos pos, int decay) {
+    public void onBreak(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, int decay) {
         if (world instanceof ServerWorld serverWorld) {
             ExperienceOrbEntity.spawn(
                     serverWorld, new Vec3d(pos.getX(), pos.getY(), pos.getZ()),
-                    getExperience(view, decay)
+                    getExperience(nbt, decay)
             );
         }
     }
 
     @Override
-    public void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay) {
+    public void onCollect(NbtCompound nbt, RegistryOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
         if (GravestonesConfig.DROP_EXPERIENCE.getValue()) {
-            onBreak(view, world, pos, decay);
+            onBreak(nbt, ops, world, pos, decay);
         } else {
-            player.addExperience(getExperience(view, decay));
+            player.addExperience(getExperience(nbt, decay));
         }
     }
 
-    private static int getExperience(ReadView view, int decay) {
-        int experience = view.getInt("experience", 0);
+    private static int getExperience(NbtCompound nbt, int decay) {
+        int experience = nbt.getInt(KEY, 0);
         return GravestonesApi.getDecayedExperience(experience, decay);
     }
 }

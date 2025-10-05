@@ -16,8 +16,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -39,6 +37,17 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
+//? if >=1.21.8 {
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+//?} else {
+/*import net.minecraft.registry.RegistryWrapper;
+*///?}
+
+//? if <1.21.8 {
+/*import net.minecraft.nbt.NbtCompound;
+*///?}
+
 public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
     private ItemStack headStack = ItemStack.EMPTY;
     @Nullable
@@ -54,6 +63,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return new SignText();
     }
 
+    //? if >=1.21.8 {
     @Override
     protected void writeData(WriteView view) {
         super.writeData(view);
@@ -71,6 +81,25 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         this.text = view.read("text", SignText.CODEC).map(this::parseLines).orElseGet(SignText::new);
         this.waxed = view.getBoolean("is_waxed", false);
     }
+    //?} else {
+    /*@Override
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+        super.writeNbt(nbt, registries);
+        if (!this.headStack.isEmpty()) {
+            nbt.put("head", ItemStack.CODEC, this.headStack);
+        }
+        nbt.put("text", SignText.CODEC, this.text);
+        nbt.putBoolean("is_waxed", this.waxed);
+    }
+
+    @Override
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+        super.readNbt(nbt, registries);
+        this.headStack = nbt.get("head", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+        this.text = nbt.get("text", SignText.CODEC).map(this::parseLines).orElseGet(SignText::new);
+        this.waxed = nbt.getBoolean("is_waxed", false);
+    }
+    *///?}
 
     @Override
     protected void addComponents(ComponentMap.Builder builder) {
@@ -86,10 +115,17 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     @SuppressWarnings("deprecation")
     @Override
+    //? if >=1.21.8 {
     public void removeFromCopiedStackData(WriteView view) {
         super.removeFromCopiedStackData(view);
         view.remove("head");
     }
+    //?} else {
+    /*public void removeFromCopiedStackNbt(NbtCompound nbt) {
+        super.removeFromCopiedStackNbt(nbt);
+        nbt.remove("head");
+    }
+    *///?}
 
     private SignText parseLines(SignText signText) {
         for (int i = 0; i < 4; ++i) {
