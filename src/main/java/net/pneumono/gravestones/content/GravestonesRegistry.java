@@ -38,6 +38,7 @@ import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
 import net.pneumono.gravestones.block.*;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
+import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 import java.util.List;
 import java.util.function.Function;
@@ -161,7 +162,7 @@ public class GravestonesRegistry {
     @SuppressWarnings("deprecation")
     private static void onSignUpdate(ServerPlayerEntity player, UpdateGravestoneC2SPayload payload, List<FilteredMessage> signText) {
         player.updateLastActionTime();
-        ServerWorld serverWorld = player.getWorld();
+        ServerWorld serverWorld = (ServerWorld) MultiVersionUtil.getWorld(player);
         BlockPos blockPos = payload.pos();
         if (serverWorld.isChunkLoaded(blockPos)) {
             if (!(serverWorld.getBlockEntity(blockPos) instanceof AestheticGravestoneBlockEntity blockEntity)) {

@@ -4,7 +4,6 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
@@ -20,6 +19,8 @@ import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
 import net.pneumono.gravestones.gravestones.GravestoneManager;
 import net.pneumono.gravestones.gravestones.RecentGraveHistory;
+import net.pneumono.gravestones.multiversion.GraveOwner;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,9 +43,9 @@ public class GravestonesCommands {
                                                     if (!(world.getBlockState(pos).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL))) {
                                                         context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.no_gravestone").formatted(Formatting.RED), false);
                                                     } else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
-                                                        ProfileComponent owner = entity.getGraveOwner();
-                                                        if (owner != null) {
-                                                            context.getSource().sendFeedback(() -> Text.stringifiedTranslatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), owner.name().orElse("???"), owner.uuid().orElse(null)).formatted(Formatting.GREEN), false);
+                                                        GraveOwner graveOwner = entity.getGraveOwner();
+                                                        if (graveOwner != null) {
+                                                            context.getSource().sendFeedback(() -> Text.stringifiedTranslatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), graveOwner.getNotNullName(), graveOwner.getUuid()).formatted(Formatting.GREEN), false);
                                                         } else {
                                                             context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.no_grave_owner", entity.getSpawnDateTime()).formatted(Formatting.RED), false);
                                                         }
@@ -60,7 +61,7 @@ public class GravestonesCommands {
                                                 .executes(context -> {
                                                     List<RecentGraveHistory> histories = GravestoneDataSaving.readHistories(context.getSource().getServer());
 
-                                                    UUID uuid = EntityArgumentType.getPlayer(context, "player").getGameProfile().getId();
+                                                    UUID uuid = VersionUtil.getId(EntityArgumentType.getPlayer(context, "player").getGameProfile());
                                                     List<GlobalPos> positions = null;
                                                     for (RecentGraveHistory history : histories) {
                                                         if (history.owner().equals(uuid)) {

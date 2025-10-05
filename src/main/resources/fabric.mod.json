@@ -50,7 +50,7 @@
 	],
 	"accessWidener": "gravestones.accesswidener",
 	"depends": {
-		"fabricloader": ">=0.16.14",
+		"fabricloader": "*",
 		"minecraft": "${supported}",
 		"java": ">=21",
 		"fabric-api": "*",

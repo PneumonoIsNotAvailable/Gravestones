@@ -19,7 +19,13 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+
+//? if >=1.21.9 {
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.CharInput;
+//?} else {
+/*import org.lwjgl.glfw.GLFW;
+*///?}
 
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -95,24 +101,60 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    //? if >=1.21.9 {
+    public boolean keyPressed(KeyInput input) {
+    //?} else {
+    /*public boolean keyPressed(int input, int scanCode, int modifiers) {
+    *///?}
         Objects.requireNonNull(this.selectionManager);
-        if (keyCode == GLFW.GLFW_KEY_UP) {
+        if (isUp(input)) {
             this.currentRow = this.currentRow - 1 & 3;
             this.selectionManager.putCursorAtEnd();
             return true;
-        } else if (keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+        } else if (isDownOrEnter(input)) {
             this.currentRow = this.currentRow + 1 & 3;
             this.selectionManager.putCursorAtEnd();
             return true;
         } else {
-            return this.selectionManager.handleSpecialKey(keyCode) || super.keyPressed(keyCode, scanCode, modifiers);
+            if (this.selectionManager.handleSpecialKey(input)) {
+                return true;
+            } else {
+                //? if >=1.21.9 {
+                return super.keyPressed(input);
+                //?} else {
+                /*return super.keyPressed(input, scanCode, modifiers);
+                *///?}
+            }
         }
     }
 
+    //? if >=1.21.9 {
+    public boolean isUp(KeyInput input) {
+        return input.isUp();
+    }
+    //?} else {
+    /*public boolean isUp(int input) {
+        return input == GLFW.GLFW_KEY_UP;
+    }
+    *///?}
+
+    //? if >=1.21.9 {
+    public boolean isDownOrEnter(KeyInput input) {
+        return input.isDown() || input.isEnter();
+    }
+    //?} else {
+    /*public boolean isDownOrEnter(int input) {
+        return input == GLFW.GLFW_KEY_DOWN || input == GLFW.GLFW_KEY_ENTER || input == GLFW.GLFW_KEY_KP_ENTER;
+    }
+    *///?}
+
     @Override
-    public boolean charTyped(char chr, int modifiers) {
-        Objects.requireNonNull(this.selectionManager).insert(chr);
+    //? if >=1.21.9 {
+    public boolean charTyped(CharInput input) {
+    //?} else {
+    /*public boolean charTyped(char input, int modifiers) {
+    *///?}
+        Objects.requireNonNull(this.selectionManager).insert(input);
         return true;
     }
 

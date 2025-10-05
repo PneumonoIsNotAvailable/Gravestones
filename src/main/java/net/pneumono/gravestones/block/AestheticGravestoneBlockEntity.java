@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.content.GravestonesRegistry;
+import net.pneumono.pneumonocore.util.MultiVersionUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -143,7 +144,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         for (Text text : this.getText().getMessages(player.shouldFilterText())) {
             Style style = text.getStyle();
             if (style.getClickEvent() instanceof ClickEvent.RunCommand(String var14)) {
-                Objects.requireNonNull(player.getServer()).getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), var14);
+                Objects.requireNonNull(MultiVersionUtil.getWorld(player).getServer()).getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), var14);
                 hasRunCommand = true;
             }
         }

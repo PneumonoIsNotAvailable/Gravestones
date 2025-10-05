@@ -1,8 +1,6 @@
 package net.pneumono.gravestones.block;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -21,14 +19,20 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
+import net.pneumono.gravestones.multiversion.GraveOwner;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+//? if <1.21.9 {
+/*import net.minecraft.block.entity.SkullBlockEntity;
+*///?}
+
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
     private NbtCompound contents = new NbtCompound();
     @Nullable
-    private ProfileComponent graveOwner;
+    private GraveOwner graveOwner;
     private String spawnDateTime;
     private long spawnDateTicks;
     private int deathDamage = 0;
@@ -43,7 +47,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         super.writeData(view);
         // Scuffed, will move away from NBT in future if possible
         view.put("contents", NbtCompound.CODEC, this.contents);
-        view.putNullable("owner", ProfileComponent.CODEC, this.graveOwner);
+        view.putNullable("owner", GraveOwner.CODEC, this.graveOwner);
         if (this.spawnDateTime != null) {
             view.putString("spawnDateTime", this.spawnDateTime);
         }
@@ -59,7 +63,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         super.readData(view);
         // Scuffed, will move away from NBT in future if possible
         this.contents = view.read("contents", NbtCompound.CODEC).orElse(new NbtCompound());
-        this.setGraveOwner(view.read("owner", ProfileComponent.CODEC).orElse(null));
+        this.setGraveOwner(view.read("owner", GraveOwner.CODEC).orElse(null));
         this.spawnDateTime = view.getString("spawnDateTime", null);
         this.spawnDateTicks = view.getLong("spawnDateTicks", 0);
         this.deathDamage = view.getInt("deathDamage", 0);
@@ -85,14 +89,14 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     private static boolean isOwnerNearby(World world, TechnicalGravestoneBlockEntity entity, BlockPos blockPos) {
-        ProfileComponent profileComponent = entity.getGraveOwner();
-        if (profileComponent == null) {
+        GraveOwner graveOwner = entity.getGraveOwner();
+        if (graveOwner == null) {
             return false;
         }
 
         Box box = Box.enclosing(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
         for (Entity nearbyEntity : world.getOtherEntities(null, box)) {
-            if (nearbyEntity instanceof PlayerEntity player && player.getGameProfile().getId() == profileComponent.gameProfile().getId()) {
+            if (nearbyEntity instanceof PlayerEntity player && VersionUtil.getId(player.getGameProfile()).equals(graveOwner.getUuid())) {
                 return true;
             }
         }
@@ -192,19 +196,21 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         this.markDirty();
     }
 
-    public void setGraveOwner(ProfileComponent graveOwner) {
-        synchronized (this) {
-            this.graveOwner = graveOwner;
-        }
+    public void setGraveOwner(@Nullable GraveOwner graveOwner) {
+        this.graveOwner = graveOwner;
 
-        if (this.graveOwner != null && !this.graveOwner.isCompleted()) {
-            this.graveOwner.getFuture().thenAcceptAsync(owner -> {
-                this.graveOwner = owner;
+        //? if >=1.21.9 {
+        this.markDirty();
+        //?} else {
+        /*if (this.graveOwner != null && !this.graveOwner.getProfileComponent().isCompleted()) {
+            this.graveOwner.getProfileComponent().getFuture().thenAcceptAsync(profile -> {
+                this.graveOwner.setProfileComponent(profile);
                 this.markDirty();
             }, SkullBlockEntity.EXECUTOR);
         } else {
             this.markDirty();
         }
+        *///?}
     }
 
     public int getTotalDamage() {
@@ -232,7 +238,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Nullable
-    public ProfileComponent getGraveOwner() {
+    public GraveOwner getGraveOwner() {
         return this.graveOwner;
     }
 

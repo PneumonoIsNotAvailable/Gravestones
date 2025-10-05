@@ -1,4 +1,4 @@
 accessWidener v2 named
 
 accessible method net/minecraft/server/network/ServerPlayNetworkHandler filterTexts (Ljava/util/List;)Ljava/util/concurrent/CompletableFuture;
-accessible method net/minecraft/client/render/block/entity/AbstractSignBlockEntityRenderer shouldRenderTextOutline (Lnet/minecraft/util/math/BlockPos;I)Z
+accessible method net/minecraft/client/render/block/entity/AbstractSignBlockEntityRenderer shouldRenderTextOutline (Lnet/minecraft/util/math/BlockPos;)Z

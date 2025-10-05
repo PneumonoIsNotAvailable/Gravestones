@@ -6,6 +6,8 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
+import net.pneumono.gravestones.multiversion.VersionUtil;
+import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,10 +19,11 @@ public class GravestoneDataSaving extends GravestoneManager {
         saveBackup(contents, player, new Date());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     protected static void saveBackup(NbtCompound contents, PlayerEntity player, Date date) {
-        String uuidString = player.getGameProfile().getId().toString();
+        String uuidString = VersionUtil.getId(player.getGameProfile()).toString();
         File deathsFile = new File(
-                getOrCreateGravestonesFolder(Objects.requireNonNull(player.getServer())), uuidString
+                getOrCreateGravestonesFolder(Objects.requireNonNull(MultiVersionUtil.getWorld(player).getServer())), uuidString
         );
 
         deathsFile.mkdirs();
@@ -74,6 +77,7 @@ public class GravestoneDataSaving extends GravestoneManager {
         return gravestoneFile.toPath().resolve("data.dat");
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File getOrCreateGravestonesFolder(MinecraftServer server) {
         File gravestonesFile = new File(server.getSavePath(WorldSavePath.ROOT).toString(), "gravestones");
 

@@ -5,6 +5,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
+import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 public class GravestoneSkeletonEntity extends SkeletonEntity {
     public GravestoneSkeletonEntity(EntityType<? extends SkeletonEntity> entityType, World world) {
@@ -26,7 +27,7 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.getWorld() instanceof ServerWorld world && isAlive() && age > 1200 && age % 20 == 0) {
+        if (MultiVersionUtil.getWorld(this) instanceof ServerWorld world && isAlive() && age > 1200 && age % 20 == 0) {
             damage(world, getDamageSources().starve(), 2);
         }
     }

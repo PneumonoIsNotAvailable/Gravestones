@@ -24,6 +24,7 @@ import net.minecraft.world.event.GameEvent;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
+import net.pneumono.pneumonocore.util.MultiVersionUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -155,7 +156,7 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         blockEntity.setEditor(player.getUuid());
         if (player instanceof ServerPlayerEntity serverPlayer) {
             BlockPos pos = blockEntity.getPos();
-            serverPlayer.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverPlayer.getWorld(), pos));
+            serverPlayer.networkHandler.sendPacket(new BlockUpdateS2CPacket(MultiVersionUtil.getWorld(serverPlayer), pos));
             ServerPlayNetworking.send(serverPlayer, new GravestoneEditorOpenS2CPayload(pos));
         }
     }
