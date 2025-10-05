@@ -1,4 +1,7 @@
 {
+  "item.gravestones.gravestone": "Надгробие",
+  "item.gravestones.gravestone_chipped": "Повреждённое надгробие",
+  "item.gravestones.gravestone_damaged": "Разбитое надгробие",
   "block.gravestones.gravestone": "Надгробие",
   "block.gravestones.gravestone_chipped": "Повреждённое надгробие",
   "block.gravestones.gravestone_damaged": "Разбитое надгробие",

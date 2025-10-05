@@ -11,7 +11,6 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
@@ -36,6 +35,10 @@ import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 //?} else {
 /*import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 *///?}
+
+//? if >=1.21.3 {
+import net.minecraft.util.math.ColorHelper;
+//?}
 
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -223,7 +226,7 @@ public class AestheticGravestoneEditScreen extends Screen {
         /*context.getMatrices().scale(7.0F, 7.0F, 1.0F);
         *///?}
         context.drawTexture(
-                /*? if >=1.21.8 {*/RenderPipelines.GUI_TEXTURED/*?} else {*//*RenderLayer::getGuiTextured*//*?}*/,
+                /*? if >=1.21.8 {*/RenderPipelines.GUI_TEXTURED,/*?} else if >=1.21.3 {*//*RenderLayer::getGuiTextured,*//*?}*/
                 this.texture,
                 -8, -8,
                 0.0F, 0.0F,
@@ -266,7 +269,7 @@ public class AestheticGravestoneEditScreen extends Screen {
                 int substringWidth = this.textRenderer.getWidth(message.substring(0, Math.min(selectionStart, message.length())));
                 int adjustedX = substringWidth - this.textRenderer.getWidth(message) / 2;
                 if (shouldFlashCursor && selectionStart < message.length()) {
-                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, ColorHelper.fullAlpha(color));
+                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, /*? if >=1.21.3 {*/ColorHelper.fullAlpha(color)/*?} else {*//*-16777216 | color*//*?}*/);
                 }
 
                 if (selectionEnd != selectionStart) {

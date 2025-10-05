@@ -34,7 +34,11 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     public void tick() {
         super.tick();
         if (MultiVersionUtil.getWorld(this) instanceof ServerWorld world && isAlive() && age > 1200 && age % 20 == 0) {
+            //? if >=1.21.3 {
             damage(world, getDamageSources().starve(), 2);
+            //?} else {
+            /*damage(getDamageSources().starve(), 2);
+            *///?}
         }
     }
 }

@@ -98,7 +98,7 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     }
 
     @Override
-    protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+    protected void onExploded(BlockState state, /*? if >=1.21.3 {*/ServerWorld/*?} else {*//*World*//*?}*/ world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 
     }
 
