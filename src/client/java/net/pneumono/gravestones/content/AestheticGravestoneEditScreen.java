@@ -6,7 +6,6 @@ import net.minecraft.block.entity.SignText;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -30,6 +29,12 @@ import net.minecraft.client.input.CharInput;
 import net.minecraft.client.gl.RenderPipelines;
 //?} else {
 /*import net.minecraft.client.render.RenderLayer;
+*///?}
+
+//? if >=1.21.4 {
+import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
+//?} else {
+/*import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 *///?}
 
 import java.util.Objects;
@@ -228,7 +233,7 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     private void renderGravestoneText(DrawContext context) {
-        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : AbstractSignBlockEntityRenderer.getTextColor(this.text);
+        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : /*? if >=1.21.4 {*/AbstractSignBlockEntityRenderer.getTextColor(this.text)/*?} else {*//*SignBlockEntityRenderer.getColor(this.text)*//*?}*/;
         boolean shouldFlashCursor = this.ticksSinceOpened / 6 % 2 == 0;
         Objects.requireNonNull(this.selectionManager);
         int selectionStart = this.selectionManager.getSelectionStart();

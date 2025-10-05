@@ -1,6 +1,6 @@
 {
     "model": {
         "type": "minecraft:model",
-        "model": "gravestones:block/gravestone_chipped"
+        "model": "gravestones:item/gravestone_chipped"
     }
 }

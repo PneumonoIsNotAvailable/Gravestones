@@ -12,6 +12,10 @@ import net.minecraft.nbt.NbtOps;
 import java.util.Optional;
 import java.util.UUID;
 
+//? if <1.21.5 {
+/*import com.mojang.datafixers.util.Pair;
+*///?}
+
 public class VersionUtil {
     public static UUID getId(GameProfile profile) {
         //? if >=1.21.9 {
@@ -41,6 +45,7 @@ public class VersionUtil {
         put(NbtOps.INSTANCE, nbt, key, codec, object);
     }
 
+    @SuppressWarnings("unused")
     public static <T> void put(DynamicOps<NbtElement> ops, NbtCompound nbt, String key, Codec<T> codec, T object) {
         //? if >=1.21.5 {
         nbt.put(key, codec, object);
@@ -53,6 +58,7 @@ public class VersionUtil {
         return get(NbtOps.INSTANCE, nbt, key, codec);
     }
 
+    @SuppressWarnings("unused")
     public static <T> Optional<T> get(DynamicOps<NbtElement> ops, NbtCompound nbt, String key, Codec<T> codec) {
         //? if >=1.21.5 {
         return nbt.get(key, codec);

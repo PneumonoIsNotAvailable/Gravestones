@@ -6,7 +6,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.block.entity.*;
-import net.minecraft.client.render.entity.model.LoadedEntityModels;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.util.Util;
@@ -38,6 +37,12 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.util.math.Vec3d;
 //?}
 
+//? if >=1.21.4 {
+import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
+//?} else {
+/*import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
+*///?}
+
 //? if >=1.21.9 {
 public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGravestoneBlockEntity, U extends AbstractGravestoneBlockEntityRenderer.RenderState> implements BlockEntityRenderer<T, U> {
 //?} else {
@@ -55,12 +60,17 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
     public AbstractGravestoneBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         //? if >=1.21.9 {
         this.textRenderer = ctx.textRenderer();
-        LoadedEntityModels loadedEntityModels = ctx.loadedEntityModels();
         //?} else {
         /*this.textRenderer = ctx.getTextRenderer();
-        LoadedEntityModels loadedEntityModels = ctx.getLoadedEntityModels();
         *///?}
-        this.models = Util.memoize(type -> SkullBlockEntityRenderer.getModels(loadedEntityModels, type));
+
+        //? if >=1.21.9 {
+        this.models = Util.memoize(type -> SkullBlockEntityRenderer.getModels(ctx.loadedEntityModels(), type));
+        //?} else if >=1.21.4 {
+        /*this.models = Util.memoize(type -> SkullBlockEntityRenderer.getModels(ctx.getLoadedEntityModels(), type));
+        *///?} else {
+        /*this.models = Util.memoize(type -> SkullBlockEntityRenderer.getModels(ctx.getLayerRenderDispatcher()).get(type));
+        *///?}
 
         //? if >=1.21.9 {
         this.skinCache = ctx.playerSkinRenderCache();
@@ -110,7 +120,7 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
         matrices.scale(TEXT_SCALE, TEXT_SCALE, TEXT_SCALE);
 
         SignText signText = getSignText(info);
-        int textColor = AbstractSignBlockEntityRenderer.getTextColor(signText);
+        int textColor = /*? if >=1.21.4 {*/AbstractSignBlockEntityRenderer.getTextColor(signText)/*?} else {*//*SignBlockEntityRenderer.getColor(signText)*//*?}*/;
         OrderedText[] orderedTexts = signText.getOrderedMessages(MinecraftClient.getInstance().shouldFilterText(), (text) -> {
             List<OrderedText> list = this.textRenderer.wrapLines(text, 120);
             return list.isEmpty() ? OrderedText.EMPTY : list.getFirst();
@@ -177,8 +187,10 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
     private static boolean shouldRenderTextOutline(BlockPos pos, int color) {
         //? if >=1.21.9 {
         return color == DyeColor.BLACK.getSignColor() || AbstractSignBlockEntityRenderer.shouldRenderTextOutline(pos);
-        //?} else {
+        //?} else if >=1.21.4 {
         /*return AbstractSignBlockEntityRenderer.shouldRenderTextOutline(pos, color);
+        *///?} else {
+        /*return SignBlockEntityRenderer.shouldRender(pos, color);
         *///?}
     }
 

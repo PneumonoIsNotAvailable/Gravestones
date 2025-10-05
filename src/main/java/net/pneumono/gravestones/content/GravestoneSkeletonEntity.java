@@ -17,9 +17,15 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     }
 
     @Override
+    //? if >=1.21.4 {
     public boolean shouldDropExperience() {
         return false;
     }
+    //?} else {
+    /*public boolean isExperienceDroppingDisabled() {
+        return true;
+    }
+    *///?}
 
     @Override
     protected void drop(ServerWorld world, DamageSource damageSource) {}

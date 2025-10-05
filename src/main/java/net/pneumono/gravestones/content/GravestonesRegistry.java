@@ -65,7 +65,7 @@ public class GravestonesRegistry {
             Registries.BLOCK_ENTITY_TYPE, Gravestones.id("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(
                     AestheticGravestoneBlockEntity::new,
                     GRAVESTONE, GRAVESTONE_CHIPPED, GRAVESTONE_DAMAGED
-            ).canPotentiallyExecuteCommands(true).build()
+            )/*? if >=1.21.4 {*/.canPotentiallyExecuteCommands(true)/*?}*/.build()
     );
 
     public static final EntityType<GravestoneSkeletonEntity> GRAVESTONE_SKELETON_ENTITY_TYPE = Registry.register(
