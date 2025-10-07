@@ -68,18 +68,12 @@ public class GravestonesRegistry {
     public static final Block GRAVESTONE_DAMAGED = registerAestheticGravestone("gravestone_damaged",
             AestheticGravestoneBlock::new, AbstractBlock.Settings.copy(Blocks.STONE).strength(3.5F).nonOpaque().requiresTool());
 
-    //? if <1.21.3 {
-    /*@SuppressWarnings("deprecation")
-    *///?}
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, Gravestones.id("technical_gravestone"), FabricBlockEntityTypeBuilder.create(
                     TechnicalGravestoneBlockEntity::new,
                     GRAVESTONE_TECHNICAL
             ).build()
     );
-    //? if <1.21.3 {
-    /*@SuppressWarnings("deprecation")
-    *///?}
     public static BlockEntityType<AestheticGravestoneBlockEntity> AESTHETIC_GRAVESTONE_ENTITY = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, Gravestones.id("aesthetic_gravestone"), FabricBlockEntityTypeBuilder.create(
                     AestheticGravestoneBlockEntity::new,

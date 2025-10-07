@@ -174,7 +174,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             return false;
         }
 
-        Box box = Box.enclosing(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
+        Box box = /*? if >=1.20.4 {*/Box.enclosing/*?} else {*//*new Box*//*?}*/(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
         for (Entity nearbyEntity : world.getOtherEntities(null, box)) {
             if (nearbyEntity instanceof PlayerEntity player && VersionUtil.getId(player.getGameProfile()).equals(graveOwner.getUuid())) {
                 return true;
@@ -248,7 +248,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     private int countEntities(World world) {
-        Box box = Box.enclosing(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
+        Box box = /*? if >=1.20.4 {*/Box.enclosing/*?} else {*//*new Box*//*?}*/(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
         List<Entity> entities = world.getOtherEntities(null, box);
         int entityCount = 0;
         for (Entity nearbyEntity : entities) {

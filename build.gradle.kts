@@ -102,6 +102,17 @@ tasks {
 				)
 			)
 		}
+
+		val mixins = if (stonecutter.eval(stonecutter.current.version, ">=1.20.4"))
+			"LivingEntityMixin" else "ExplosionMixin\", \"LivingEntityMixin"
+
+		filesMatching("gravestones.mixins.json") {
+			expand(
+				mutableMapOf(
+					"mixins" to mixins
+				)
+			)
+		}
 	}
 
 	withType<JavaCompile> {

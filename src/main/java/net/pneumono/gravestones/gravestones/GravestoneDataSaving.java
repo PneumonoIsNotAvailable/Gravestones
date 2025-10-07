@@ -3,7 +3,6 @@ package net.pneumono.gravestones.gravestones;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 import net.pneumono.gravestones.multiversion.VersionUtil;
@@ -13,6 +12,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+
+//? if >=1.20.4 {
+import net.minecraft.nbt.NbtSizeTracker;
+//?}
 
 public class GravestoneDataSaving extends GravestoneManager {
     protected static void saveBackup(NbtCompound contents, PlayerEntity player) {
@@ -39,7 +42,11 @@ public class GravestoneDataSaving extends GravestoneManager {
         deathData.put("contents", contents);
 
         try {
+            //? if >=1.20.4 {
             NbtIo.writeCompressed(deathData, path);
+            //?} else {
+            /*NbtIo.writeCompressed(deathData, path.toFile());
+            *///?}
         } catch (IOException e) {
             error("Failed to write Gravestone Contents Data", e);
         }
@@ -50,7 +57,7 @@ public class GravestoneDataSaving extends GravestoneManager {
 
         NbtCompound compound = new NbtCompound();
         try {
-            compound = NbtIo.readCompressed(path, NbtSizeTracker.ofUnlimitedBytes());
+            compound = NbtIo.readCompressed(path/*? if >=1.20.4 {*/, NbtSizeTracker.ofUnlimitedBytes()/*?} else {*//*.toFile()*//*?}*/);
         } catch (IOException e) {
             error("Failed to read Gravestone Data", e);
         }
@@ -65,7 +72,11 @@ public class GravestoneDataSaving extends GravestoneManager {
         VersionUtil.put(compound, "data", RecentGraveHistory.CODEC.listOf(), histories);
 
         try {
+            //? if >=1.20.4 {
             NbtIo.writeCompressed(compound, path);
+             //?} else {
+            /*NbtIo.writeCompressed(compound, path.toFile());
+            *///?}
         } catch (IOException e) {
             error("Failed to write Gravestone Data", e);
         }

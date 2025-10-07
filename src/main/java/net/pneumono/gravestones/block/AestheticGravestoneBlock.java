@@ -14,7 +14,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.PlainTextContent;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -30,17 +29,25 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
-    public static final MapCodec<AestheticGravestoneBlock> CODEC = AestheticGravestoneBlock.createCodec(AestheticGravestoneBlock::new);
+//? if >=1.20.4 {
+import net.minecraft.text.PlainTextContent;
+//?} else {
+/*import net.minecraft.text.LiteralTextContent;
+*///?}
 
+public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
     public AestheticGravestoneBlock(Settings settings) {
         super(settings);
     }
+
+    //? if >=1.20.4 {
+    public static final MapCodec<AestheticGravestoneBlock> CODEC = AestheticGravestoneBlock.createCodec(AestheticGravestoneBlock::new);
 
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() {
         return CODEC;
     }
+    //?}
 
     //? if <1.20.6 {
     /*@SuppressWarnings("deprecation")
@@ -247,7 +254,7 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
     private boolean isTextLiteralOrEmpty(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
         SignText signText = blockEntity.getText();
         return Arrays.stream(signText.getMessages(player.shouldFilterText()))
-                .allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof PlainTextContent);
+                .allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof /*? if >=1.20.4 {*/PlainTextContent/*?} else {*//*LiteralTextContent*//*?}*/);
     }
 
     @Override

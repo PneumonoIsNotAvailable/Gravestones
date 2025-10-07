@@ -33,17 +33,20 @@ import java.util.function.BiConsumer;
 *///?}
 
 public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
-    public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
     public static final IntProperty DAMAGE = IntProperty.of("damage", 0, 2);
 
     public TechnicalGravestoneBlock(Settings settings) {
         super(settings);
     }
 
+    //? if >=1.20.4 {
+    public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
+
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() {
         return CODEC;
     }
+    //?}
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
@@ -84,7 +87,11 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     ^///?}
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        //? if >=1.20.4 {
         ItemScatterer.onStateReplaced(state, newState, world, pos);
+        //?} else {
+        /^world.updateComparators(pos, this);
+        ^///?}
 
         if (state.getBlock() != world.getBlockState(pos).getBlock()) {
             createSoulParticles(world, pos);
@@ -107,13 +114,12 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
-    //? <1.20.6 {
-    /*@SuppressWarnings("deprecation")
-    *///?}
+    //? if >=1.20.4 {
     @Override
     public void onExploded(BlockState state, /*? if >=1.21.3 {*/ServerWorld/*?} else {*//*World*//*?}*/ world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 
     }
+    //?}
 
     @Nullable
     @Override
