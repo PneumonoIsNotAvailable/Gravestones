@@ -61,6 +61,11 @@ loom {
 	}
 }
 
+stonecutter {
+	constants["trinkets"] = trinkets
+	constants["accessories"] = accessories
+}
+
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft("com.mojang:minecraft:${stonecutter.current.version}")
