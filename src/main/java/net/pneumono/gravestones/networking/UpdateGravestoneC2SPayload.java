@@ -1,6 +1,5 @@
 package net.pneumono.gravestones.networking;
 
-import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.minecraft.util.Identifier;
@@ -16,7 +15,11 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
 *///?}
 
-public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line2, String line3, String line4) implements CustomPayload {
+//? if >=1.20.2 {
+import net.minecraft.network.packet.CustomPayload;
+ //?}
+
+public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line2, String line3, String line4) /*? if >=1.20.2 {*/implements CustomPayload/*?}*/ {
     public static final Identifier ID = Gravestones.id("update_gravestone");
 
     //? if >=1.20.6 {
@@ -64,7 +67,9 @@ public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line
         return buf;
     }
 
+    //? if >=1.20.2 {
     @Override
+     //?}
     public void write(PacketByteBuf buf) {
         buf.writeBlockPos(this.pos);
         buf.writeString(this.line1);
@@ -73,7 +78,9 @@ public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line
         buf.writeString(this.line4);
     }
 
+    //? if >=1.20.2 {
     @Override
+    //?}
     public Identifier id() {
         return ID;
     }

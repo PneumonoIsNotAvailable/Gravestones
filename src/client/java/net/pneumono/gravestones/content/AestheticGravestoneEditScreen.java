@@ -181,10 +181,12 @@ public class AestheticGravestoneEditScreen extends Screen {
         this.renderGravestone(context);
     }
 
+    //? if >=1.20.2 {
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         this.renderInGameBackground(context);
     }
+    //?}
 
     @Override
     public void close() {

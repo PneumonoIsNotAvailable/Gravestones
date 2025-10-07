@@ -290,7 +290,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         } else {
             this.markDirty();
         }
-        *///?} else {
+        *///?} else if >=1.20.2 {
         /*if (this.graveOwner != null && !Util.isBlank(this.graveOwner.getName()) && !SkullBlockEntity.hasTextures(this.graveOwner.getProfile())) {
             SkullBlockEntity.fetchProfile(this.graveOwner.getName()).thenAcceptAsync(profile -> {
                 this.graveOwner.setProfile(profile.orElse(this.graveOwner.getProfile()));
@@ -299,6 +299,11 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         } else {
             this.markDirty();
         }
+        *///?} else {
+        /*SkullBlockEntity.loadProperties(this.graveOwner == null ? null : this.graveOwner.getProfile(), profile -> {
+            this.graveOwner.setProfile(profile);
+            this.markDirty();
+        });
         *///?}
     }
 

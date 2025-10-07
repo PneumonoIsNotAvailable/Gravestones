@@ -1,6 +1,5 @@
 package net.pneumono.gravestones.networking;
 
-import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.minecraft.util.Identifier;
@@ -14,7 +13,11 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
 *///?}
 
-public record GravestoneEditorOpenS2CPayload(BlockPos pos) implements CustomPayload {
+//? if >=1.20.2 {
+import net.minecraft.network.packet.CustomPayload;
+//?}
+
+public record GravestoneEditorOpenS2CPayload(BlockPos pos) /*? if >=1.20.2 {*/implements CustomPayload/*?}*/ {
     public static final Identifier ID = Gravestones.id("gravestone_editor_open");
 
     //? if >=1.20.6 {
@@ -40,12 +43,16 @@ public record GravestoneEditorOpenS2CPayload(BlockPos pos) implements CustomPayl
         return buf;
     }
 
+    //? if >=1.20.2 {
     @Override
+     //?}
     public void write(PacketByteBuf buf) {
         buf.writeBlockPos(this.pos);
     }
 
+    //? if >=1.20.2 {
     @Override
+     //?}
     public Identifier id() {
         return ID;
     }

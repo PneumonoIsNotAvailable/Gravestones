@@ -213,7 +213,10 @@ public class GravestonesRegistry {
         }
         return false;
         //?} else {
-        /^for (RegistryEntry<Enchantment> enchantment : EnchantmentHelper.get(stack).keySet().stream().map(Enchantment::getRegistryEntry).toList()) {
+        /^for (RegistryEntry<Enchantment> enchantment : EnchantmentHelper.get(stack).keySet().stream()
+                .map(Registries.ENCHANTMENT::getEntry)
+                .toList()
+        ) {
             if (enchantment.isIn(ENCHANTMENT_SKIPS_GRAVESTONES)) {
                 return true;
             }

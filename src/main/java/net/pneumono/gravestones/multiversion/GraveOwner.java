@@ -46,7 +46,7 @@ public class GraveOwner {
     }
 
     //?} else {
-    /*public static final Codec<GraveOwner> CODEC = Codecs.GAME_PROFILE_WITH_PROPERTIES.xmap(GraveOwner::new, GraveOwner::getProfile);
+    /*public static final Codec<GraveOwner> CODEC = Codecs./^? if >=1.20.2 {^/GAME_PROFILE_WITH_PROPERTIES/^?} else {^//^GAME_PROFILE^//^?}^/.xmap(GraveOwner::new, GraveOwner::getProfile);
     private GameProfile profile;
 
     public GraveOwner(GameProfile profile) {

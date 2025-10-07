@@ -130,6 +130,6 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return TechnicalGravestoneBlock.validateTicker(type, GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
+        return /*? if >=1.20.2 {*/validateTicker/*?} else {*//*checkType*//*?}*/(type, GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
     }
 }
