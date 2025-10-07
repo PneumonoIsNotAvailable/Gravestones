@@ -19,7 +19,7 @@ import java.util.UUID;
 /*import com.mojang.datafixers.util.Pair;
 *///?}
 
-//? if >1.20.6 {
+//? if >=1.20.6 {
 import net.minecraft.component.type.ProfileComponent;
 //?}
 
