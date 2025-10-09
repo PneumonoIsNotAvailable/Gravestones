@@ -62,8 +62,8 @@ loom {
 }
 
 stonecutter {
-	constants["trinkets"] = trinkets
 	constants["accessories"] = accessories
+	constants["trinkets"] = trinkets
 }
 
 dependencies {
@@ -82,15 +82,15 @@ dependencies {
 	modCompileOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 	modRuntimeOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
-	// Trinkets
-	if (trinkets) {
-		modCompileOnly("dev.emi:trinkets:${property("trinkets_version")}")
-	}
-
 	// Accessories
 	if (accessories) {
 		modCompileOnly("io.wispforest:accessories-fabric:${property("accessories_version")}")
 		modCompileOnly("io.wispforest:owo-lib:${property("owo_version")}")
+	}
+
+	// Trinkets
+	if (trinkets) {
+		modCompileOnly("dev.emi:trinkets:${property("trinkets_version")}")
 	}
 }
 

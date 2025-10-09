@@ -109,10 +109,10 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
         this.contents = VersionUtil.get(ops, nbt, "contents", NbtCompound.CODEC).orElse(new NbtCompound());
         this.setGraveOwner(VersionUtil.get(ops, nbt, "owner", GraveOwner.CODEC).orElse(null));
-        this.spawnDateTime = nbt.getString("spawnDateTime"/^? if >=1.21.5 {^//^, null^//^?}^/);
-        this.spawnDateTicks = nbt.getLong("spawnDateTicks"/^? if >=1.21.5 {^//^, 0^//^?}^/);
-        this.deathDamage = nbt.getInt("deathDamage"/^? if >=1.21.5 {^//^, 0^//^?}^/);
-        this.ageDamage = nbt.getInt("ageDamage"/^? if >=1.21.5 {^//^, 0^//^?}^/);
+        this.spawnDateTime = nbt.getString("spawnDateTime"/^? if >=1.21.5 {^/, null/^?}^/);
+        this.spawnDateTicks = nbt.getLong("spawnDateTicks"/^? if >=1.21.5 {^/, 0/^?}^/);
+        this.deathDamage = nbt.getInt("deathDamage"/^? if >=1.21.5 {^/, 0/^?}^/);
+        this.ageDamage = nbt.getInt("ageDamage"/^? if >=1.21.5 {^/, 0/^?}^/);
     }
     *///?} else {
     /*@Override
