@@ -10,7 +10,7 @@ java.targetCompatibility = javaVersion
 java.sourceCompatibility = javaVersion
 
 base.archivesName.set(project.property("mod_id") as String)
-version = "${project.property("mod_version")}+${stonecutter.current.project}"
+version = "${project.property("mod_version")}+${stonecutter.current.project}+${property("mod_subversion")}"
 
 val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
