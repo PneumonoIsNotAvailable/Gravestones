@@ -51,7 +51,7 @@
 	"accessWidener": "gravestones.accesswidener",
 	"depends": {
 		"fabricloader": "*",
-		"minecraft": "${supported}",
+		"minecraft": ">=${min_supported} <=${max_supported}",
 		"java": ">=21",
 		"fabric-api": "*",
 		"pneumonocore": "*"
