@@ -2,14 +2,12 @@ package net.pneumono.gravestones.content;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
@@ -44,7 +42,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         for (NbtElement element : list) {
             ItemStack stack = StackWithSlot.CODEC.decode(ops, element).result().orElseThrow().getFirst().stack();
-            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+            dropStack(world, pos, stack);
         }
     }
 
@@ -73,14 +71,6 @@ public class PlayerInventoryDataType extends GravestoneDataType {
             remainingStacks.add(stackWithSlot.stack());
         }
 
-        for (ItemStack stack : remainingStacks) {
-            if (!player.giveItemStack(stack)) {
-                ItemEntity itemEntity = player.dropItem(stack, false);
-                if (itemEntity != null) {
-                    itemEntity.resetPickupDelay();
-                    itemEntity.setOwner(player.getUuid());
-                }
-            }
-        }
+        dropStacks(player, remainingStacks);
     }
 }

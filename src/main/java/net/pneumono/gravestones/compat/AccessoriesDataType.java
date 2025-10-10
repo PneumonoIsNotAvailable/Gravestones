@@ -78,7 +78,7 @@ public class AccessoriesDataType extends GravestoneDataType {
         List<SlotReferencePrimitive> list = VersionUtil.get(ops, nbt, KEY, SlotReferencePrimitive.CODEC.listOf()).orElse(null);
         if (list == null || list.isEmpty()) return;
 
-        dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack));
+        dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack).toList());
     }
 
     @Override
@@ -89,7 +89,7 @@ public class AccessoriesDataType extends GravestoneDataType {
         AccessoriesCapability capability = AccessoriesCapability.get(player);
         if (capability == null) {
             warn("Player {} does not have an AccessoriesCapability. Any accessories will be dropped on the ground", player.getName().getString());
-            dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack));
+            dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack).toList());
             return;
         }
 
@@ -153,12 +153,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             }
         }
 
-        dropStacks(world, pos, remaining.stream());
-    }
-
-    public void dropStacks(World world, BlockPos pos, Stream<ItemStack> stream) {
-        stream.filter(stack -> !stack.isEmpty())
-                .forEach(stack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack));
+        dropStacks(world, pos, remaining);
     }
 
     //? if >=1.21.5 {

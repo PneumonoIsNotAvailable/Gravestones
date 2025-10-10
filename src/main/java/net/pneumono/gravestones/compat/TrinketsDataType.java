@@ -51,9 +51,7 @@ public class TrinketsDataType extends GravestoneDataType {
         List<TrinketsSlot> list = VersionUtil.get(ops, nbt, KEY, TrinketsSlot.CODEC.listOf()).orElseThrow();
 
         for (TrinketsSlot slot : list) {
-            if (!slot.stack().isEmpty()) {
-                ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), slot.stack());
-            }
+            dropStack(world, pos, slot.stack());
         }
     }
 
@@ -87,13 +85,7 @@ public class TrinketsDataType extends GravestoneDataType {
 
         for (TrinketsSlot slot : remainingSlots) {
             ItemStack stack = slot.stack();
-            if (!player.giveItemStack(stack)) {
-                ItemEntity itemEntity = player.dropItem(stack, false);
-                if (itemEntity != null) {
-                    itemEntity.resetPickupDelay();
-                    itemEntity.setOwner(player.getUuid());
-                }
-            }
+            dropStack(player, stack);
         }
     }
 
