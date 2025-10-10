@@ -14,7 +14,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.PlainTextContent;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -24,28 +23,58 @@ import net.minecraft.world.event.GameEvent;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
+import net.pneumono.pneumonocore.util.MultiVersionUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.UUID;
 
-public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
-    public static final MapCodec<AestheticGravestoneBlock> CODEC = AestheticGravestoneBlock.createCodec(AestheticGravestoneBlock::new);
+//? if >=1.20.4 {
+import net.minecraft.text.PlainTextContent;
+//?} else {
+/*import net.minecraft.text.LiteralTextContent;
+*///?}
 
+public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
     public AestheticGravestoneBlock(Settings settings) {
         super(settings);
     }
+
+    //? if >=1.20.4 {
+    public static final MapCodec<AestheticGravestoneBlock> CODEC = AestheticGravestoneBlock.createCodec(AestheticGravestoneBlock::new);
 
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() {
         return CODEC;
     }
+    //?}
 
+    //? if <1.20.6 {
+    /*@SuppressWarnings("deprecation")
     @Override
-    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ActionResult result = onUseWithItem(player.getStackInHand(hand), state, world, pos, player, hand, hit);
+        if (result == ActionResult.PASS) {
+            return onUse(state, world, pos, player, hit);
+        } else {
+            return result;
+        }
+    }
+    *///?}
+
+    //? if >=1.20.6 {
+    @Override
+    //?}
+    protected /*? if >=1.21.3 {*/ActionResult/*?} else if >=1.20.6 {*//*ItemActionResult*//*?} else {*//*ActionResult*//*?}*/ onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof AestheticGravestoneBlockEntity gravestone)) {
-            return ActionResult.PASS;
+            //? if >=1.21.3 {
+            return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+            //?} else if >=1.20.6 {
+            /*return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            *///?} else {
+            /*return ActionResult.PASS;
+            *///?}
         }
         Item item = stack.getItem();
 
@@ -56,7 +85,13 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
                 world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_GRAVESTONE_ADD_SKULL, SoundCategory.BLOCKS);
                 gravestone.setHeadStack(player, stack);
             }
+            //? if >=1.21.3 {
             return ActionResult.SUCCESS;
+            //?} else if >=1.20.6 {
+            /*return ItemActionResult.SUCCESS;
+            *///?} else {
+            /*return ActionResult.SUCCESS;
+            *///?}
         }
 
         if (!world.isClient()) {
@@ -71,16 +106,47 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
                 gravestone.runCommandClickEvent(player, world, pos);
                 player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
                 world.emitGameEvent(GameEvent.BLOCK_CHANGE, gravestone.getPos(), GameEvent.Emitter.of(player, gravestone.getCachedState()));
+                //? if >=1.20.6 {
                 stack.decrementUnlessCreative(1, player);
+                //?} else {
+                /*if (!player.isCreative()) {
+                    stack.decrement(1);
+                }
+                *///?}
+
+                //? if >=1.21.3 {
                 return ActionResult.SUCCESS;
+                //?} else if >=1.20.6 {
+                /*return ItemActionResult.SUCCESS;
+                *///?} else {
+                /*return ActionResult.SUCCESS;
+                *///?}
             } else {
+                //? if >=1.21.3 {
                 return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+                //?} else if >=1.20.6 {
+                /*return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                *///?} else {
+                /*return ActionResult.PASS;
+                *///?}
             }
         } else {
             if ((!(item instanceof SignChangingItem) || !player.canModifyBlocks()) && !waxed) {
+                //? if >=1.21.3 {
                 return ActionResult.CONSUME;
+                //?} else if >=1.20.6 {
+                /*return ItemActionResult.CONSUME;
+                *///?} else {
+                /*return ActionResult.CONSUME;
+                *///?}
             } else {
+                //? if >=1.21.3 {
                 return ActionResult.SUCCESS;
+                //?} else if >=1.20.6 {
+                /*return ItemActionResult.SUCCESS;
+                *///?} else {
+                /*return ActionResult.SUCCESS;
+                *///?}
             }
         }
     }
@@ -119,12 +185,14 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         return false;
     }
 
+    //? >=1.20.6 {
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    //?}
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity)) return ActionResult.PASS;
 
         if (world.isClient()) {
-            Util.getFatalOrPause(new IllegalStateException("Expected to only call this on server"));
+            Util./*? if >=1.21.3 {*/getFatalOrPause/*?} else {*//*throwOrPause*//*?}*/(new IllegalStateException("Expected to only call this on server"));
         }
 
         ItemStack headStack = blockEntity.getHeadStack();
@@ -140,23 +208,41 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         boolean ranCommand = blockEntity.runCommandClickEvent(player, world, pos);
         if (blockEntity.isWaxed()) {
             world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, SoundCategory.BLOCKS);
-            return ActionResult.SUCCESS_SERVER;
+            return ActionResult.SUCCESS;
         } else if (ranCommand) {
-            return ActionResult.SUCCESS_SERVER;
+            return ActionResult.SUCCESS;
         } else if (noOtherPlayerEditing(player, blockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, blockEntity)) {
             this.openEditScreen(player, blockEntity);
-            return ActionResult.SUCCESS_SERVER;
+            return ActionResult.SUCCESS;
         } else {
             return ActionResult.PASS;
         }
     }
 
+    //? <1.20.6 {
+    /*@SuppressWarnings("deprecation")
+    *///?}
+    //? if <1.21.5 {
+    /*@Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity) {
+            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), blockEntity.getHeadStack());
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+    *///?}
+
     public void openEditScreen(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
         blockEntity.setEditor(player.getUuid());
         if (player instanceof ServerPlayerEntity serverPlayer) {
             BlockPos pos = blockEntity.getPos();
-            serverPlayer.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverPlayer.getWorld(), pos));
-            ServerPlayNetworking.send(serverPlayer, new GravestoneEditorOpenS2CPayload(pos));
+            serverPlayer.networkHandler.sendPacket(new BlockUpdateS2CPacket(MultiVersionUtil.getWorld(serverPlayer), pos));
+            GravestoneEditorOpenS2CPayload payload = new GravestoneEditorOpenS2CPayload(pos);
+            //? if >=1.20.6 {
+            ServerPlayNetworking.send(serverPlayer, payload);
+            //?} else {
+            /*ServerPlayNetworking.send(serverPlayer, payload.id(), payload.write());
+            *///?}
         }
     }
 
@@ -168,7 +254,7 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
     private boolean isTextLiteralOrEmpty(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
         SignText signText = blockEntity.getText();
         return Arrays.stream(signText.getMessages(player.shouldFilterText()))
-                .allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof PlainTextContent);
+                .allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof /*? if >=1.20.4 {*/PlainTextContent/*?} else {*//*LiteralTextContent*//*?}*/);
     }
 
     @Override

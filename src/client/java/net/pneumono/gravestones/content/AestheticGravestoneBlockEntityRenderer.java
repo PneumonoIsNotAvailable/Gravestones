@@ -3,78 +3,57 @@ package net.pneumono.gravestones.content;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.SignText;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.OrderedText;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 
-import java.util.List;
+//? if >=1.21.9 {
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.command.ModelCommandRenderer;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
+//?} else {
+/*import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import org.jetbrains.annotations.Nullable;
+*///?}
 
-public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBlockEntityRenderer<AestheticGravestoneBlockEntity> {
+//? if >=1.20.6 {
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
+//?} else {
+/*import com.mojang.authlib.GameProfile;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.Util;
+*///?}
+
+//? if >=1.21.9 {
+public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBlockEntityRenderer<AestheticGravestoneBlockEntity, AestheticGravestoneBlockEntityRenderer.AestheticRenderState> {
+//?} else {
+/*public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBlockEntityRenderer<AestheticGravestoneBlockEntity> {
+*///?}
     public AestheticGravestoneBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         super(ctx);
     }
 
-    public void renderGravestoneText(AestheticGravestoneBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int worldLight) {
-        SignText signText = entity.getText();
-
-        boolean glowing = signText.isGlowing();
-        int textColor = AbstractSignBlockEntityRenderer.getTextColor(signText);
-        int color = glowing ? signText.getColor().getSignColor() : textColor;
-        boolean renderOutline = glowing && AbstractSignBlockEntityRenderer.shouldRenderTextOutline(entity.getPos(), color);
-        int light = glowing ? 15728880 : worldLight;
-
-        for (int i = 0; i < 4; ++i) {
-            matrices.translate(0, 2 * (1 / TEXT_SCALE), 0);
-
-            OrderedText[] messages = signText.getOrderedMessages(MinecraftClient.getInstance().shouldFilterText(), text -> {
-                List<OrderedText> list = this.textRenderer.wrapLines(text, AestheticGravestoneEditScreen.TEXT_WIDTH);
-                return list.isEmpty() ? OrderedText.EMPTY : list.getFirst();
-            });
-            OrderedText message = messages[i];
-
-            if (renderOutline) {
-                this.textRenderer.drawWithOutline(
-                        message,
-                        (float) (-this.textRenderer.getWidth(message) / 2),
-                        0.0F,
-                        color,
-                        textColor,
-                        matrices.peek().getPositionMatrix(),
-                        vertexConsumers,
-                        light
-                );
-            } else {
-                this.textRenderer.draw(
-                        message,
-                        (float) (-this.textRenderer.getWidth(message) / 2),
-                        0.0F,
-                        color,
-                        false,
-                        matrices.peek().getPositionMatrix(),
-                        vertexConsumers,
-                        TextRenderer.TextLayerType.POLYGON_OFFSET,
-                        0,
-                        light
-                );
-            }
-        }
+    @Override
+    public SignText getSignText(AestheticGravestoneBlockEntity entity) {
+        return entity.getText();
     }
 
     @Override
-    public void renderGravestoneHead(AestheticGravestoneBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, float yaw, float pitch, int light) {
-        ItemStack headStack = entity.getHeadStack();
+    //? if >=1.21.9 {
+    public void renderHead(AestheticRenderState info, MatrixStack matrices, OrderedRenderCommandQueue queue, float yaw, float pitch) {
+    //?} else {
+    /*public void renderHead(AestheticGravestoneBlockEntity info, MatrixStack matrices, VertexConsumerProvider vertexConsumers, float yaw, float pitch, int light) {
+    *///?}
+        ItemStack headStack = info.getHeadStack();
         if (headStack.isEmpty()) return;
 
         if (
@@ -84,11 +63,72 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
 
         SkullBlock.SkullType type = skullBlock.getSkullType();
 
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
-                SkullBlockEntityRenderer.getRenderLayer(type, headStack.get(DataComponentTypes.PROFILE))
+        //? if >=1.21.9 {
+        ProfileComponent profileComponent = headStack.get(DataComponentTypes.PROFILE);
+        RenderLayer layer;
+        if (profileComponent != null) {
+            layer = this.skinCache.get(profileComponent).getRenderLayer();
+        } else {
+            layer = SkullBlockEntityRenderer.getCutoutRenderLayer(type, null);
+        }
+
+        renderHeadModel(
+                info,
+                matrices,
+                this.models.apply(type),
+                queue,
+                layer,
+                yaw,
+                pitch
         );
-        SkullBlockEntityModel model = this.models.apply(type);
-        model.setHeadRotation(0.0F, yaw, pitch);
-        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+        //?} else {
+        /*VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
+                SkullBlockEntityRenderer.getRenderLayer(type, getStackProfile(headStack))
+        );
+        renderHeadModel(matrices, this.models.apply(type), vertexConsumer, yaw, pitch, light);
+        *///?}
     }
+
+    //? if >=1.20.6 {
+    @Nullable
+    private static ProfileComponent getStackProfile(ItemStack stack) {
+        return stack.get(DataComponentTypes.PROFILE);
+    }
+    //?} else {
+    /*@Nullable
+    private static GameProfile getStackProfile(ItemStack stack) {
+        GameProfile gameProfile = null;
+        NbtCompound nbtCompound = stack.getNbt();
+        if (nbtCompound != null && !nbtCompound.isEmpty()) {
+            if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
+                gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+            } else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbtCompound.getString("SkullOwner"))) {
+                gameProfile = new GameProfile(Util.NIL_UUID, nbtCompound.getString("SkullOwner"));
+            }
+        }
+
+        return gameProfile;
+    }
+    *///?}
+
+    //? if >=1.21.9 {
+    @Override
+    public AestheticRenderState createRenderState() {
+        return new AestheticRenderState();
+    }
+
+    @Override
+    public void updateRenderState(AestheticGravestoneBlockEntity entity, AestheticRenderState state, float tickProgress, Vec3d cameraPos, ModelCommandRenderer.@Nullable CrumblingOverlayCommand crumblingOverlay) {
+        super.updateRenderState(entity, state, tickProgress, cameraPos, crumblingOverlay);
+        state.headStack = entity.getHeadStack();
+    }
+
+    public static class AestheticRenderState extends RenderState {
+        public ItemStack headStack;
+
+        public ItemStack getHeadStack() {
+            return headStack;
+        }
+    }
+    //?}
 }

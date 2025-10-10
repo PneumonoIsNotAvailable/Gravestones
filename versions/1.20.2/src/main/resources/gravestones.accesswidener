@@ -1,0 +1,7 @@
+accessWidener v2 named
+
+accessible field net/minecraft/block/entity/SkullBlockEntity EXECUTOR Ljava/util/concurrent/Executor;
+accessible method net/minecraft/block/entity/SkullBlockEntity hasTextures (Lcom/mojang/authlib/GameProfile;)Z
+accessible method net/minecraft/block/entity/SkullBlockEntity fetchProfile (Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
+accessible method net/minecraft/server/network/ServerPlayNetworkHandler filterTexts (Ljava/util/List;)Ljava/util/concurrent/CompletableFuture;
+accessible method net/minecraft/client/render/block/entity/SignBlockEntityRenderer shouldRender (Lnet/minecraft/util/math/BlockPos;I)Z

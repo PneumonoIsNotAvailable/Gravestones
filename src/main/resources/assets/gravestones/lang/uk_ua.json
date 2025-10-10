@@ -1,4 +1,7 @@
 {
+  "item.gravestones.gravestone": "Могила",
+  "item.gravestones.gravestone_chipped": "Надщерблена могила",
+  "item.gravestones.gravestone_damaged": "Пошкоджена могила",
   "block.gravestones.gravestone": "Могила",
   "block.gravestones.gravestone_chipped": "Надщерблена могила",
   "block.gravestones.gravestone_damaged": "Пошкоджена могила",

@@ -4,7 +4,6 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
@@ -20,6 +19,8 @@ import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
 import net.pneumono.gravestones.gravestones.GravestoneManager;
 import net.pneumono.gravestones.gravestones.RecentGraveHistory;
+import net.pneumono.gravestones.multiversion.GraveOwner;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,9 +43,9 @@ public class GravestonesCommands {
                                                     if (!(world.getBlockState(pos).isOf(GravestonesRegistry.GRAVESTONE_TECHNICAL))) {
                                                         context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.no_gravestone").formatted(Formatting.RED), false);
                                                     } else if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) {
-                                                        ProfileComponent owner = entity.getGraveOwner();
-                                                        if (owner != null) {
-                                                            context.getSource().sendFeedback(() -> Text.stringifiedTranslatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), owner.name().orElse("???"), owner.uuid().orElse(null)).formatted(Formatting.GREEN), false);
+                                                        GraveOwner graveOwner = entity.getGraveOwner();
+                                                        if (graveOwner != null) {
+                                                            context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.all_data", entity.getSpawnDateTime(), graveOwner.getNotNullName(), graveOwner.getUuid()).formatted(Formatting.GREEN), false);
                                                         } else {
                                                             context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.gravestone.no_grave_owner", entity.getSpawnDateTime()).formatted(Formatting.RED), false);
                                                         }
@@ -60,7 +61,7 @@ public class GravestonesCommands {
                                                 .executes(context -> {
                                                     List<RecentGraveHistory> histories = GravestoneDataSaving.readHistories(context.getSource().getServer());
 
-                                                    UUID uuid = EntityArgumentType.getPlayer(context, "player").getGameProfile().getId();
+                                                    UUID uuid = VersionUtil.getId(EntityArgumentType.getPlayer(context, "player").getGameProfile());
                                                     List<GlobalPos> positions = null;
                                                     for (RecentGraveHistory history : histories) {
                                                         if (history.owner().equals(uuid)) {
@@ -76,7 +77,7 @@ public class GravestonesCommands {
                                                     }
 
                                                     ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
-                                                    Text first = GravestoneManager.posToText(positions.getFirst());
+                                                    Text first = GravestoneManager.posToText(positions.get(0));
                                                     Text second = GravestoneManager.posToText(positions.get(1));
                                                     Text third = GravestoneManager.posToText(positions.get(2));
                                                     context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.getdata.player.grave_data",
@@ -97,7 +98,7 @@ public class GravestonesCommands {
 
                                                     NbtCompound nbt = DeathArgumentType.getDeath(context, "death");
 
-                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(nbt.getCompoundOrEmpty("contents"))), false);
+                                                    source.sendFeedback(() -> Text.translatable("commands.gravestones.deaths.view", NbtHelper.toPrettyPrintedText(VersionUtil.getCompoundOrEmpty(nbt, "contents"))), false);
                                                     return 1;
                                                 })
                                         )
@@ -130,7 +131,7 @@ public class GravestonesCommands {
     }
 
     private static int recoverDeath(CommandContext<ServerCommandSource> context, NbtCompound nbt, ServerPlayerEntity player) {
-        GravestonesApi.onCollect(context.getSource().getWorld(), player.getBlockPos(), player, 0, nbt.getCompoundOrEmpty("contents").copy());
+        GravestonesApi.onCollect(context.getSource().getWorld(), player.getBlockPos(), player, 0, VersionUtil.getCompoundOrEmpty(nbt, "contents").copy());
         context.getSource().sendFeedback(() -> Text.translatable("commands.gravestones.deaths.recover"), true);
         return 1;
     }

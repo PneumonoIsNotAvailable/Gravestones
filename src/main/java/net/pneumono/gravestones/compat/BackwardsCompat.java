@@ -11,6 +11,7 @@ import net.minecraft.util.math.GlobalPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
 import net.pneumono.gravestones.gravestones.RecentGraveHistory;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class BackwardsCompat {
 
     private record GravestonePosition(Identifier dimension, int posX, int posY, int posZ) {
         private Optional<GlobalPos> convert() {
-            return Optional.of(new GlobalPos(RegistryKey.of(RegistryKeys.WORLD, dimension()), new BlockPos(this.posX, this.posY, this.posZ)));
+            return Optional.of(VersionUtil.createGlobalPos(RegistryKey.of(RegistryKeys.WORLD, dimension()), new BlockPos(this.posX, this.posY, this.posZ)));
         }
     }
 }

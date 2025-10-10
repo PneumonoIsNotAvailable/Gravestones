@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import net.pneumono.gravestones.api.PositionValidationCallback;
 import net.pneumono.gravestones.api.RedirectGravestonePositionCallback;
 import net.pneumono.gravestones.content.GravestonesRegistry;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.jetbrains.annotations.Nullable;
 
 public class GravestonePlacement extends GravestoneManager {
@@ -31,11 +32,11 @@ public class GravestonePlacement extends GravestoneManager {
         GlobalPos redirected = RedirectGravestonePositionCallback.EVENT.invoker().redirectPosition(world, player, deathPos);
         if (redirected != null) return redirected;
 
-        BlockPos validPos = getValidPos(world, deathPos.pos(), RADIUS);
+        BlockPos validPos = getValidPos(world, VersionUtil.getPos(deathPos), RADIUS);
         if (validPos == null) {
             return null;
         } else {
-            return new GlobalPos(deathPos.dimension(), validPos);
+            return VersionUtil.createGlobalPos(VersionUtil.getDimension(deathPos), validPos);
         }
     }
 

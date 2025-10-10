@@ -1,0 +1,28 @@
+{
+    "values": [
+        {
+            "id": "enderio:soulbound",
+            "required": false
+        },
+        {
+            "id": "alessandrvenchantments:soulbound",
+            "required": false
+        },
+        {
+            "id": "enchantery:soulbound",
+            "required": false
+        },
+        {
+            "id": "enderzoology:soulbound",
+            "required": false
+        },
+        {
+            "id": "soulbound:soulbound",
+            "required": false
+        },
+        {
+            "id": "soulbound_enchantment:soulbound",
+            "required": false
+        }
+    ]
+}

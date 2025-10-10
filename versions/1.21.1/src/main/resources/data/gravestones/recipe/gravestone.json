@@ -1,0 +1,29 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "pneumonocore:configurations",
+      "configuration": "gravestones:aesthetic_gravestones",
+      "operation": "EQUAL",
+      "value": "true"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "minecraft:stone"
+    },
+    "s": {
+      "item": "minecraft:stone_slab"
+    }
+  },
+  "pattern": [
+    " s ",
+    "SSS",
+    "sss"
+  ],
+  "result": {
+    "count": 1,
+    "id": "gravestones:gravestone"
+  }
+}

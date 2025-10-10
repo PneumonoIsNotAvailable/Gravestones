@@ -1,43 +1,64 @@
 package net.pneumono.gravestones.compat;
 
-import com.mojang.serialization.Codec;
+//? if accessories {
+/*import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.wispforest.accessories.Accessories;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
-import io.wispforest.accessories.api.core.Accessory;
-import io.wispforest.accessories.api.core.AccessoryRegistry;
-import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
 import io.wispforest.accessories.api.slot.SlotReference;
-import io.wispforest.accessories.impl.core.ExpandedContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+//? if >=1.21.5 {
+/^import io.wispforest.accessories.api.core.Accessory;
+import io.wispforest.accessories.api.core.AccessoryRegistry;
+import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
+import io.wispforest.accessories.impl.core.ExpandedContainer;
+^///?} else if >=1.21.3 {
+/^import io.wispforest.accessories.api.Accessory;
+import io.wispforest.accessories.api.AccessoryRegistry;
+import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
+import io.wispforest.accessories.impl.ExpandedSimpleContainer;
+^///?} else {
+import io.wispforest.accessories.api.Accessory;
+import io.wispforest.accessories.api.AccessoriesAPI;
+import io.wispforest.accessories.impl.ExpandedSimpleContainer;
+//?}
+
+//? if >=1.21.4 {
+/^import io.wispforest.accessories.Accessories;
+^///?}
+
 public class AccessoriesDataType extends GravestoneDataType {
-    @SuppressWarnings("UnstableApiUsage")
+    private static final String KEY = "accessories";
+
+    //? if >=1.21.4 {
+    /^@SuppressWarnings("UnstableApiUsage")
+    ^///?}
     @Override
-    public void writeData(WriteView view, PlayerEntity player) {
+    public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception {
         MinecraftServer server = player.getServer();
-        if (server != null && server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)) {
+        if (server != null /^? if >=1.21.4 {^//^&& server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)^//^?}^/) {
             return;
         }
 
         AccessoriesCapability capability = AccessoriesCapability.get(player);
         if (capability == null) {
-            warn("Player {} does not have an AccessoriesCapability", player.getName().getString());
-            return;
+            throw new IllegalStateException("Player {} does not have an AccessoriesCapability");
         }
 
         List<SlotReferencePrimitive> list = capability.getAllEquipped().stream()
@@ -49,30 +70,26 @@ public class AccessoriesDataType extends GravestoneDataType {
                 })
                 .toList();
 
-        view.put(
-                "accessories",
-                SlotReferencePrimitive.CODEC.listOf(),
-                list
-        );
+        VersionUtil.put(ops, nbt, KEY, SlotReferencePrimitive.CODEC.listOf(), list);
     }
 
     @Override
-    public void onBreak(ReadView view, World world, BlockPos pos, int decay) {
-        List<SlotReferencePrimitive> list = view.read("accessories", SlotReferencePrimitive.CODEC.listOf()).orElse(null);
+    public void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) {
+        List<SlotReferencePrimitive> list = VersionUtil.get(ops, nbt, KEY, SlotReferencePrimitive.CODEC.listOf()).orElse(null);
         if (list == null || list.isEmpty()) return;
 
-        dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack));
+        dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack).toList());
     }
 
     @Override
-    public void onCollect(ReadView view, World world, BlockPos pos, PlayerEntity player, int decay) {
-        List<SlotReferencePrimitive> list = view.read("accessories", SlotReferencePrimitive.CODEC.listOf()).orElse(null);
+    public void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
+        List<SlotReferencePrimitive> list = VersionUtil.get(ops, nbt, KEY, SlotReferencePrimitive.CODEC.listOf()).orElse(null);
         if (list == null || list.isEmpty()) return;
 
         AccessoriesCapability capability = AccessoriesCapability.get(player);
         if (capability == null) {
             warn("Player {} does not have an AccessoriesCapability. Any accessories will be dropped on the ground", player.getName().getString());
-            dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack));
+            dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack).toList());
             return;
         }
 
@@ -89,36 +106,58 @@ public class AccessoriesDataType extends GravestoneDataType {
                 continue;
             }
 
-            if (!SlotPredicateRegistry.canInsertIntoSlot(newStack, container.createReference(primitive.index))) {
+            boolean canInsert =
+            //? if >=1.21.3 {
+            /^SlotPredicateRegistry.canInsertIntoSlot(newStack, container.createReference(primitive.index));
+            ^///?} else {
+            AccessoriesAPI.canInsertIntoSlot(newStack, container.createReference(primitive.index));
+            //?}
+            if (!canInsert) {
                 remaining.add(newStack);
                 continue;
             }
 
-            ExpandedContainer accessories = container.getAccessories();
+            //? if >=1.21.5 {
+            /^ExpandedContainer accessories = container.getAccessories();
+            ^///?} else {
+            ExpandedSimpleContainer accessories = container.getAccessories();
+            //?}
 
             ItemStack oldStack = accessories.getStack(index);
             SlotReference slotReference = container.createReference(index);
 
-            if (oldStack.isEmpty()
-                    && AccessoryRegistry.canUnequip(oldStack, slotReference)
-                    && SlotPredicateRegistry.canInsertIntoSlot(newStack, slotReference)
+            boolean canUnequipOldStack =
+            //? if >=1.21.3 {
+            /^AccessoryRegistry.canUnequip(oldStack, slotReference);
+            ^///?} else {
+            AccessoriesAPI.canUnequip(oldStack, slotReference);
+            //?}
+            boolean canInsertNewStack =
+            //? if >=1.21.3 {
+            /^SlotPredicateRegistry.canInsertIntoSlot(newStack, slotReference);
+            ^///?} else {
+            AccessoriesAPI.canInsertIntoSlot(newStack, slotReference);
+            //?}
+
+            if (oldStack.isEmpty() && canUnequipOldStack && canInsertNewStack
             ) {
-                Accessory accessory = AccessoryRegistry.getAccessoryOrDefault(oldStack);
+                Accessory accessory =
+                //? if >=1.21.3 {
+                /^AccessoryRegistry.getAccessoryOrDefault(oldStack);
+                ^///?} else {
+                AccessoriesAPI.getOrDefaultAccessory(oldStack);
+                //?}
                 ItemStack splitStack = newStack.split(accessory.maxStackSize(newStack));
 
                 slotReference.setStack(splitStack);
             }
         }
 
-        dropStacks(world, pos, remaining.stream());
+        dropStacks(world, pos, remaining);
     }
 
-    public void dropStacks(World world, BlockPos pos, Stream<ItemStack> stream) {
-        stream.filter(stack -> !stack.isEmpty())
-                .forEach(stack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack));
-    }
-
-    public record SlotReferencePrimitive(ItemStack stack, String slotName, int index, List<Integer> innerIndices, boolean isNested) {
+    //? if >=1.21.5 {
+    /^public record SlotReferencePrimitive(ItemStack stack, String slotName, int index, List<Integer> innerIndices, boolean isNested) {
         public static final Codec<SlotReferencePrimitive> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ItemStack.CODEC.fieldOf("newStack").forGetter(SlotReferencePrimitive::stack),
                 Codec.STRING.fieldOf("slot_name").forGetter(SlotReferencePrimitive::slotName),
@@ -137,4 +176,22 @@ public class AccessoriesDataType extends GravestoneDataType {
             );
         }
     }
+    ^///?} else {
+    public record SlotReferencePrimitive(ItemStack stack, String slotName, int index) {
+        public static final Codec<SlotReferencePrimitive> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ItemStack.CODEC.fieldOf("newStack").forGetter(SlotReferencePrimitive::stack),
+                Codec.STRING.fieldOf("slot_name").forGetter(SlotReferencePrimitive::slotName),
+                Codec.INT.fieldOf("index").forGetter(SlotReferencePrimitive::index)
+        ).apply(instance, SlotReferencePrimitive::new));
+
+        public SlotReferencePrimitive(ItemStack stack, SlotReference reference) {
+            this(
+                    stack,
+                    reference.slotName(),
+                    reference.slot()
+            );
+        }
+    }
+    //?}
 }
+*///?}

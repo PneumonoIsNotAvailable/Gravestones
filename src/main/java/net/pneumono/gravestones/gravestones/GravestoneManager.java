@@ -4,6 +4,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.pneumono.gravestones.GravestonesConfig;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,11 +67,11 @@ public abstract class GravestoneManager {
     }
 
     public static String posToString(GlobalPos global) {
-        return posToString(global.pos()) + " in " + global.dimension().getValue().toString();
+        return posToString(VersionUtil.getPos(global)) + " in " + VersionUtil.getDimension(global).getValue().toString();
     }
 
     public static Text posToText(GlobalPos global) {
-        BlockPos pos = global.pos();
-        return Text.translatable("gravestones.position", pos.getX(), pos.getY(), pos.getZ(), global.dimension().getValue().toString());
+        BlockPos pos = VersionUtil.getPos(global);
+        return Text.translatable("gravestones.position", pos.getX(), pos.getY(), pos.getZ(), VersionUtil.getDimension(global).getValue().toString());
     }
 }

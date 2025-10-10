@@ -24,18 +24,29 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
+//? if <1.21.5 {
+/*import net.pneumono.gravestones.api.GravestonesApi;
+*///?}
+
+//? if <1.20.6 {
+/*import net.minecraft.util.Hand;
+*///?}
+
 public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
-    public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
     public static final IntProperty DAMAGE = IntProperty.of("damage", 0, 2);
 
     public TechnicalGravestoneBlock(Settings settings) {
         super(settings);
     }
 
+    //? if >=1.20.4 {
+    public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
+
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() {
         return CODEC;
     }
+    //?}
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
@@ -43,22 +54,25 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         builder.add(DAMAGE);
     }
 
+    //? <1.20.6 {
+    /*@SuppressWarnings("deprecation")
+    *///?}
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,/*? <1.20.6 {*//*Hand hand,*//*?}*/ BlockHitResult hit) {
         if (!(world instanceof ServerWorld serverWorld)) {
-            return ActionResult.FAIL;
+            return ActionResult.SUCCESS;
         }
 
         createSoulParticles(world, pos);
 
         if (GravestoneCollection.collect(serverWorld, player, pos)) {
             player.incrementStat(GravestonesRegistry.GRAVESTONES_COLLECTED);
-            return ActionResult.SUCCESS;
-        } else {
-            return ActionResult.FAIL;
         }
+
+        return ActionResult.SUCCESS;
     }
 
+    //? if >=1.21.5 {
     @Override
     public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
         ItemScatterer.onStateReplaced(state, world, pos);
@@ -67,6 +81,29 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
             createSoulParticles(world, pos);
         }
     }
+    //?} else {
+    /*//? <1.20.6 {
+    /^@SuppressWarnings("deprecation")
+    ^///?}
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        //? if >=1.20.4 {
+        ItemScatterer.onStateReplaced(state, newState, world, pos);
+        //?} else {
+        /^world.updateComparators(pos, this);
+        ^///?}
+
+        if (state.getBlock() != world.getBlockState(pos).getBlock()) {
+            createSoulParticles(world, pos);
+
+            if (world instanceof ServerWorld serverWorld && world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity blockEntity) {
+                GravestonesApi.onBreak(serverWorld, pos, state.get(TechnicalGravestoneBlock.DAMAGE), blockEntity);
+            }
+        }
+
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+    *///?}
 
     public static void createSoulParticles(World world, BlockPos pos) {
         Random random = new Random();
@@ -77,10 +114,12 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
+    //? if >=1.20.4 {
     @Override
-    protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+    public void onExploded(BlockState state, /*? if >=1.21.3 {*/ServerWorld/*?} else {*//*World*//*?}*/ world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 
     }
+    //?}
 
     @Nullable
     @Override
@@ -91,6 +130,6 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return TechnicalGravestoneBlock.validateTicker(type, GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
+        return /*? if >=1.20.2 {*/validateTicker/*?} else {*//*checkType*//*?}*/(type, GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntity::tick);
     }
 }

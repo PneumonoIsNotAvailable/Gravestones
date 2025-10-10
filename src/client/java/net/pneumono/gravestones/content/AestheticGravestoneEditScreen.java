@@ -3,23 +3,45 @@ package net.pneumono.gravestones.content;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.SignText;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+
+//? if >=1.21.9 {
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.CharInput;
+//?} else {
+/*import org.lwjgl.glfw.GLFW;
+*///?}
+
+//? if >=1.21.8 {
+import net.minecraft.client.gl.RenderPipelines;
+//?} else {
+/*import net.minecraft.client.render.RenderLayer;
+*///?}
+
+//? if >=1.21.4 {
+import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
+//?} else {
+/*import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
+*///?}
+
+//? if >=1.21.3 {
+import net.minecraft.util.math.ColorHelper;
+//?}
+
+//? if >=1.21.1 {
+import net.minecraft.util.Colors;
+//?}
 
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -30,7 +52,6 @@ public class AestheticGravestoneEditScreen extends Screen {
     protected final AestheticGravestoneBlockEntity blockEntity;
     private SignText text;
     private final String[] messages;
-    protected final Block block;
     private int ticksSinceOpened;
     private int currentRow;
     @Nullable
@@ -43,12 +64,13 @@ public class AestheticGravestoneEditScreen extends Screen {
         this.text = blockEntity.getText();
         this.messages = IntStream.range(0, 4).mapToObj(line -> this.text.getMessage(line, filtered)).map(Text::getString).toArray(String[]::new);
         World world = blockEntity.getWorld();
+        Block block;
         if (world != null) {
-            this.block = world.getBlockState(blockEntity.getPos()).getBlock();
+            block = world.getBlockState(blockEntity.getPos()).getBlock();
         } else {
-            this.block = GravestonesRegistry.GRAVESTONE;
+            block = GravestonesRegistry.GRAVESTONE;
         }
-        this.texture = getTexture(this.block);
+        this.texture = getTexture(block);
     }
 
     private Identifier getTexture(Block block) {
@@ -95,24 +117,60 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    //? if >=1.21.9 {
+    public boolean keyPressed(KeyInput input) {
+    //?} else {
+    /*public boolean keyPressed(int input, int scanCode, int modifiers) {
+    *///?}
         Objects.requireNonNull(this.selectionManager);
-        if (keyCode == GLFW.GLFW_KEY_UP) {
+        if (isUp(input)) {
             this.currentRow = this.currentRow - 1 & 3;
             this.selectionManager.putCursorAtEnd();
             return true;
-        } else if (keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+        } else if (isDownOrEnter(input)) {
             this.currentRow = this.currentRow + 1 & 3;
             this.selectionManager.putCursorAtEnd();
             return true;
         } else {
-            return this.selectionManager.handleSpecialKey(keyCode) || super.keyPressed(keyCode, scanCode, modifiers);
+            if (this.selectionManager.handleSpecialKey(input)) {
+                return true;
+            } else {
+                //? if >=1.21.9 {
+                return super.keyPressed(input);
+                //?} else {
+                /*return super.keyPressed(input, scanCode, modifiers);
+                *///?}
+            }
         }
     }
 
+    //? if >=1.21.9 {
+    public boolean isUp(KeyInput input) {
+        return input.isUp();
+    }
+    //?} else {
+    /*public boolean isUp(int input) {
+        return input == GLFW.GLFW_KEY_UP;
+    }
+    *///?}
+
+    //? if >=1.21.9 {
+    public boolean isDownOrEnter(KeyInput input) {
+        return input.isDown() || input.isEnter();
+    }
+    //?} else {
+    /*public boolean isDownOrEnter(int input) {
+        return input == GLFW.GLFW_KEY_DOWN || input == GLFW.GLFW_KEY_ENTER || input == GLFW.GLFW_KEY_KP_ENTER;
+    }
+    *///?}
+
     @Override
-    public boolean charTyped(char chr, int modifiers) {
-        Objects.requireNonNull(this.selectionManager).insert(chr);
+    //? if >=1.21.9 {
+    public boolean charTyped(CharInput input) {
+    //?} else {
+    /*public boolean charTyped(char input, int modifiers) {
+    *///?}
+        Objects.requireNonNull(this.selectionManager).insert(input);
         return true;
     }
 
@@ -120,13 +178,15 @@ public class AestheticGravestoneEditScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         super.render(context, mouseX, mouseY, deltaTicks);
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 40, 16777215);
-        this.renderSign(context);
+        this.renderGravestone(context);
     }
 
+    //? if >=1.20.2 {
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         this.renderInGameBackground(context);
     }
+    //?}
 
     @Override
     public void close() {
@@ -136,7 +196,11 @@ public class AestheticGravestoneEditScreen extends Screen {
     @Override
     public void removed() {
         UpdateGravestoneC2SPayload payload = new UpdateGravestoneC2SPayload(this.blockEntity.getPos(), this.messages[0], this.messages[1], this.messages[2], this.messages[3]);
+        //? if >=1.20.6 {
         ClientPlayNetworking.send(payload);
+        //?} else {
+        /*ClientPlayNetworking.send(payload.id(), payload.write());
+        *///?}
     }
 
     @Override
@@ -144,24 +208,44 @@ public class AestheticGravestoneEditScreen extends Screen {
         return false;
     }
 
-    private void renderSign(DrawContext context) {
+    private void renderGravestone(DrawContext context) {
+        //? if >=1.21.8 {
         context.getMatrices().pushMatrix();
         context.getMatrices().translate(this.width / 2.0F, 125.0F);
         context.getMatrices().pushMatrix();
-        this.renderSignBackground(context);
+        this.renderGravestoneBackground(context);
         context.getMatrices().popMatrix();
-        this.renderSignText(context);
+        this.renderGravestoneText(context);
         context.getMatrices().popMatrix();
+        //?} else {
+        /*context.getMatrices().push();
+        context.getMatrices().translate(this.width / 2.0F, 125.0F, 50.0F);
+        context.getMatrices().push();
+        this.renderGravestoneBackground(context);
+        context.getMatrices().pop();
+        this.renderGravestoneText(context);
+        context.getMatrices().pop();
+        *///?}
     }
 
-    protected void renderSignBackground(DrawContext context) {
+    protected void renderGravestoneBackground(DrawContext context) {
+        //? if >=1.21.8 {
         context.getMatrices().scale(7.0F, 7.0F);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, this.texture, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
+        //?} else {
+        /*context.getMatrices().scale(7.0F, 7.0F, 1.0F);
+        *///?}
+        context.drawTexture(
+                /*? if >=1.21.8 {*/RenderPipelines.GUI_TEXTURED,/*?} else if >=1.21.3 {*//*RenderLayer::getGuiTextured,*//*?}*/
+                this.texture,
+                -8, -8,
+                0.0F, 0.0F,
+                16, 16,
+                16, 16
+        );
     }
 
-    private void renderSignText(DrawContext context) {
-        context.getMatrices().scale(1.0F, 1.0F);
-        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : AbstractSignBlockEntityRenderer.getTextColor(this.text);
+    private void renderGravestoneText(DrawContext context) {
+        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : /*? if >=1.21.4 {*/AbstractSignBlockEntityRenderer.getTextColor(this.text)/*?} else {*//*SignBlockEntityRenderer.getColor(this.text)*//*?}*/;
         boolean shouldFlashCursor = this.ticksSinceOpened / 6 % 2 == 0;
         Objects.requireNonNull(this.selectionManager);
         int selectionStart = this.selectionManager.getSelectionStart();
@@ -194,7 +278,7 @@ public class AestheticGravestoneEditScreen extends Screen {
                 int substringWidth = this.textRenderer.getWidth(message.substring(0, Math.min(selectionStart, message.length())));
                 int adjustedX = substringWidth - this.textRenderer.getWidth(message) / 2;
                 if (shouldFlashCursor && selectionStart < message.length()) {
-                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, ColorHelper.fullAlpha(color));
+                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, /*? if >=1.21.3 {*/ColorHelper.fullAlpha(color)/*?} else {*//*-16777216 | color*//*?}*/);
                 }
 
                 if (selectionEnd != selectionStart) {
@@ -202,9 +286,16 @@ public class AestheticGravestoneEditScreen extends Screen {
                     int end = Math.max(selectionStart, selectionEnd);
                     int widthStart = this.textRenderer.getWidth(message.substring(0, start)) - this.textRenderer.getWidth(message) / 2;
                     int widthEnd = this.textRenderer.getWidth(message.substring(0, end)) - this.textRenderer.getWidth(message) / 2;
-                    int idk = Math.min(widthStart, widthEnd);
-                    int idk2 = Math.max(widthStart, widthEnd);
-                    context.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, idk, adjustedY, idk2, adjustedY + TEXT_LINE_HEIGHT, Colors.BLUE);
+                    int startX = Math.min(widthStart, widthEnd);
+                    int endX = Math.max(widthStart, widthEnd);
+                    context.fill(
+                            /*? if >=1.21.8 {*/RenderPipelines.GUI_TEXT_HIGHLIGHT/*?} else {*//*RenderLayer.getGuiTextHighlight()*//*?}*/,
+                            startX,
+                            adjustedY,
+                            endX,
+                            adjustedY + TEXT_LINE_HEIGHT,
+                            /*? if >=1.21.1 {*/Colors.BLUE/*?} else {*//*-16776961*//*?}*/
+                    );
                 }
             }
         }

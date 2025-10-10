@@ -10,7 +10,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.pneumono.gravestones.Gravestones;
@@ -21,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+//? if >=1.20.4 {
+import net.minecraft.nbt.NbtSizeTracker;
+//?}
 
 public class DeathArgumentType implements ArgumentType<String> {
     protected static final DynamicCommandExceptionType COULD_NOT_READ = new DynamicCommandExceptionType(
@@ -81,7 +84,7 @@ public class DeathArgumentType implements ArgumentType<String> {
 
         NbtCompound nbt;
         try {
-            nbt = NbtIo.readCompressed(deathFile.toPath(), NbtSizeTracker.ofUnlimitedBytes());
+            nbt = NbtIo.readCompressed(deathFile/*? if >=1.20.4 {*/.toPath(), NbtSizeTracker.ofUnlimitedBytes()/*?}*/);
         } catch (IOException e) {
             throw COULD_NOT_READ.create(file);
         }

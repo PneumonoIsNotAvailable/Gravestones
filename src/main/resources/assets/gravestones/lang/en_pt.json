@@ -1,4 +1,7 @@
 {
+    "item.gravestones.gravestone": "Dead Man's Chest",
+    "item.gravestones.gravestone_chipped": "Chipped Dead Man's Chest",
+    "item.gravestones.gravestone_damaged": "Cracked Dead Man's Chest",
     "block.gravestones.gravestone": "Dead Man's Chest",
     "block.gravestones.gravestone_chipped": "Chipped Dead Man's Chest",
     "block.gravestones.gravestone_damaged": "Cracked Dead Man's Chest",
