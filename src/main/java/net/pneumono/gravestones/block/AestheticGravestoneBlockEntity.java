@@ -7,6 +7,7 @@ import net.minecraft.block.entity.SignText;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
@@ -224,7 +225,10 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
                 String value = clickEvent.getValue();
             *///?}
-                Objects.requireNonNull(MultiVersionUtil.getWorld(player).getServer()).getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), value);
+                CommandManager manager = Objects.requireNonNull(MultiVersionUtil.getWorld(player).getServer()).getCommandManager();
+                ServerCommandSource commandSource = createCommandSource(player, world, pos);
+                String command = value.startsWith("/") ? value.substring(1) : value;
+                manager.execute(manager.getDispatcher().parse(command, commandSource), command);
                 hasRunCommand = true;
             }
         }
