@@ -21,6 +21,7 @@
 
     "tag.enchantment.gravestones.skips_gravestones": "Is not buried in a Dead Man's Chest",
     "tag.item.gravestones.skips_gravestones": "Is not buried in a Dead Man's Chest",
+    "tag.block.gravestones.gravestone_irreplaceable": "Is not dug out in place of a Dead Man's Chest",
 
     "stat.gravestones.gravestones_collected": "Dead Man's Chests unburied",
 
