@@ -43,6 +43,10 @@ import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.Colors;
 //?}
 
+//? if <1.20.2 {
+/*import net.minecraft.client.render.DiffuseLighting;
+*///?}
+
 import java.util.Objects;
 import java.util.stream.IntStream;
 
@@ -176,9 +180,16 @@ public class AestheticGravestoneEditScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-        super.render(context, mouseX, mouseY, deltaTicks);
+        //? if <1.20.2 {
+        /*DiffuseLighting.disableGuiDepthLighting();
+        this.renderBackground(context);
+        *///?}
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 40, 16777215);
         this.renderGravestone(context);
+        //? if <1.20.2 {
+        /*DiffuseLighting.enableGuiDepthLighting();
+        *///?}
+        super.render(context, mouseX, mouseY, deltaTicks);
     }
 
     //? if >=1.20.2 {
