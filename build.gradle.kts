@@ -91,6 +91,9 @@ dependencies {
 	// Trinkets
 	if (trinkets) {
 		modCompileOnly("dev.emi:trinkets:${property("trinkets_version")}")
+		if (stonecutter.current.project == "1.20.2") {
+			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0")
+		}
 	}
 }
 

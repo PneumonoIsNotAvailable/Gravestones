@@ -24,35 +24,35 @@ import java.util.List;
 import java.util.stream.Stream;
 
 //? if >=1.21.5 {
-import io.wispforest.accessories.api.core.Accessory;
+/^import io.wispforest.accessories.api.core.Accessory;
 import io.wispforest.accessories.api.core.AccessoryRegistry;
 import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
 import io.wispforest.accessories.impl.core.ExpandedContainer;
-//?} else if >=1.21.3 {
+^///?} else if >=1.21.3 {
 /^import io.wispforest.accessories.api.Accessory;
 import io.wispforest.accessories.api.AccessoryRegistry;
 import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
 import io.wispforest.accessories.impl.ExpandedSimpleContainer;
 ^///?} else {
-/^import io.wispforest.accessories.api.Accessory;
+import io.wispforest.accessories.api.Accessory;
 import io.wispforest.accessories.api.AccessoriesAPI;
 import io.wispforest.accessories.impl.ExpandedSimpleContainer;
-^///?}
+//?}
 
 //? if >=1.21.4 {
-import io.wispforest.accessories.Accessories;
-//?}
+/^import io.wispforest.accessories.Accessories;
+^///?}
 
 public class AccessoriesDataType extends GravestoneDataType {
     private static final String KEY = "accessories";
 
     //? if >=1.21.4 {
-    @SuppressWarnings("UnstableApiUsage")
-    //?}
+    /^@SuppressWarnings("UnstableApiUsage")
+    ^///?}
     @Override
     public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception {
         MinecraftServer server = player.getServer();
-        if (server != null /^? if >=1.21.4 {^/&& server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)/^?}^/) {
+        if (server != null /^? if >=1.21.4 {^//^&& server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)^//^?}^/) {
             return;
         }
 
@@ -108,45 +108,45 @@ public class AccessoriesDataType extends GravestoneDataType {
 
             boolean canInsert =
             //? if >=1.21.3 {
-            SlotPredicateRegistry.canInsertIntoSlot(newStack, container.createReference(primitive.index));
-            //?} else {
-            /^AccessoriesAPI.canInsertIntoSlot(newStack, container.createReference(primitive.index));
-            ^///?}
+            /^SlotPredicateRegistry.canInsertIntoSlot(newStack, container.createReference(primitive.index));
+            ^///?} else {
+            AccessoriesAPI.canInsertIntoSlot(newStack, container.createReference(primitive.index));
+            //?}
             if (!canInsert) {
                 remaining.add(newStack);
                 continue;
             }
 
             //? if >=1.21.5 {
-            ExpandedContainer accessories = container.getAccessories();
-            //?} else {
-            /^ExpandedSimpleContainer accessories = container.getAccessories();
-            ^///?}
+            /^ExpandedContainer accessories = container.getAccessories();
+            ^///?} else {
+            ExpandedSimpleContainer accessories = container.getAccessories();
+            //?}
 
             ItemStack oldStack = accessories.getStack(index);
             SlotReference slotReference = container.createReference(index);
 
             boolean canUnequipOldStack =
             //? if >=1.21.3 {
-            AccessoryRegistry.canUnequip(oldStack, slotReference);
-            //?} else {
-            /^AccessoriesAPI.canUnequip(oldStack, slotReference);
-            ^///?}
+            /^AccessoryRegistry.canUnequip(oldStack, slotReference);
+            ^///?} else {
+            AccessoriesAPI.canUnequip(oldStack, slotReference);
+            //?}
             boolean canInsertNewStack =
             //? if >=1.21.3 {
-            SlotPredicateRegistry.canInsertIntoSlot(newStack, slotReference);
-            //?} else {
-            /^AccessoriesAPI.canInsertIntoSlot(newStack, slotReference);
-            ^///?}
+            /^SlotPredicateRegistry.canInsertIntoSlot(newStack, slotReference);
+            ^///?} else {
+            AccessoriesAPI.canInsertIntoSlot(newStack, slotReference);
+            //?}
 
             if (oldStack.isEmpty() && canUnequipOldStack && canInsertNewStack
             ) {
                 Accessory accessory =
                 //? if >=1.21.3 {
-                AccessoryRegistry.getAccessoryOrDefault(oldStack);
-                //?} else {
-                /^AccessoriesAPI.getOrDefaultAccessory(oldStack);
-                ^///?}
+                /^AccessoryRegistry.getAccessoryOrDefault(oldStack);
+                ^///?} else {
+                AccessoriesAPI.getOrDefaultAccessory(oldStack);
+                //?}
                 ItemStack splitStack = newStack.split(accessory.maxStackSize(newStack));
 
                 slotReference.setStack(splitStack);
@@ -162,7 +162,7 @@ public class AccessoriesDataType extends GravestoneDataType {
     }
 
     //? if >=1.21.5 {
-    public record SlotReferencePrimitive(ItemStack stack, String slotName, int index, List<Integer> innerIndices, boolean isNested) {
+    /^public record SlotReferencePrimitive(ItemStack stack, String slotName, int index, List<Integer> innerIndices, boolean isNested) {
         public static final Codec<SlotReferencePrimitive> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ItemStack.CODEC.fieldOf("newStack").forGetter(SlotReferencePrimitive::stack),
                 Codec.STRING.fieldOf("slot_name").forGetter(SlotReferencePrimitive::slotName),
@@ -181,8 +181,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             );
         }
     }
-    //?} else {
-    /^public record SlotReferencePrimitive(ItemStack stack, String slotName, int index) {
+    ^///?} else {
+    public record SlotReferencePrimitive(ItemStack stack, String slotName, int index) {
         public static final Codec<SlotReferencePrimitive> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ItemStack.CODEC.fieldOf("newStack").forGetter(SlotReferencePrimitive::stack),
                 Codec.STRING.fieldOf("slot_name").forGetter(SlotReferencePrimitive::slotName),
@@ -197,6 +197,6 @@ public class AccessoriesDataType extends GravestoneDataType {
             );
         }
     }
-    ^///?}
+    //?}
 }
 *///?}
