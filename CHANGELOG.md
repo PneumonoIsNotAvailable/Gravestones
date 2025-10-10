@@ -1,0 +1,12 @@
+- Added support for all versions from 1.20 to 1.21.10
+- Added Russian translation (FO13E)
+- Added Config option to prevent Gravestones spawning in Creative Mode
+- Added Config option to prevent Gravestones spawning when Keep Inventory is enabled
+- Added GravestoneCollectedCallback for developers
+- Improved error handling
+- Minor but breaking GravestoneDataType changes
+- Fixed explosions removing Gravestones in some versions
+- Fixed Accessories' Cosmetic Slots not being inserted
+- Fixed Accessories' Keep Inventory gamerule not working
+- Fixed Gravestone decay working inconsistently across dimensions
+- Fixed Gravestones being collectable by dead players in laggy conditions

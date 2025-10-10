@@ -142,6 +142,38 @@ tasks {
 	}
 }
 
+publishMods {
+	file = tasks.remapJar.get().archiveFile
+	additionalFiles.from(tasks.remapSourcesJar.get().archiveFile)
+	displayName = "Gravestones ${project.version}"
+	version = "${project.version}"
+	changelog = rootProject.file("CHANGELOG.md").readText()
+	type = STABLE
+	modLoaders.addAll("fabric", "quilt")
+
+	dryRun = providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
+
+	modrinth {
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		projectId = "Heh3BbSv"
+
+		minecraftVersionRange {
+			start = "${property("min_supported_version")}"
+			end = "${property("max_supported_version")}"
+		}
+
+		requires {
+			// PneumonoCore
+			id = "ZLKQjA7t"
+		}
+
+		requires {
+			// Fabric API
+			id = "P7dR8mSH"
+		}
+	}
+}
+
 // configure the maven publication
 publishing {
 	publications {
