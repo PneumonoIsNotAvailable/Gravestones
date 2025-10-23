@@ -52,7 +52,7 @@ public class AccessoriesDataType extends GravestoneDataType {
     @Override
     public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception {
         MinecraftServer server = MultiVersionUtil.getWorld(player).getServer();
-        if (server != null /*? if >=1.21.4 {*/&& server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)/*?}*/) {
+        if (server == null /*? if >=1.21.4 {*/|| server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)/*?}*/) {
             return;
         }
 
