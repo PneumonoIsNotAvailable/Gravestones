@@ -1,7 +1,7 @@
 package net.pneumono.gravestones.compat;
 
 //? if accessories {
-/*import com.mojang.serialization.Codec;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.wispforest.accessories.api.AccessoriesCapability;
@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.multiversion.VersionUtil;
+import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +29,15 @@ import io.wispforest.accessories.api.core.AccessoryRegistry;
 import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
 import io.wispforest.accessories.impl.core.ExpandedContainer;
 //?} else if >=1.21.3 {
-/^import io.wispforest.accessories.api.Accessory;
+/*import io.wispforest.accessories.api.Accessory;
 import io.wispforest.accessories.api.AccessoryRegistry;
 import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
 import io.wispforest.accessories.impl.ExpandedSimpleContainer;
-^///?} else {
-/^import io.wispforest.accessories.api.Accessory;
+*///?} else {
+/*import io.wispforest.accessories.api.Accessory;
 import io.wispforest.accessories.api.AccessoriesAPI;
 import io.wispforest.accessories.impl.ExpandedSimpleContainer;
-^///?}
+*///?}
 
 //? if >=1.21.4 {
 import io.wispforest.accessories.Accessories;
@@ -50,8 +51,8 @@ public class AccessoriesDataType extends GravestoneDataType {
     //?}
     @Override
     public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception {
-        MinecraftServer server = player.getServer();
-        if (server != null /^? if >=1.21.4 {^/&& server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)/^?}^/) {
+        MinecraftServer server = MultiVersionUtil.getWorld(player).getServer();
+        if (server != null /*? if >=1.21.4 {*/&& server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)/*?}*/) {
             return;
         }
 
@@ -68,8 +69,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.5 {
             ExpandedContainer accessories = container.getAccessories();
             //?} else {
-            /^ExpandedSimpleContainer accessories = container.getAccessories();
-            ^///?}
+            /*ExpandedSimpleContainer accessories = container.getAccessories();
+            *///?}
             for (int index = 0; index < accessories.size(); ++index) {
                 ItemStack stack = accessories.getStack(index);
                 if (!GravestonesApi.shouldSkipItem(player, stack) && !stack.isEmpty()) {
@@ -81,8 +82,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.5 {
             ExpandedContainer cosmetics = container.getCosmeticAccessories();
             //?} else {
-            /^ExpandedSimpleContainer cosmetics = container.getCosmeticAccessories();
-            ^///?}
+            /*ExpandedSimpleContainer cosmetics = container.getCosmeticAccessories();
+            *///?}
             for (int index = 0; index < cosmetics.size(); ++index) {
                 ItemStack stack = cosmetics.getStack(index);
                 if (!GravestonesApi.shouldSkipItem(player, stack) && !stack.isEmpty()) {
@@ -133,8 +134,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.3 {
             SlotPredicateRegistry.canInsertIntoSlot(newStack, reference);
             //?} else {
-            /^AccessoriesAPI.canInsertIntoSlot(newStack, reference);
-            ^///?}
+            /*AccessoriesAPI.canInsertIntoSlot(newStack, reference);
+            *///?}
             if (!canInsert) {
                 remaining.add(newStack);
                 continue;
@@ -143,8 +144,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.5 {
             ExpandedContainer accessories = primitive.cosmetic ? container.getCosmeticAccessories() : container.getAccessories();
             //?} else {
-            /^ExpandedSimpleContainer accessories = container.getAccessories();
-            ^///?}
+            /*ExpandedSimpleContainer accessories = container.getAccessories();
+            *///?}
 
             ItemStack oldStack = accessories.getStack(index);
 
@@ -152,14 +153,14 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.3 {
             AccessoryRegistry.canUnequip(oldStack, reference);
             //?} else {
-            /^AccessoriesAPI.canUnequip(oldStack, reference);
-            ^///?}
+            /*AccessoriesAPI.canUnequip(oldStack, reference);
+            *///?}
             boolean canInsertNewStack =
             //? if >=1.21.3 {
             SlotPredicateRegistry.canInsertIntoSlot(newStack, reference);
             //?} else {
-            /^AccessoriesAPI.canInsertIntoSlot(newStack, reference);
-            ^///?}
+            /*AccessoriesAPI.canInsertIntoSlot(newStack, reference);
+            *///?}
 
             if (oldStack.isEmpty() && canUnequipOldStack && canInsertNewStack
             ) {
@@ -167,8 +168,8 @@ public class AccessoriesDataType extends GravestoneDataType {
                 //? if >=1.21.3 {
                 AccessoryRegistry.getAccessoryOrDefault(oldStack);
                 //?} else {
-                /^AccessoriesAPI.getOrDefaultAccessory(oldStack);
-                ^///?}
+                /*AccessoriesAPI.getOrDefaultAccessory(oldStack);
+                *///?}
                 ItemStack splitStack = newStack.split(accessory.maxStackSize(newStack));
                 accessories.setStack(index, splitStack);
                 if (!newStack.isEmpty()) {
@@ -189,4 +190,4 @@ public class AccessoriesDataType extends GravestoneDataType {
         ).apply(instance, SlotReferencePrimitive::new));
     }
 }
-*///?}
+//?}

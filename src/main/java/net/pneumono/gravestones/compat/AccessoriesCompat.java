@@ -6,7 +6,7 @@ import net.pneumono.gravestones.api.GravestonesApi;
 public class AccessoriesCompat {
     public static void register() {
         //? if accessories {
-        /*GravestonesApi.registerDataType(Gravestones.id("accessories"), new AccessoriesDataType());
-        *///?}
+        GravestonesApi.registerDataType(Gravestones.id("accessories"), new AccessoriesDataType());
+        //?}
     }
 }
