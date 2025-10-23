@@ -32,7 +32,7 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
+import net.pneumono.gravestones.api.SkipItemCallback;
 import net.pneumono.gravestones.block.*;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 import net.pneumono.pneumonocore.util.MultiVersionUtil;
@@ -175,7 +175,7 @@ public class GravestonesRegistry {
         GravestonesApi.registerDataType(Gravestones.id("inventory"), new PlayerInventoryDataType());
         GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
 
-        InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
+        SkipItemCallback.EVENT.register((player, itemStack, slot) ->
                 itemStack.isIn(ITEM_SKIPS_GRAVESTONES) ||
                 //? if >=1.21.1 {
                 EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, ENCHANTMENT_SKIPS_GRAVESTONES)
@@ -183,7 +183,7 @@ public class GravestonesRegistry {
                 /*hasSkippableEnchantments(itemStack)
                 *///?}
         );
-        InsertGravestoneItemCallback.EVENT.register((player, itemStack) ->
+        SkipItemCallback.EVENT.register((player, itemStack, slot) ->
                 //? if >=1.21.1 {
                 EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
                 //?} else {

@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
@@ -28,7 +29,9 @@ public class PlayerInventoryDataType extends GravestoneDataType {
 
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack itemStack = inventory.getStack(i);
-            if (!GravestonesApi.shouldSkipItem(player, itemStack) && !itemStack.isEmpty()) {
+            Identifier slotIdentifier = Identifier.of("minecraft", Integer.toString(i));
+            GravestonesApi.onInsertItem(player, itemStack, slotIdentifier);
+            if (!GravestonesApi.shouldSkipItem(player, itemStack, slotIdentifier) && !itemStack.isEmpty()) {
                 DataResult<NbtElement> result = StackWithSlot.CODEC.encodeStart(ops, new StackWithSlot(i, inventory.removeStack(i)));
                 list.add(result.result().orElseThrow());
             }

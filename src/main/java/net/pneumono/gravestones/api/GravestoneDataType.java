@@ -33,8 +33,9 @@ public abstract class GravestoneDataType extends GravestoneManager {
      * <p>Normal inventory dropping on death still occurs after this is called,
      * so make sure to clear/remove data when it's inserted to prevent it being duplicated.
      *
-     * <p>When handling items, make sure to check them with {@link GravestonesApi#shouldSkipItem},
-     * to maintain compatibility. If an item stack should be skipped, do not insert or remove it,
+     * <p>When handling items, make sure to call {@link GravestonesApi#onInsertItem},
+     * and check the item with {@link GravestonesApi#shouldSkipItem}.
+     * If an item stack should be skipped, do not insert or remove it,
      * since it should fall back to non-gravestones processing.
      *
      * @param player The player who has died.

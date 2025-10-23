@@ -6,7 +6,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
-import net.pneumono.gravestones.api.InsertGravestoneItemCallback;
+import net.pneumono.gravestones.api.SkipItemCallback;
 import net.pneumono.gravestones.compat.AccessoriesCompat;
 import net.pneumono.gravestones.compat.BackwardsCompat;
 import net.pneumono.gravestones.compat.TrinketsCompat;
@@ -35,7 +35,7 @@ public class Gravestones implements ModInitializer {
 		GravestonesCommands.registerCommands();
 
 		if (isModLoaded("spelunkery")) {
-			InsertGravestoneItemCallback.EVENT.register((player, itemStack) -> itemStack.isOf(Items.RECOVERY_COMPASS));
+			SkipItemCallback.EVENT.register((player, itemStack, slot) -> itemStack.isOf(Items.RECOVERY_COMPASS));
 		}
 
 		// Accessories' Compat Layers exist, so to prevent issues Gravestones will prioritize Accessories directly over other mods

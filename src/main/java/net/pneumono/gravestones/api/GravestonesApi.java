@@ -13,6 +13,7 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.multiversion.VersionUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,17 +31,18 @@ import java.util.function.BiPredicate;
  * </ul>
  *
  * <p>Most mods will not need to use anything other than the tags,
- * {@link InsertGravestoneItemCallback} (for items with different behavior on death)
+ * {@link SkipItemCallback} and {@link OnInsertItemCallback} (for items with different behavior on death)
  * and {@link #registerDataType} (for custom data that also needs to be saved on death).
  *
  * <p>There is a page on the <a href="https://github.com/PneumonoIsNotAvailable/Gravestones/wiki">Gravestones Wiki</a>
- * for Gravestones' API features, however the documentation here is more detailed and up-to-date.
+ * for Gravestones' API features, however the documentation here is more detailed and likely to be up-to-date.
  *
  * @see GravestoneDataType
  * @see CancelGravestonePlacementCallback
  * @see RedirectGravestonePositionCallback
  * @see PositionValidationCallback
- * @see InsertGravestoneItemCallback
+ * @see SkipItemCallback
+ * @see OnInsertItemCallback
  * @see GravestonePlacedCallback
  * @see GravestoneCollectedCallback
  */
@@ -56,7 +58,7 @@ public class GravestonesApi {
     }
 
     /**
-     * @deprecated Use {@link InsertGravestoneItemCallback#EVENT} instead.
+     * @deprecated Use {@link SkipItemCallback#EVENT} instead.
      */
     @Deprecated
     public static void registerItemSkipPredicate(BiPredicate<PlayerEntity, ItemStack> predicate) {
@@ -149,19 +151,52 @@ public class GravestonesApi {
     }
 
     /**
-     * Checks all registered {@link InsertGravestoneItemCallback} listeners, and item skip predicates,
+     * Checks all registered {@link SkipItemCallback} listeners,
      * to see whether an item stack should be skipped by gravestone processing.
      *
-     * <p>This should be called before checking anything else about the stack,
-     * as listeners may change it (e.g. emptying it).
+     * <p>This should be called after {@link #onInsertItem}, as listeners may change the stack.
+     *
+     * <p>If the item comes from a specific slot,
+     * {@link #shouldSkipItem(PlayerEntity, ItemStack, Identifier)} should be used instead.
+     *
+     * <p>Also checks {@link InsertGravestoneItemCallback} listeners and Item Skip Predicates for backwards compatibility.
      *
      * @param player The player who has died.
      * @param stack The item stack being checked.
      * @return Whether the item should be skipped.
-     * @see InsertGravestoneItemCallback#EVENT
+     * @see SkipItemCallback#EVENT
      */
+    @SuppressWarnings("deprecation")
     public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
+        return shouldSkipItem(player, stack, null);
+    }
+
+    /**
+     * Checks all registered {@link SkipItemCallback} listeners,
+     * to see whether an item stack should be skipped by gravestone processing.
+     *
+     * <p>This should be called after {@link #onInsertItem}, as that may make changes the stack.
+     *
+     * <p>Slot identifiers should always use the mod they originate from as a namespace,
+     * to maintain compatibility with other mods.
+     * Slot identifiers do not need to match perfectly to the actual slots themselves,
+     * and simply need to be unique for each slot.
+     *
+     * <p>Also checks {@link InsertGravestoneItemCallback} listeners and Item Skip Predicates for backwards compatibility.
+     *
+     * @param player The player who has died.
+     * @param stack The item stack being checked.
+     * @param slot The identifier of the slot holding the item stack.
+     * @return Whether the item should be skipped.
+     * @see SkipItemCallback#EVENT
+     */
+    @SuppressWarnings("deprecation")
+    public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack, @Nullable Identifier slot) {
         if (InsertGravestoneItemCallback.EVENT.invoker().insertItem(player, stack)) {
+            return true;
+        }
+
+        if (SkipItemCallback.EVENT.invoker().insertItem(player, stack, slot)) {
             return true;
         }
 
@@ -175,13 +210,48 @@ public class GravestonesApi {
     }
 
     /**
+     * Invokes all {@link OnInsertItemCallback} listeners.
+     *
+     * <p>Should be called for each item stack being inserted into a gravestone.
+     *
+     * <p>If the item comes from a specific slot,
+     * {@link #onInsertItem(PlayerEntity, ItemStack, Identifier)} should be used instead.
+     *
+     * @param player The player who has died.
+     * @param stack The item stack being checked.
+     * @see OnInsertItemCallback#EVENT
+     */
+    public static void onInsertItem(PlayerEntity player, ItemStack stack) {
+        onInsertItem(player, stack, null);
+    }
+
+    /**
+     * Invokes all {@link OnInsertItemCallback} listeners.
+     *
+     * <p>Should be called for each item stack being inserted into a gravestone.
+     *
+     * <p>Slot identifiers should always use the mod they originate from as a namespace,
+     * to maintain compatibility with other mods.
+     * Slot identifiers do not need to match perfectly to the actual slots themselves,
+     * and simply need to be unique for each slot.
+     *
+     * @param player The player who has died.
+     * @param stack The item stack being checked.
+     * @param slot The identifier of the slot holding the item stack.
+     * @see OnInsertItemCallback#EVENT
+     */
+    public static void onInsertItem(PlayerEntity player, ItemStack stack, @Nullable Identifier slot) {
+        OnInsertItemCallback.EVENT.invoker().insertItem(player, stack, slot);
+    }
+
+    /**
      * If the Experience Decay config is enabled, and gravestone decay should affect gameplay,
      * applies experience decay to an amount of experience.
      * Otherwise, does nothing.
      *
-     * @param experience The initial experience amount
-     * @param decay The decay stage of the gravestone
-     * @return The final (decayed) experience amount
+     * @param experience The initial experience amount.
+     * @param decay The decay stage of the gravestone.
+     * @return The final (decayed) experience amount.
      */
     public static int getDecayedExperience(int experience, int decay) {
         if (GravestonesConfig.EXPERIENCE_DECAY.getValue() && shouldDecayAffectGameplay()) {
