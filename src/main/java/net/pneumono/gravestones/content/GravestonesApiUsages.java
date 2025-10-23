@@ -10,13 +10,14 @@ import net.pneumono.gravestones.api.SkipItemCallback;
 
 //? if >=1.21.1 {
 import net.minecraft.component.EnchantmentEffectComponentTypes;
-//?} else if >=1.20.6 {
-/*import net.minecraft.component.type.ItemEnchantmentsComponent;
+//?} else {
+/*import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
-*///?} else {
-/*import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
+*///?}
+
+//? if >=1.20.6 {
+/*import net.minecraft.component.type.ItemEnchantmentsComponent;
 *///?}
 
 /**
