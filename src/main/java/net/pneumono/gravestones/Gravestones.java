@@ -7,9 +7,8 @@ import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.api.SkipItemCallback;
-import net.pneumono.gravestones.compat.AccessoriesCompat;
 import net.pneumono.gravestones.compat.BackwardsCompat;
-import net.pneumono.gravestones.compat.TrinketsCompat;
+import net.pneumono.gravestones.content.GravestonesApiUsages;
 import net.pneumono.gravestones.content.GravestonesCommands;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
@@ -18,6 +17,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.function.Function;
+
+//? if accessories {
+/*import net.pneumono.gravestones.compat.AccessoriesCompat;
+*///?}
+
+//? if trinkets {
+/*import net.pneumono.gravestones.compat.TrinketsCompat;
+*///?}
 
 public class Gravestones implements ModInitializer {
 	public static final String MOD_ID = "gravestones";
@@ -32,6 +39,7 @@ public class Gravestones implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTED.register(BackwardsCompat::convertOldFiles);
 
 		GravestonesRegistry.registerModContent();
+		GravestonesApiUsages.register();
 		GravestonesCommands.registerCommands();
 
 		if (isModLoaded("spelunkery")) {

@@ -11,7 +11,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
@@ -27,12 +26,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameRules;
 import net.pneumono.gravestones.Gravestones;
-import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
-import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.api.SkipItemCallback;
 import net.pneumono.gravestones.block.*;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 import net.pneumono.pneumonocore.util.MultiVersionUtil;
@@ -41,17 +35,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-//? if >=1.21.1 {
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-//?} else if >=1.20.6 {
-/*import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
-*///?} else {
-/*import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
-*///?}
 
 //? if >=1.20.6 {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -98,8 +81,20 @@ public class GravestonesRegistry {
                     *///?}
     );
 
+    /**
+     * @deprecated Use {@link net.pneumono.gravestones.api.GravestonesApi#ITEM_SKIPS_GRAVESTONES ITEM_SKIPS_GRAVESTONES} instead
+     */
+    @Deprecated
     public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ITEM, Gravestones.id("skips_gravestones"));
+    /**
+     * @deprecated Use {@link net.pneumono.gravestones.api.GravestonesApi#ENCHANTMENT_SKIPS_GRAVESTONES ENCHANTMENT_SKIPS_GRAVESTONES} instead
+     */
+    @Deprecated
     public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.id("skips_gravestones"));
+    /**
+     * @deprecated Use {@link net.pneumono.gravestones.api.GravestonesApi#BLOCK_GRAVESTONE_IRREPLACEABLE BLOCK_GRAVESTONE_IRREPLACEABLE} instead
+     */
+    @Deprecated
     public static final TagKey<Block> BLOCK_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, Gravestones.id("gravestone_irreplaceable"));
 
     public static final SoundEvent SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL = registerSoundEvent("block.gravestone.waxed_interact_fail");
@@ -138,8 +133,6 @@ public class GravestonesRegistry {
                 ConstantArgumentSerializer.of(DeathArgumentType::new)
         );
 
-        registerAPIUsages();
-
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
             content.add(GRAVESTONE);
             content.add(GRAVESTONE_CHIPPED);
@@ -170,61 +163,6 @@ public class GravestonesRegistry {
         });
         *///?}
     }
-
-    private static void registerAPIUsages() {
-        GravestonesApi.registerDataType(Gravestones.id("inventory"), new PlayerInventoryDataType());
-        GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
-
-        SkipItemCallback.EVENT.register((player, itemStack, slot) ->
-                itemStack.isIn(ITEM_SKIPS_GRAVESTONES) ||
-                //? if >=1.21.1 {
-                EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, ENCHANTMENT_SKIPS_GRAVESTONES)
-                //?} else {
-                /*hasSkippableEnchantments(itemStack)
-                *///?}
-        );
-        SkipItemCallback.EVENT.register((player, itemStack, slot) ->
-                //? if >=1.21.1 {
-                EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
-                //?} else {
-                /*EnchantmentHelper.hasVanishingCurse(itemStack)
-                *///?}
-        );
-
-        CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
-                world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !GravestonesConfig.SPAWN_GRAVESTONES_WITH_KEEPINV.getValue()
-        );
-        CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
-                player.isCreative() && !GravestonesConfig.SPAWN_GRAVESTONES_IN_CREATIVE.getValue()
-        );
-    }
-
-    //? if <1.20.6 {
-    /*@SuppressWarnings("deprecation")
-    *///?}
-    //? if <1.21.1 {
-    /*private static boolean hasSkippableEnchantments(ItemStack stack) {
-        //? if >=1.20.6 {
-        ItemEnchantmentsComponent component = stack.getEnchantments();
-        for (RegistryEntry<Enchantment> enchantment : component.getEnchantments()) {
-            if (enchantment.isIn(ENCHANTMENT_SKIPS_GRAVESTONES)) {
-                return true;
-            }
-        }
-        return false;
-        //?} else {
-        /^for (RegistryEntry<Enchantment> enchantment : EnchantmentHelper.get(stack).keySet().stream()
-                .map(Registries.ENCHANTMENT::getEntry)
-                .toList()
-        ) {
-            if (enchantment.isIn(ENCHANTMENT_SKIPS_GRAVESTONES)) {
-                return true;
-            }
-        }
-        return false;
-        ^///?}
-    }
-    *///?}
 
     @SuppressWarnings("deprecation")
     private static void onSignUpdate(ServerPlayerEntity player, UpdateGravestoneC2SPayload payload, List<FilteredMessage> signText) {

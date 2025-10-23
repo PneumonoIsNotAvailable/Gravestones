@@ -1,11 +1,16 @@
 package net.pneumono.gravestones.api;
 
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -49,6 +54,10 @@ import java.util.function.BiPredicate;
 public class GravestonesApi {
     private static final Map<Identifier, GravestoneDataType> DATA_TYPES = new HashMap<>();
     private static final List<BiPredicate<PlayerEntity, ItemStack>> ITEM_SKIP_PREDICATES = new ArrayList<>();
+
+    public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ITEM, Gravestones.id("skips_gravestones"));
+    public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.id("skips_gravestones"));
+    public static final TagKey<Block> BLOCK_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, Gravestones.id("gravestone_irreplaceable"));
 
     /**
      * Registers a type of data that gravestones save, and how gravestones should handle that data.

@@ -9,9 +9,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
+import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.PositionValidationCallback;
 import net.pneumono.gravestones.api.RedirectGravestonePositionCallback;
-import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,7 +85,7 @@ public class GravestonePlacement extends GravestoneManager {
         return block.getHardness() < 0 ||
                 block.getBlastResistance() >= 3600000 ||
                 block == Blocks.VOID_AIR ||
-                state.isIn(GravestonesRegistry.BLOCK_GRAVESTONE_IRREPLACEABLE);
+                state.isIn(GravestonesApi.BLOCK_GRAVESTONE_IRREPLACEABLE);
     }
 
     private static double getCost(World world, BlockPos newPos, BlockPos origin) {
