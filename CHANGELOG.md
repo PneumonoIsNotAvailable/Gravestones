@@ -1,2 +1,3 @@
-- Fixed versions 1.20.1 to 1.20.4 not working due to incorrect java version
-- Fixed gravestone edit screen not having a gray background in 1.20.1
+- Added Accessories support for 1.21.9 and 1.21.10
+- Improved API for item skipping and on-death functionality
+- Fixed Accessories support not working properly
