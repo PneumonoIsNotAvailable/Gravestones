@@ -100,14 +100,14 @@ dependencies {
 
 tasks {
 	processResources {
-		inputs.property("version", stonecutter.current.version)
+		inputs.property("version", project.version)
 		inputs.property("min_supported", project.property("min_supported_version"))
 		inputs.property("max_supported", project.property("max_supported_version"))
 
 		filesMatching("fabric.mod.json") {
 			expand(
 				mutableMapOf(
-					"version" to stonecutter.current.version,
+					"version" to project.version,
 					"min_supported" to project.property("min_supported_version"),
 					"max_supported" to project.property("max_supported_version")
 				)
