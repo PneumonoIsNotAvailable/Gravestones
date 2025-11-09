@@ -1,7 +1,7 @@
 package net.pneumono.gravestones.compat;
 
 //? if trinkets {
-/*import com.mojang.serialization.Codec;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.emi.trinkets.api.*;
@@ -107,8 +107,8 @@ public class TrinketsDataType extends GravestoneDataType {
             //? if >=1.21.1 {
             EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP);
             //?} else {
-            /^EnchantmentHelper.hasVanishingCurse(stack);
-            ^///?}
+            /*EnchantmentHelper.hasVanishingCurse(stack);
+            *///?}
             if (vanishing) {
                 dropRule = TrinketEnums.DropRule.DESTROY;
             } else {
@@ -137,4 +137,4 @@ public class TrinketsDataType extends GravestoneDataType {
         }
     }
 }
-*///?}
+//?}

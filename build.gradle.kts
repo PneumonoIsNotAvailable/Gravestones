@@ -1,5 +1,5 @@
 plugins {
-	id("fabric-loom") version "1.11-SNAPSHOT"
+	id("fabric-loom") version "1.12-SNAPSHOT"
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin") version "1.0.0"
 }
@@ -13,6 +13,7 @@ base.archivesName.set(project.property("mod_id") as String)
 version = "${project.property("mod_version")}+${stonecutter.current.project}+${property("mod_subversion")}"
 
 val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
+val trinketsCanary = "${property("trinkets_canary_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
 
 repositories {
@@ -22,8 +23,8 @@ repositories {
 		maven("https://maven.nucleoid.xyz/")
 	}
 
-	// Trinkets
-	if (trinkets) {
+	// Trinkets & Trinkets Canary
+	if (trinkets || trinketsCanary) {
 		maven("https://maven.ladysnake.org/releases")
 	}
 
@@ -34,7 +35,7 @@ repositories {
 		maven("https://maven.shedaniel.me/")
 	}
 
-	// Core
+	// Core & Trinkets Canary
 	exclusiveContent {
 		forRepository {
 			maven("https://api.modrinth.com/maven")
@@ -64,7 +65,7 @@ loom {
 
 stonecutter {
 	constants["accessories"] = accessories
-	constants["trinkets"] = trinkets
+	constants["trinkets"] = trinkets || trinketsCanary
 }
 
 dependencies {
@@ -94,6 +95,20 @@ dependencies {
 		modCompileOnly("dev.emi:trinkets:${property("trinkets_version")}")
 		if (stonecutter.current.project == "1.20.2") {
 			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0")
+		}
+	}
+	if (trinketsCanary) {
+		modCompileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
+		val ccaVersion = when (stonecutter.current.project) {
+			"1.21.4" -> "6.2.2"
+			"1.21.5" -> "6.3.1"
+			"1.21.8" -> "7.0.0-beta.1"
+			"1.21.9" -> "7.2.0"
+			else -> "null"
+		}
+		if (ccaVersion != "null") {
+			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${ccaVersion}")
+			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${ccaVersion}")
 		}
 	}
 }
