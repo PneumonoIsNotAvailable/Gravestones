@@ -1,3 +1,3 @@
-- Added Accessories support for 1.21.9 and 1.21.10
-- Improved API for item skipping and on-death functionality
-- Fixed Accessories support not working properly
+- Added support for Trinkets for 1.21.4+ via Trinkets Canary
+- Fixed Minecraft version being used for FMJ mod version
+  - Caused issues such as Mod Menu displaying the mod version as "1.21.9"
