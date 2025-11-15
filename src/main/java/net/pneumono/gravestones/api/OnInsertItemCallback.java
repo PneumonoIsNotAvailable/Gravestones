@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Callback for each item before being inserted into a gravestone.
@@ -35,5 +36,5 @@ public interface OnInsertItemCallback {
             }
     );
 
-    void insertItem(PlayerEntity player, ItemStack itemStack, Identifier slot);
+    void insertItem(PlayerEntity player, ItemStack itemStack, @Nullable Identifier slot);
 }
