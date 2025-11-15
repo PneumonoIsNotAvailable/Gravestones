@@ -23,6 +23,7 @@ import net.pneumono.pneumonocore.util.MultiVersionUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 //? if >=1.21.5 {
 import io.wispforest.accessories.api.core.Accessory;
@@ -74,7 +75,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             *///?}
             for (int index = 0; index < accessories.size(); ++index) {
                 ItemStack stack = accessories.getStack(index);
-                GravestonesApi.onInsertItem(player, stack, Identifier.of("accessories", name + "/" + index + "/" + "normal"));
+                GravestonesApi.onInsertItem(player, stack, Objects.requireNonNull(Identifier.tryParse(name)).withSuffixedPath("/" + index + "/" + "normal"));
                 if (!GravestonesApi.shouldSkipItem(player, stack) && !stack.isEmpty()) {
                     accessories.removeStack(index);
                     list.add(new SlotReferencePrimitive(stack, name, index, false));
@@ -88,7 +89,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             *///?}
             for (int index = 0; index < cosmetics.size(); ++index) {
                 ItemStack stack = cosmetics.getStack(index);
-                GravestonesApi.onInsertItem(player, stack, Identifier.of("accessories", name + "/" + index + "/" + "cosmetic"));
+                GravestonesApi.onInsertItem(player, stack, Objects.requireNonNull(Identifier.tryParse(name)).withSuffixedPath("/" + index + "/" + "cosmetic"));
                 if (!GravestonesApi.shouldSkipItem(player, stack) && !stack.isEmpty()) {
                     cosmetics.removeStack(index);
                     list.add(new SlotReferencePrimitive(stack, name, index, true));
