@@ -147,7 +147,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.5 {
             ExpandedContainer accessories = primitive.cosmetic ? container.getCosmeticAccessories() : container.getAccessories();
             //?} else {
-            /*ExpandedSimpleContainer accessories = container.getAccessories();
+            /*ExpandedSimpleContainer accessories = primitive.cosmetic ? container.getCosmeticAccessories() : container.getAccessories();
             *///?}
 
             ItemStack oldStack = accessories.getStack(index);
