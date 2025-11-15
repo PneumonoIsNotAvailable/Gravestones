@@ -38,7 +38,7 @@ public class TrinketsDataType extends GravestoneDataType {
 
         List<TrinketsSlot> storedTrinkets = new ArrayList<>();
         component.forEach((reference, stack) -> {
-            GravestonesApi.onInsertItem(player, stack, Identifier.of("trinkets", reference.getId()));
+            GravestonesApi.onInsertItem(player, stack, getId(reference));
             if (shouldSkipTrinket(player, reference, stack)) return;
 
             storedTrinkets.add(new TrinketsSlot(reference, stack));
@@ -46,6 +46,12 @@ public class TrinketsDataType extends GravestoneDataType {
         });
 
         VersionUtil.put(ops, nbt, KEY, TrinketsSlot.CODEC.listOf(), storedTrinkets);
+    }
+
+    private Identifier getId(SlotReference reference) {
+        SlotType slotType = reference.inventory().getSlotType();
+        return Identifier.of("trinkets",
+                slotType.getGroup() + "/" + slotType.getName() + "/" + reference.index());
     }
 
     @Override
