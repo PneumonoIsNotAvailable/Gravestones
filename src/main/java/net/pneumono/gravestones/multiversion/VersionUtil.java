@@ -81,7 +81,7 @@ public class VersionUtil {
     @SuppressWarnings("unused")
     public static <T> void put(DynamicOps<NbtElement> ops, NbtCompound nbt, String key, Codec<T> codec, T object) {
         //? if >=1.21.5 {
-        nbt.put(key, codec, object);
+        nbt.put(key, codec, ops, object);
         //?} else {
         /*nbt.put(key, codec.encodeStart(ops, object).result().orElseThrow());
         *///?}
