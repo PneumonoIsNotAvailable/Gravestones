@@ -221,7 +221,8 @@ public class GravestonesApi {
     /**
      * Invokes all {@link OnInsertItemCallback} listeners.
      *
-     * <p>Should be called for each item stack being inserted into a gravestone.
+     * <p>Should be called for each item stack before being inserted into a gravestone,
+     * including ones that will be skipped.
      *
      * <p>If the item comes from a specific slot,
      * {@link #onInsertItem(PlayerEntity, ItemStack, Identifier)} should be used instead.
@@ -237,7 +238,8 @@ public class GravestonesApi {
     /**
      * Invokes all {@link OnInsertItemCallback} listeners.
      *
-     * <p>Should be called for each item stack being inserted into a gravestone.
+     * <p>Should be called for each item stack before being inserted into a gravestone,
+     * including ones that will be skipped.
      *
      * <p>Slot identifiers should always use the mod they originate from as a namespace,
      * to maintain compatibility with other mods.
