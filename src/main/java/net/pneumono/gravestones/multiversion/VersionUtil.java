@@ -94,7 +94,7 @@ public class VersionUtil {
     @SuppressWarnings("unused")
     public static <T> Optional<T> get(DynamicOps<NbtElement> ops, NbtCompound nbt, String key, Codec<T> codec) {
         //? if >=1.21.5 {
-        return nbt.get(key, codec);
+        return nbt.get(key, codec, ops);
         //?} else {
         /*return codec.decode(ops, nbt.get(key)).result().map(Pair::getFirst);
         *///?}
