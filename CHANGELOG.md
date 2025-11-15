@@ -1,4 +1,1 @@
-- Changed FMJ version to omit Minecraft version and mod subversion
-- Fixed Accessories and Trinkets data types not calling `onInsertItem`
-- (1.21.5+) Fixed Accessories and Trinkets slots failing to insert items that require dynamic registries
-- (1.21.5+) Fixed items not being correctly inserted into Accessories cosmetic slots
+- Fixed Accessories support being broken
