@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -37,6 +38,7 @@ public class TrinketsDataType extends GravestoneDataType {
 
         List<TrinketsSlot> storedTrinkets = new ArrayList<>();
         component.forEach((reference, stack) -> {
+            GravestonesApi.onInsertItem(player, stack, Identifier.of("trinkets", reference.getId()));
             if (shouldSkipTrinket(player, reference, stack)) return;
 
             storedTrinkets.add(new TrinketsSlot(reference, stack));

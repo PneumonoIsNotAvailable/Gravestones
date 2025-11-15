@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
@@ -73,6 +74,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             *///?}
             for (int index = 0; index < accessories.size(); ++index) {
                 ItemStack stack = accessories.getStack(index);
+                GravestonesApi.onInsertItem(player, stack, Identifier.of("accessories", name + "/" + index + "/" + "normal"));
                 if (!GravestonesApi.shouldSkipItem(player, stack) && !stack.isEmpty()) {
                     accessories.removeStack(index);
                     list.add(new SlotReferencePrimitive(stack, name, index, false));
@@ -86,6 +88,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             *///?}
             for (int index = 0; index < cosmetics.size(); ++index) {
                 ItemStack stack = cosmetics.getStack(index);
+                GravestonesApi.onInsertItem(player, stack, Identifier.of("accessories", name + "/" + index + "/" + "cosmetic"));
                 if (!GravestonesApi.shouldSkipItem(player, stack) && !stack.isEmpty()) {
                     cosmetics.removeStack(index);
                     list.add(new SlotReferencePrimitive(stack, name, index, true));
