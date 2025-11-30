@@ -18,6 +18,7 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 
@@ -25,16 +26,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TrinketsDataType extends GravestoneDataType {
-    public static final Codec<Pair<SlotReferencePrimitive, ItemStack>> SLOT_CODEC = RecordCodecBuilder.create(builder -> builder.group(
-            SlotReferencePrimitive.CODEC.fieldOf("slot").forGetter(Pair::getFirst),
-            ItemStack.CODEC.fieldOf("stack").forGetter(Pair::getSecond)
-    ).apply(builder, Pair<SlotReferencePrimitive, ItemStack>::new));
+import java.util.Optional;
+
+public class TrinketsDataType implements InventoryMod {
+    public static final Codec<Pair<SlotReferencePrimitive, ItemStack>> SLOT_CODEC = Codec.pair(
+            SlotReferencePrimitive.CODEC.fieldOf("slot").codec(),
+            ItemStack.CODEC.fieldOf("item").codec()
+    );
+
+    @Override
+    public String getId() {
+        return "trinkets";
+    }
 
     @Override
     public void writeData(NbtCompound view, PlayerEntity player) {
-        TrinketComponent component = TrinketsApi.getTrinketComponent(player).orElse(null);
-        if (component == null) return;
+        Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(player);
+        if (optional.isEmpty()) return;
+        TrinketComponent component = optional.get();
 
         List<Pair<SlotReferencePrimitive, ItemStack>> storedTrinkets = new ArrayList<>();
         component.forEach((reference, stack) -> {

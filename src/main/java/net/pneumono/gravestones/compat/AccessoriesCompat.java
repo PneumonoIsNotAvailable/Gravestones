@@ -5,6 +5,6 @@ import net.pneumono.gravestones.api.GravestonesApi;
 
 public class AccessoriesCompat {
     public static void register() {
-        GravestonesApi.registerDataType(Gravestones.id("accessories"), new AccessoriesDataType());
+        InventoryModManager.INSTANCE.registerInventoryMod(new AccessoriesDataType(), Gravestones.id("accessories"));
     }
 }

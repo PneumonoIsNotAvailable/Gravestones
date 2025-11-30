@@ -5,6 +5,6 @@ import net.pneumono.pneumonocore.PneumonoCore;
 
 public class TrinketsCompat {
     public static void register() {
-        GravestonesApi.registerDataType(PneumonoCore.identifier("trinkets"), new TrinketsDataType());
+        InventoryModManager.INSTANCE.registerInventoryMod(new TrinketsDataType(), PneumonoCore.identifier("trinkets"));
     }
 }

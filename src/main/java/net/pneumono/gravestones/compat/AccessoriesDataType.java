@@ -19,6 +19,7 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 
@@ -26,7 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class AccessoriesDataType extends GravestoneDataType {
+public class AccessoriesDataType implements InventoryMod {
+    @Override
+    public String getId() {
+        return "accessories";
+    }
+
     @Override
     public void writeData(NbtCompound view, PlayerEntity player) {
         AccessoriesCapability capability = AccessoriesCapability.get(player);
