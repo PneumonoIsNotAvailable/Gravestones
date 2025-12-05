@@ -41,8 +41,14 @@ import io.wispforest.accessories.api.AccessoriesAPI;
 import io.wispforest.accessories.impl.ExpandedSimpleContainer;
 *///?}
 
+//? if >=1.21.9 {
+import io.wispforest.accessories.misc.AccessoriesGameRules;
+//?} else if >=1.21.4 {
+/*import io.wispforest.accessories.Accessories;
+*///?}
+
 //? if >=1.21.4 {
-import io.wispforest.accessories.Accessories;
+import net.minecraft.world.GameRules;
 //?}
 
 public class AccessoriesDataType extends GravestoneDataType {
@@ -54,7 +60,12 @@ public class AccessoriesDataType extends GravestoneDataType {
     @Override
     public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception {
         MinecraftServer server = MultiVersionUtil.getWorld(player).getServer();
-        if (server == null /*? if >=1.21.4 {*/|| server.getGameRules().getBoolean(Accessories.RULE_KEEP_ACCESSORY_INVENTORY)/*?}*/) {
+        //? if >=1.21.9 {
+        GameRules.Key<GameRules.BooleanRule> gameRule = AccessoriesGameRules.RULE_KEEP_ACCESSORY_INVENTORY;
+        //?} else if >=1.21.4 {
+        /*GameRules.Key<GameRules.BooleanRule> gameRule = Accessories.RULE_KEEP_ACCESSORY_INVENTORY;
+        *///?}
+        if (server == null /*? if >=1.21.4 {*/|| server.getGameRules().getBoolean(gameRule)/*?}*/) {
             return;
         }
 
