@@ -7,13 +7,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.emi.trinkets.api.*;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pneumono.gravestones.api.GravestoneDataType;
@@ -24,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-//? if >=1.21.1 {
+//? if >=1.21 {
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 //?}
 
@@ -112,7 +110,7 @@ public class TrinketsDataType extends GravestoneDataType {
 
         if (dropRule == TrinketEnums.DropRule.DEFAULT) {
             boolean vanishing =
-            //? if >=1.21.1 {
+            //? if >=1.21 {
             EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP);
             //?} else {
             /*EnchantmentHelper.hasVanishingCurse(stack);

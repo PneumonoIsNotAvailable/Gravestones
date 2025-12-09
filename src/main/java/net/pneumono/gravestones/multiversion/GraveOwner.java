@@ -5,14 +5,14 @@ import com.mojang.serialization.Codec;
 
 import java.util.UUID;
 
-//? if >=1.20.6 {
+//? if >=1.20.5 {
 import net.minecraft.component.type.ProfileComponent;
 //?} else {
 /*import net.minecraft.util.dynamic.Codecs;
 *///?}
 
 public class GraveOwner {
-    //? if >=1.20.6 {
+    //? if >=1.20.5 {
     public static final Codec<GraveOwner> CODEC = ProfileComponent.CODEC.xmap(GraveOwner::new, GraveOwner::getProfile);
     private ProfileComponent profile;
 

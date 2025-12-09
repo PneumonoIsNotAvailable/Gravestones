@@ -19,7 +19,7 @@ import java.util.UUID;
 /*import com.mojang.datafixers.util.Pair;
 *///?}
 
-//? if >=1.20.6 {
+//? if >=1.20.5 {
 import net.minecraft.component.type.ProfileComponent;
 //?}
 
@@ -40,7 +40,7 @@ public class VersionUtil {
          *///?}
     }
 
-    //? if >=1.20.6 {
+    //? if >=1.20.5 {
     public static GameProfile getGameProfile(ProfileComponent profile) {
         //? if >=1.21.9 {
         return profile.getGameProfile();
@@ -51,7 +51,7 @@ public class VersionUtil {
     //?}
 
     public static GlobalPos createGlobalPos(RegistryKey<World> dimension, BlockPos pos) {
-        //? if >=1.20.6 {
+        //? if >=1.20.5 {
         return new GlobalPos(dimension, pos);
         //?} else {
         /*return GlobalPos.create(dimension, pos);
@@ -59,7 +59,7 @@ public class VersionUtil {
     }
 
     public static BlockPos getPos(GlobalPos pos) {
-        //? if >=1.20.6 {
+        //? if >=1.20.5 {
         return pos.pos();
         //?} else {
         /*return pos.getPos();
@@ -67,7 +67,7 @@ public class VersionUtil {
     }
 
     public static RegistryKey<World> getDimension(GlobalPos pos) {
-        //? if >=1.20.6 {
+        //? if >=1.20.5 {
         return pos.dimension();
         //?} else {
         /*return pos.getDimension();

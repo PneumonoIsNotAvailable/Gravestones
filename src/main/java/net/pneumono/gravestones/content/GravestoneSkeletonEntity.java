@@ -28,13 +28,13 @@ public class GravestoneSkeletonEntity extends SkeletonEntity {
     *///?}
 
     @Override
-    protected void drop(/*? if >=1.21.1 {*/ServerWorld world,/*?}*/ DamageSource damageSource) {}
+    protected void drop(/*? if >=1.21 {*/ServerWorld world,/*?}*/ DamageSource damageSource) {}
 
     @Override
     public void tick() {
         super.tick();
         if (MultiVersionUtil.getWorld(this) instanceof ServerWorld world && isAlive() && age > 1200 && age % 20 == 0) {
-            //? if >=1.21.3 {
+            //? if >=1.21.2 {
             damage(world, getDamageSources().starve(), 2);
             //?} else {
             /*damage(getDamageSources().starve(), 2);

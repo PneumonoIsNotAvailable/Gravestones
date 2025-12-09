@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
-//? if >=1.20.6 {
+//? if >=1.20.5 {
 import net.minecraft.registry.RegistryWrapper;
 //?}
 
@@ -27,7 +27,7 @@ public abstract class AbstractGravestoneBlockEntity extends BlockEntity {
     }
 
     @Override
-    //? if >=1.20.6 {
+    //? if >=1.20.5 {
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
         return this.createComponentlessNbt(registryLookup);
     }

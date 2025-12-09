@@ -29,13 +29,13 @@ jobs:
 
       - name: build
         run: |
-          ./gradlew :1.20.1:build
+          ./gradlew :1.20:build
           ./gradlew :1.20.2:build
-          ./gradlew :1.20.4:build
-          ./gradlew :1.20.6:build
-          ./gradlew :1.21.1:build
-          ./gradlew :1.21.3:build
+          ./gradlew :1.20.3:build
+          ./gradlew :1.20.5:build
+          ./gradlew :1.21:build
+          ./gradlew :1.21.2:build
           ./gradlew :1.21.4:build
           ./gradlew :1.21.5:build
-          ./gradlew :1.21.8:build
+          ./gradlew :1.21.6:build
           ./gradlew :1.21.9:build

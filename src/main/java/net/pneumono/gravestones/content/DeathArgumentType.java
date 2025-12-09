@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-//? if >=1.20.4 {
+//? if >=1.20.3 {
 import net.minecraft.nbt.NbtSizeTracker;
 //?}
 
@@ -84,7 +84,7 @@ public class DeathArgumentType implements ArgumentType<String> {
 
         NbtCompound nbt;
         try {
-            nbt = NbtIo.readCompressed(deathFile/*? if >=1.20.4 {*/.toPath(), NbtSizeTracker.ofUnlimitedBytes()/*?}*/);
+            nbt = NbtIo.readCompressed(deathFile/*? if >=1.20.3 {*/.toPath(), NbtSizeTracker.ofUnlimitedBytes()/*?}*/);
         } catch (IOException e) {
             throw COULD_NOT_READ.create(file);
         }

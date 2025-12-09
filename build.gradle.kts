@@ -19,7 +19,7 @@ val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${pr
 repositories {
 	// Mod Menu
 	maven("https://maven.terraformersmc.com/")
-	if (stonecutter.current.project == "1.20.4") {
+	if (stonecutter.current.project == "1.20.3") {
 		maven("https://maven.nucleoid.xyz/")
 	}
 
@@ -102,7 +102,7 @@ dependencies {
 		val ccaVersion = when (stonecutter.current.project) {
 			"1.21.4" -> "6.2.2"
 			"1.21.5" -> "6.3.1"
-			"1.21.8" -> "7.0.0-beta.1"
+			"1.21.6" -> "7.0.0-beta.1"
 			"1.21.9" -> "7.2.0"
 			else -> "null"
 		}
@@ -129,7 +129,7 @@ tasks {
 			)
 		}
 
-		val mixins = if (stonecutter.eval(stonecutter.current.version, ">=1.20.4"))
+		val mixins = if (stonecutter.eval(stonecutter.current.version, ">=1.20.3"))
 			"LivingEntityMixin" else "ExplosionMixin\", \"LivingEntityMixin"
 
 		filesMatching("gravestones.mixins.json") {

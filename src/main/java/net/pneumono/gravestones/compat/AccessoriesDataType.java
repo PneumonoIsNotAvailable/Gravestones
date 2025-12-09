@@ -30,7 +30,7 @@ import io.wispforest.accessories.api.core.Accessory;
 import io.wispforest.accessories.api.core.AccessoryRegistry;
 import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
 import io.wispforest.accessories.impl.core.ExpandedContainer;
-//?} else if >=1.21.3 {
+//?} else if >=1.21.2 {
 /*import io.wispforest.accessories.api.Accessory;
 import io.wispforest.accessories.api.AccessoryRegistry;
 import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
@@ -146,7 +146,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             SlotReference reference = SlotReference.of(player, primitive.slotName(), primitive.index());
 
             boolean canInsert =
-            //? if >=1.21.3 {
+            //? if >=1.21.2 {
             SlotPredicateRegistry.canInsertIntoSlot(newStack, reference);
             //?} else {
             /*AccessoriesAPI.canInsertIntoSlot(newStack, reference);
@@ -165,13 +165,13 @@ public class AccessoriesDataType extends GravestoneDataType {
             ItemStack oldStack = accessories.getStack(index);
 
             boolean canUnequipOldStack =
-            //? if >=1.21.3 {
+            //? if >=1.21.2 {
             AccessoryRegistry.canUnequip(oldStack, reference);
             //?} else {
             /*AccessoriesAPI.canUnequip(oldStack, reference);
             *///?}
             boolean canInsertNewStack =
-            //? if >=1.21.3 {
+            //? if >=1.21.2 {
             SlotPredicateRegistry.canInsertIntoSlot(newStack, reference);
             //?} else {
             /*AccessoriesAPI.canInsertIntoSlot(newStack, reference);
@@ -180,7 +180,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             if (oldStack.isEmpty() && canUnequipOldStack && canInsertNewStack
             ) {
                 Accessory accessory =
-                //? if >=1.21.3 {
+                //? if >=1.21.2 {
                 AccessoryRegistry.getAccessoryOrDefault(oldStack);
                 //?} else {
                 /*AccessoriesAPI.getOrDefaultAccessory(oldStack);

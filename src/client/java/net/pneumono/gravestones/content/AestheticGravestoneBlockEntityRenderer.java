@@ -22,7 +22,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import org.jetbrains.annotations.Nullable;
 *///?}
 
-//? if >=1.20.6 {
+//? if >=1.20.5 {
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
 //?} else {
@@ -89,7 +89,7 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
         *///?}
     }
 
-    //? if >=1.20.6 {
+    //? if >=1.20.5 {
     @Nullable
     private static ProfileComponent getStackProfile(ItemStack stack) {
         return stack.get(DataComponentTypes.PROFILE);

@@ -36,7 +36,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//? if >=1.20.6 {
+//? if >=1.20.5 {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
 //?}
@@ -68,13 +68,13 @@ public class GravestonesRegistry {
             Registries.ENTITY_TYPE,
             Gravestones.id("gravestone_skeleton"),
             EntityType.Builder.<GravestoneSkeletonEntity>create(GravestoneSkeletonEntity::new, SpawnGroup.MISC)
-                    //? if >=1.20.6 {
+                    //? if >=1.20.5 {
                     .dimensions(0.6F, 1.99F)
                     //?} else {
                     /*.setDimensions(0.6F, 1.99F)
                     *///?}
                     .maxTrackingRange(8)
-                    //? if >=1.21.3 {
+                    //? if >=1.21.2 {
                     .build(RegistryKey.of(RegistryKeys.ENTITY_TYPE, Gravestones.id("gravestone_skeleton")))
                     //?} else {
                     /*.build("gravestone_skeleton")
@@ -106,14 +106,14 @@ public class GravestonesRegistry {
     private static Block registerAestheticGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Block block = registerGravestone(name, factory, settings);
         Registry.register(Registries.ITEM, Gravestones.id(name), new AestheticGravestoneBlockItem(block,
-                new Item.Settings()/*? if >=1.21.3 {*/.useBlockPrefixedTranslationKey().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.id(name)))/*?}*/
+                new Item.Settings()/*? if >=1.21.2 {*/.useBlockPrefixedTranslationKey().registryKey(RegistryKey.of(RegistryKeys.ITEM, Gravestones.id(name)))/*?}*/
         ));
         return block;
     }
 
     private static Block registerGravestone(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         return Registry.register(Registries.BLOCK, Gravestones.id(name),
-                factory.apply(settings/*? if >=1.21.3 {*/.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.id(name)))/*?}*/)
+                factory.apply(settings/*? if >=1.21.2 {*/.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Gravestones.id(name)))/*?}*/)
         );
     }
 
@@ -142,7 +142,7 @@ public class GravestonesRegistry {
         Registry.register(Registries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
         Stats.CUSTOM.getOrCreateStat(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
 
-        //? if >=1.20.6 {
+        //? if >=1.20.5 {
         PayloadTypeRegistry.playS2C().register(GravestoneEditorOpenS2CPayload.PAYLOAD_ID, GravestoneEditorOpenS2CPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(UpdateGravestoneC2SPayload.PAYLOAD_ID, UpdateGravestoneC2SPayload.CODEC);
 

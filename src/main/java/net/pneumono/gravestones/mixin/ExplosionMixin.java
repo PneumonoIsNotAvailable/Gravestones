@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Explosion.class)
 public abstract class ExplosionMixin {
-    //? if <1.20.4 {
+    //? if <1.20.3 {
     /*@ModifyVariable(method = "affectWorld", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
     private BlockState modifyAffectedBlocks(BlockState old) {
         if (old.getBlock() == GravestonesRegistry.GRAVESTONE_TECHNICAL) {

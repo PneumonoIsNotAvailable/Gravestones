@@ -20,7 +20,7 @@ import net.minecraft.client.render.entity.EntityRendererFactories;
 /*import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 *///?}
 
-//? if >=1.20.6 {
+//? if >=1.20.5 {
 import net.minecraft.client.MinecraftClient;
 //?}
 
@@ -35,7 +35,7 @@ public class GravestonesClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(GravestonesRegistry.TECHNICAL_GRAVESTONE_ENTITY, TechnicalGravestoneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(GravestonesRegistry.AESTHETIC_GRAVESTONE_ENTITY, AestheticGravestoneBlockEntityRenderer::new);
 
-        //? if >=1.20.6 {
+        //? if >=1.20.5 {
         ClientPlayNetworking.registerGlobalReceiver(GravestoneEditorOpenS2CPayload.PAYLOAD_ID, (payload, context) -> {
             MinecraftClient client = context.client();
             ClientWorld world = client.world;

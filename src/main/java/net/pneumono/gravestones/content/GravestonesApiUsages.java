@@ -8,9 +8,9 @@ import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.SkipItemCallback;
 
-//? if >=1.21.1 {
+//? if >=1.21 {
 import net.minecraft.component.EnchantmentEffectComponentTypes;
-//?} else if >=1.20.6 {
+//?} else if >=1.20.5 {
 /*import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
@@ -32,14 +32,14 @@ public class GravestonesApiUsages {
 
         SkipItemCallback.EVENT.register((player, itemStack, slot) ->
                 itemStack.isIn(GravestonesApi.ITEM_SKIPS_GRAVESTONES) ||
-                //? if >=1.21.1 {
+                //? if >=1.21 {
                 EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, GravestonesApi.ENCHANTMENT_SKIPS_GRAVESTONES)
                 //?} else {
                 /*hasSkippableEnchantments(itemStack)
                 *///?}
         );
         SkipItemCallback.EVENT.register((player, itemStack, slot) ->
-                //? if >=1.21.1 {
+                //? if >=1.21 {
                 EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
                 //?} else {
                 /*EnchantmentHelper.hasVanishingCurse(itemStack)
@@ -54,12 +54,12 @@ public class GravestonesApiUsages {
         );
     }
 
-    //? if <1.20.6 {
+    //? if <1.20.5 {
     /*@SuppressWarnings("deprecation")
      *///?}
-    //? if <1.21.1 {
+    //? if <1.21 {
     /*private static boolean hasSkippableEnchantments(ItemStack stack) {
-        //? if >=1.20.6 {
+        //? if >=1.20.5 {
         ItemEnchantmentsComponent component = stack.getEnchantments();
         for (RegistryEntry<Enchantment> enchantment : component.getEnchantments()) {
             if (enchantment.isIn(GravestonesApi.ENCHANTMENT_SKIPS_GRAVESTONES)) {

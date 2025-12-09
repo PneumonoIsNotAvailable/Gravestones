@@ -33,10 +33,10 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
-//? if >=1.21.8 {
+//? if >=1.21.6 {
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
-//?} else if >=1.20.6 {
+//?} else if >=1.20.5 {
 /*import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -53,7 +53,7 @@ import net.minecraft.component.ComponentsAccess;
 import net.minecraft.util.ItemScatterer;
 //?}
 
-//? if >=1.20.6 {
+//? if >=1.20.5 {
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
@@ -74,7 +74,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return new SignText();
     }
 
-    //? if >=1.21.8 {
+    //? if >=1.21.6 {
     @Override
     public void writeData(WriteView view) {
         super.writeData(view);
@@ -92,7 +92,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         this.text = view.read("text", SignText.CODEC).map(this::parseLines).orElseGet(SignText::new);
         this.waxed = view.getBoolean("is_waxed", false);
     }
-    //?} else if >=1.20.6 {
+    //?} else if >=1.20.5 {
     /*@Override
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.writeNbt(nbt, registries);
@@ -136,7 +136,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
     *///?}
 
-    //? if >=1.20.6 {
+    //? if >=1.20.5 {
     @Override
     protected void addComponents(ComponentMap.Builder builder) {
         super.addComponents(builder);
@@ -150,14 +150,14 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
     //?}
 
-    //? if >=1.21.8 {
+    //? if >=1.21.6 {
     @SuppressWarnings("deprecation")
     @Override
     public void removeFromCopiedStackData(WriteView view) {
         super.removeFromCopiedStackData(view);
         view.remove("head");
     }
-    //?} else if >=1.20.6 {
+    //?} else if >=1.20.5 {
     /*@SuppressWarnings("deprecation")
     @Override
     public void removeFromCopiedStackNbt(NbtCompound nbt) {
@@ -247,7 +247,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             return true;
         }
         PlayerEntity playerEntity = this.world.getPlayerByUuid(uuid);
-        return playerEntity == null || /*? if >=1.20.6 {*/!playerEntity.canInteractWithBlockAt(this.getPos(), 4.0)/*?} else {*//*playerEntity.squaredDistanceTo(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) > 64.0*//*?}*/;
+        return playerEntity == null || /*? if >=1.20.5 {*/!playerEntity.canInteractWithBlockAt(this.getPos(), 4.0)/*?} else {*//*playerEntity.squaredDistanceTo(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) > 64.0*//*?}*/;
     }
 
     @Override
@@ -263,7 +263,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public void setHeadStack(@Nullable LivingEntity entity, ItemStack headStack) {
-        //? if >=1.21.1 {
+        //? if >=1.21 {
         this.headStack = headStack.splitUnlessCreative(1, entity);
         //?} else {
         /*this.headStack = headStack.copyWithCount(1);

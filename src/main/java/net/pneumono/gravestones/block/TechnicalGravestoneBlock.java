@@ -28,7 +28,7 @@ import java.util.function.BiConsumer;
 /*import net.pneumono.gravestones.api.GravestonesApi;
 *///?}
 
-//? if <1.20.6 {
+//? if <1.20.5 {
 /*import net.minecraft.util.Hand;
 *///?}
 
@@ -39,7 +39,7 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         super(settings);
     }
 
-    //? if >=1.20.4 {
+    //? if >=1.20.3 {
     public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.createCodec(TechnicalGravestoneBlock::new);
 
     @Override
@@ -54,11 +54,11 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         builder.add(DAMAGE);
     }
 
-    //? <1.20.6 {
+    //? <1.20.5 {
     /*@SuppressWarnings("deprecation")
     *///?}
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,/*? <1.20.6 {*//*Hand hand,*//*?}*/ BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,/*? <1.20.5 {*//*Hand hand,*//*?}*/ BlockHitResult hit) {
         if (!(world instanceof ServerWorld serverWorld)) {
             return ActionResult.SUCCESS;
         }
@@ -82,12 +82,12 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
     //?} else {
-    /*//? <1.20.6 {
+    /*//? <1.20.5 {
     /^@SuppressWarnings("deprecation")
     ^///?}
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        //? if >=1.20.4 {
+        //? if >=1.20.3 {
         ItemScatterer.onStateReplaced(state, newState, world, pos);
         //?} else {
         /^world.updateComparators(pos, this);
@@ -114,9 +114,9 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
-    //? if >=1.20.4 {
+    //? if >=1.20.3 {
     @Override
-    public void onExploded(BlockState state, /*? if >=1.21.3 {*/ServerWorld/*?} else {*//*World*//*?}*/ world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+    public void onExploded(BlockState state, /*? if >=1.21.2 {*/ServerWorld/*?} else {*//*World*//*?}*/ world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 
     }
     //?}

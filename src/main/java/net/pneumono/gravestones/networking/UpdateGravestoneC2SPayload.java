@@ -4,7 +4,7 @@ import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.minecraft.util.Identifier;
 
-//? if >=1.20.6 {
+//? if >=1.20.5 {
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -22,7 +22,7 @@ import net.minecraft.network.packet.CustomPayload;
 public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line2, String line3, String line4) /*? if >=1.20.2 {*/implements CustomPayload/*?}*/ {
     public static final Identifier ID = Gravestones.id("update_gravestone");
 
-    //? if >=1.20.6 {
+    //? if >=1.20.5 {
     public static final CustomPayload.Id<UpdateGravestoneC2SPayload> PAYLOAD_ID = new Id<>(ID);
     public static final PacketCodec<RegistryByteBuf, UpdateGravestoneC2SPayload> CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC,
@@ -51,12 +51,12 @@ public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line
         return new String[]{this.line1, this.line2, this.line3, this.line4};
     }
 
-    //? if >=1.20.6 {
+    //? if >=1.20.5 {
     @Override
     public Id<? extends CustomPayload> getId() {
         return PAYLOAD_ID;
     }
-    //?} else if <1.20.6 {
+    //?} else if <1.20.5 {
     /*public static UpdateGravestoneC2SPayload read(PacketByteBuf buf) {
         return new UpdateGravestoneC2SPayload(buf.readBlockPos(), buf.readString(), buf.readString(), buf.readString(), buf.readString());
     }
