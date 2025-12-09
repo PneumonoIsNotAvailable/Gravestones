@@ -151,7 +151,7 @@ public class GravestonesRegistry {
             List<String> list = Stream.of(payload.getText()).map(Formatting::strip).collect(Collectors.toList());
             context.player().networkHandler.filterTexts(list).thenAcceptAsync(texts ->
                     onSignUpdate(context.player(), payload, texts),
-                    /*? if =1.20.5 {*//*context.player().getServer()*//*? else {*/context.server()/*?}*/
+                    /*? if =1.20.5 {*//*context.player().getServer()*//*?} else {*/context.server()/*?}*/
             );
         });
         //?} else {
