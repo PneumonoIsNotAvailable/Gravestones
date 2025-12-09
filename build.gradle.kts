@@ -81,8 +81,7 @@ dependencies {
 	modImplementation("maven.modrinth:pneumono_core:${property("core_version")}")
 
 	// ModMenu
-	modCompileOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
-	modRuntimeOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
+	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
 	// Accessories
 	if (accessories) {
