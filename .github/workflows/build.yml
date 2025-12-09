@@ -6,7 +6,7 @@
 # I DON'T KNOW HOW ANY OF THIS WORKS HELP
 
 name: build
-on: [pull_request, push]
+on: [push]
 
 jobs:
   build:
