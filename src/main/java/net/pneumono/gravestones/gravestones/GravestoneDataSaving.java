@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
-//? if >=1.20.3 {
+//? if =1.20.3 {
+/*import net.minecraft.nbt.NbtTagSizeTracker;
+*///?} else if >=1.20.5 {
 import net.minecraft.nbt.NbtSizeTracker;
 //?}
 
@@ -57,7 +59,13 @@ public class GravestoneDataSaving extends GravestoneManager {
 
         NbtCompound compound = new NbtCompound();
         try {
-            compound = NbtIo.readCompressed(path/*? if >=1.20.3 {*/, NbtSizeTracker.ofUnlimitedBytes()/*?} else {*//*.toFile()*//*?}*/);
+            //? if <1.20.3 {
+            /*compound = NbtIo.readCompressed(path.toFile());
+            *///?} else if =1.20.3 {
+            /*NbtTagSizeTracker.ofUnlimitedBytes()
+            *///?} else {
+            compound = NbtIo.readCompressed(path, NbtSizeTracker.ofUnlimitedBytes());
+            //?}
         } catch (IOException e) {
             error("Failed to read Gravestone Data", e);
         }

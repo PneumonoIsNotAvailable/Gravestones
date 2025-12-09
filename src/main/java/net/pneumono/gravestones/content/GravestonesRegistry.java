@@ -41,6 +41,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
 //?}
 
+@SuppressWarnings("deprecation")
 public class GravestonesRegistry {
     public static final Block GRAVESTONE_TECHNICAL = registerGravestone("gravestone_technical",
             TechnicalGravestoneBlock::new, AbstractBlock.Settings.copy(Blocks.STONE).strength(-1.0F, 3600000.0F).nonOpaque());
@@ -149,7 +150,8 @@ public class GravestonesRegistry {
         ServerPlayNetworking.registerGlobalReceiver(UpdateGravestoneC2SPayload.PAYLOAD_ID, (payload, context) -> {
             List<String> list = Stream.of(payload.getText()).map(Formatting::strip).collect(Collectors.toList());
             context.player().networkHandler.filterTexts(list).thenAcceptAsync(texts ->
-                    onSignUpdate(context.player(), payload, texts), context.server()
+                    onSignUpdate(context.player(), payload, texts),
+                    /*? if =1.20.5 {*//*context.player().getServer()*//*? else {*/context.server()/*?}*/
             );
         });
         //?} else {
