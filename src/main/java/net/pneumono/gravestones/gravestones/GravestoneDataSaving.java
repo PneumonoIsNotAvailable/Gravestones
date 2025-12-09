@@ -62,7 +62,7 @@ public class GravestoneDataSaving extends GravestoneManager {
             //? if <1.20.3 {
             /*compound = NbtIo.readCompressed(path.toFile());
             *///?} else if =1.20.3 {
-            /*NbtTagSizeTracker.ofUnlimitedBytes()
+            /*NbtIo.readCompressed(path, NbtTagSizeTracker.ofUnlimitedBytes());
             *///?} else {
             compound = NbtIo.readCompressed(path, NbtSizeTracker.ofUnlimitedBytes());
             //?}

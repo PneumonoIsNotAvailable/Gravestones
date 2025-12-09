@@ -90,7 +90,7 @@ public class DeathArgumentType implements ArgumentType<String> {
                     deathFile/*? if >=1.20.3 {*/.toPath(),/*?}*/
                     //? if =1.20.3 {
                     /*NbtTagSizeTracker.ofUnlimitedBytes()
-                    *///?} else {
+                    *///?} else if >=1.20.5 {
                     NbtSizeTracker.ofUnlimitedBytes()
                     //?}
             );
