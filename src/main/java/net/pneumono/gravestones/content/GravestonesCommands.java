@@ -36,7 +36,7 @@ public class GravestonesCommands {
     public static void registerCommands() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 dispatcher.register(literal("gravestones")
-                        .requires(/*? if >=1.21.11 {*/CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK)/*?} else {*//*source -> source.hasPermission(4)*//*?}*/)
+                        .requires(/*? if >=1.21.11 {*/CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK)/*?} else {*//*source -> source.hasPermissionLevel(4)*//*?}*/)
                         .then(literal("getdata")
                                 .then(literal("gravestone")
                                         .then(argument("position", BlockPosArgumentType.blockPos())
