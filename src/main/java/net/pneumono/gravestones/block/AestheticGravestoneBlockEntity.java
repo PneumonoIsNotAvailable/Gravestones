@@ -245,7 +245,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         Text text = player == null ? Text.literal("Gravestone") : player.getDisplayName();
         return new ServerCommandSource(
                 CommandOutput.DUMMY, Vec3d.ofCenter(pos), Vec2f.ZERO, (ServerWorld)world,
-                /*? if >=1.21.11 {*/LeveledPermissionPredicate.GAMEMASTERS/*?} else*//*2*//*?}*/,
+                /*? if >=1.21.11 {*/LeveledPermissionPredicate.GAMEMASTERS/*?} else {*//*2*//*?}*/,
                 string, text, world.getServer(), player
         );
     }
