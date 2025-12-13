@@ -1,0 +1,73 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "pneumonocore:configurations",
+      "configuration": "gravestones:aesthetic_gravestones",
+      "operation": "EQUAL",
+      "value": "true"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_stone_slab": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:stone_slab"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravestone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "gravestones:gravestone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravestone_chipped": {
+      "conditions": {
+        "items": [
+          {
+            "items": "gravestones:gravestone_chipped"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravestone_damaged": {
+      "conditions": {
+        "items": [
+          {
+            "items": "gravestones:gravestone_damaged"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "gravestones:gravestone_chipped"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_stone_slab",
+      "has_gravestone",
+      "has_gravestone_chipped",
+      "has_gravestone_damaged",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "gravestones:gravestone_chipped"
+    ]
+  }
+}

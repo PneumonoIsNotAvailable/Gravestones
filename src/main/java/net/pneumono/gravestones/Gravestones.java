@@ -19,12 +19,12 @@ import java.io.File;
 import java.util.function.Function;
 
 //? if accessories {
-import net.pneumono.gravestones.compat.AccessoriesCompat;
-//?}
+/*import net.pneumono.gravestones.compat.AccessoriesCompat;
+*///?}
 
 //? if trinkets {
-import net.pneumono.gravestones.compat.TrinketsCompat;
-//?}
+/*import net.pneumono.gravestones.compat.TrinketsCompat;
+*///?}
 
 public class Gravestones implements ModInitializer {
 	public static final String MOD_ID = "gravestones";
@@ -50,17 +50,17 @@ public class Gravestones implements ModInitializer {
 		boolean usingAccessories = false;
 
 		//? if accessories {
-		if (isModLoaded("accessories")) {
+		/*if (isModLoaded("accessories")) {
 			AccessoriesCompat.register();
 			usingAccessories = true;
 		}
-		//?}
+		*///?}
 
 		//? if trinkets {
-		if (!usingAccessories && isModLoaded("trinkets")) {
+		/*if (!usingAccessories && isModLoaded("trinkets")) {
 			TrinketsCompat.register();
 		}
-		//?}
+		*///?}
 	}
 
 	private static boolean isModLoaded(String id) {

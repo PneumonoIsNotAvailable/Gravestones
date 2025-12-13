@@ -1,7 +1,7 @@
 package net.pneumono.gravestones.compat;
 
 //? if accessories {
-import com.mojang.serialization.Codec;
+/*import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.wispforest.accessories.api.AccessoriesCapability;
@@ -31,21 +31,21 @@ import io.wispforest.accessories.api.core.AccessoryRegistry;
 import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
 import io.wispforest.accessories.impl.core.ExpandedContainer;
 //?} else if >=1.21.2 {
-/*import io.wispforest.accessories.api.Accessory;
+/^import io.wispforest.accessories.api.Accessory;
 import io.wispforest.accessories.api.AccessoryRegistry;
 import io.wispforest.accessories.api.slot.SlotPredicateRegistry;
 import io.wispforest.accessories.impl.ExpandedSimpleContainer;
-*///?} else {
-/*import io.wispforest.accessories.api.Accessory;
+^///?} else {
+/^import io.wispforest.accessories.api.Accessory;
 import io.wispforest.accessories.api.AccessoriesAPI;
 import io.wispforest.accessories.impl.ExpandedSimpleContainer;
-*///?}
+^///?}
 
 //? if >=1.21.9 {
 import io.wispforest.accessories.misc.AccessoriesGameRules;
 //?} else if >=1.21.4 {
-/*import io.wispforest.accessories.Accessories;
-*///?}
+/^import io.wispforest.accessories.Accessories;
+^///?}
 
 //? if >=1.21.4 {
 import net.minecraft.world.GameRules;
@@ -63,9 +63,9 @@ public class AccessoriesDataType extends GravestoneDataType {
         //? if >=1.21.9 {
         GameRules.Key<GameRules.BooleanRule> gameRule = AccessoriesGameRules.RULE_KEEP_ACCESSORY_INVENTORY;
         //?} else if >=1.21.4 {
-        /*GameRules.Key<GameRules.BooleanRule> gameRule = Accessories.RULE_KEEP_ACCESSORY_INVENTORY;
-        *///?}
-        if (server == null /*? if >=1.21.4 {*/|| server.getGameRules().getBoolean(gameRule)/*?}*/) {
+        /^GameRules.Key<GameRules.BooleanRule> gameRule = Accessories.RULE_KEEP_ACCESSORY_INVENTORY;
+        ^///?}
+        if (server == null /^? if >=1.21.4 {^/|| server.getGameRules().getBoolean(gameRule)/^?}^/) {
             return;
         }
 
@@ -82,8 +82,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.5 {
             ExpandedContainer accessories = container.getAccessories();
             //?} else {
-            /*ExpandedSimpleContainer accessories = container.getAccessories();
-            *///?}
+            /^ExpandedSimpleContainer accessories = container.getAccessories();
+            ^///?}
             for (int index = 0; index < accessories.size(); ++index) {
                 ItemStack stack = accessories.getStack(index);
                 GravestonesApi.onInsertItem(player, stack, Objects.requireNonNull(Identifier.tryParse(name)).withSuffixedPath("/" + index + "/" + "normal"));
@@ -96,8 +96,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.5 {
             ExpandedContainer cosmetics = container.getCosmeticAccessories();
             //?} else {
-            /*ExpandedSimpleContainer cosmetics = container.getCosmeticAccessories();
-            *///?}
+            /^ExpandedSimpleContainer cosmetics = container.getCosmeticAccessories();
+            ^///?}
             for (int index = 0; index < cosmetics.size(); ++index) {
                 ItemStack stack = cosmetics.getStack(index);
                 GravestonesApi.onInsertItem(player, stack, Objects.requireNonNull(Identifier.tryParse(name)).withSuffixedPath("/" + index + "/" + "cosmetic"));
@@ -149,8 +149,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.2 {
             SlotPredicateRegistry.canInsertIntoSlot(newStack, reference);
             //?} else {
-            /*AccessoriesAPI.canInsertIntoSlot(newStack, reference);
-            *///?}
+            /^AccessoriesAPI.canInsertIntoSlot(newStack, reference);
+            ^///?}
             if (!canInsert) {
                 remaining.add(newStack);
                 continue;
@@ -159,8 +159,8 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.5 {
             ExpandedContainer accessories = primitive.cosmetic ? container.getCosmeticAccessories() : container.getAccessories();
             //?} else {
-            /*ExpandedSimpleContainer accessories = primitive.cosmetic ? container.getCosmeticAccessories() : container.getAccessories();
-            *///?}
+            /^ExpandedSimpleContainer accessories = primitive.cosmetic ? container.getCosmeticAccessories() : container.getAccessories();
+            ^///?}
 
             ItemStack oldStack = accessories.getStack(index);
 
@@ -168,14 +168,14 @@ public class AccessoriesDataType extends GravestoneDataType {
             //? if >=1.21.2 {
             AccessoryRegistry.canUnequip(oldStack, reference);
             //?} else {
-            /*AccessoriesAPI.canUnequip(oldStack, reference);
-            *///?}
+            /^AccessoriesAPI.canUnequip(oldStack, reference);
+            ^///?}
             boolean canInsertNewStack =
             //? if >=1.21.2 {
             SlotPredicateRegistry.canInsertIntoSlot(newStack, reference);
             //?} else {
-            /*AccessoriesAPI.canInsertIntoSlot(newStack, reference);
-            *///?}
+            /^AccessoriesAPI.canInsertIntoSlot(newStack, reference);
+            ^///?}
 
             if (oldStack.isEmpty() && canUnequipOldStack && canInsertNewStack
             ) {
@@ -183,8 +183,8 @@ public class AccessoriesDataType extends GravestoneDataType {
                 //? if >=1.21.2 {
                 AccessoryRegistry.getAccessoryOrDefault(oldStack);
                 //?} else {
-                /*AccessoriesAPI.getOrDefaultAccessory(oldStack);
-                *///?}
+                /^AccessoriesAPI.getOrDefaultAccessory(oldStack);
+                ^///?}
                 ItemStack splitStack = newStack.split(accessory.maxStackSize(newStack));
                 accessories.setStack(index, splitStack);
                 if (!newStack.isEmpty()) {
@@ -205,4 +205,4 @@ public class AccessoriesDataType extends GravestoneDataType {
         ).apply(instance, SlotReferencePrimitive::new));
     }
 }
-//?}
+*///?}

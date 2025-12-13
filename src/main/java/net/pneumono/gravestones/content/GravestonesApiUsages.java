@@ -1,12 +1,17 @@
 package net.pneumono.gravestones.content;
 
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.world.GameRules;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.SkipItemCallback;
+
+//? if >=1.21.11 {
+import net.minecraft.world.rule.GameRules;
+//?} else {
+/*import net.minecraft.world.GameRules;
+*///?}
 
 //? if >=1.21 {
 import net.minecraft.component.EnchantmentEffectComponentTypes;
@@ -46,9 +51,14 @@ public class GravestonesApiUsages {
                 *///?}
         );
 
-        CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
-                world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !GravestonesConfig.SPAWN_GRAVESTONES_WITH_KEEPINV.getValue()
-        );
+        CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) -> {
+            //? if >=1.21.11 {
+            boolean keepInv = world.getGameRules().getValue(GameRules.KEEP_INVENTORY);
+            //?} else {
+            /*boolean keepInv = world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY);
+            *///?}
+            return keepInv && !GravestonesConfig.SPAWN_GRAVESTONES_WITH_KEEPINV.getValue();
+        });
         CancelGravestonePlacementCallback.EVENT.register((world, player, deathPos) ->
                 player.isCreative() && !GravestonesConfig.SPAWN_GRAVESTONES_IN_CREATIVE.getValue()
         );

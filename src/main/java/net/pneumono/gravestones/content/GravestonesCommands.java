@@ -28,11 +28,15 @@ import java.util.UUID;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+//? if >=1.21.11 {
+import net.minecraft.server.command.CommandManager;
+//?}
+
 public class GravestonesCommands {
     public static void registerCommands() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 dispatcher.register(literal("gravestones")
-                        .requires(source -> source.hasPermissionLevel(4))
+                        .requires(/*? if >=1.21.11 {*/CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK)/*?} else {*//*source -> source.hasPermission(4)*//*?}*/)
                         .then(literal("getdata")
                                 .then(literal("gravestone")
                                         .then(argument("position", BlockPosArgumentType.blockPos())
