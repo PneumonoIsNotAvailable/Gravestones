@@ -29,6 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.*;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
+import net.pneumono.pneumonocore.config_api.registry.ServerConfigCommandRegistry;
 import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 import java.util.List;
@@ -124,6 +125,8 @@ public class GravestonesRegistry {
     }
 
     public static void registerModContent() {
+        ServerConfigCommandRegistry.registerServerConfigCommand(Gravestones.MOD_ID, "gravestonesconfig");
+
         FabricDefaultAttributeRegistry.register(GRAVESTONE_SKELETON_ENTITY_TYPE,
                 GravestoneSkeletonEntity.createAbstractSkeletonAttributes()
         );

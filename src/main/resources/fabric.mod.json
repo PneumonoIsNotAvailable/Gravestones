@@ -54,7 +54,7 @@
 		"minecraft": ">=${min_supported} <=${max_supported}",
 		"java": "*",
 		"fabric-api": "*",
-		"pneumonocore": "*"
+		"pneumonocore": ">=1.2.1"
 	},
 	"suggests": {
 		"modmenu": "*"
