@@ -1,2 +1,2 @@
-- Fixed Accessories support being broken
-- Fixed data not being read correctly when using dynamic registries
+- Added support for 1.21.11
+- Updated to new PneumonoCore version
