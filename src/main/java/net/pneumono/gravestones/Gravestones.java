@@ -23,8 +23,8 @@ import java.util.function.Function;
 *///?}
 
 //? if trinkets {
-/*import net.pneumono.gravestones.compat.TrinketsCompat;
-*///?}
+import net.pneumono.gravestones.compat.TrinketsCompat;
+//?}
 
 public class Gravestones implements ModInitializer {
 	public static final String MOD_ID = "gravestones";
@@ -57,10 +57,10 @@ public class Gravestones implements ModInitializer {
 		*///?}
 
 		//? if trinkets {
-		/*if (!usingAccessories && isModLoaded("trinkets")) {
+		if (!usingAccessories && isModLoaded("trinkets")) {
 			TrinketsCompat.register();
 		}
-		*///?}
+		//?}
 	}
 
 	private static boolean isModLoaded(String id) {
