@@ -3,11 +3,9 @@ package net.pneumono.gravestones;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
-import net.pneumono.gravestones.api.SkipItemCallback;
-import net.pneumono.gravestones.compat.BackwardsCompat;
+import net.pneumono.gravestones.compat.*;
 import net.pneumono.gravestones.content.GravestonesApiUsages;
 import net.pneumono.gravestones.content.GravestonesCommands;
 import net.pneumono.gravestones.content.GravestonesRegistry;
@@ -17,18 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.function.Function;
-
-//? if galosphere && >=1.21 {
-/*import net.orcinus.galosphere.init.GDataComponents;
-*///?}
-
-//? if accessories {
-/*import net.pneumono.gravestones.compat.AccessoriesCompat;
-*///?}
-
-//? if trinkets {
-import net.pneumono.gravestones.compat.TrinketsCompat;
-//?}
 
 public class Gravestones implements ModInitializer {
 	public static final String MOD_ID = "gravestones";
@@ -47,38 +33,24 @@ public class Gravestones implements ModInitializer {
 		GravestonesCommands.registerCommands();
 
 		if (isModLoaded("spelunkery")) {
-			SkipItemCallback.EVENT.register((player, itemStack, slot) -> itemStack.isOf(Items.RECOVERY_COMPASS));
+			SpelunkeryCompat.register();
 		}
 
 		if (isModLoaded("galosphere")) {
-			SkipItemCallback.EVENT.register((player, itemStack, slot) -> {
-				//? if >=1.20.5 {
-				//? if galosphere {
-				/*return itemStack.contains(GDataComponents.PRESERVED);
-				*///?} else {
-				return false;
-				//?}
-				//?} else {
-				/*return itemStack.getNbt() != null && itemStack.getNbt().contains("Preserved");
-				*///?}
-			});
+			GalosphereCompat.register();
 		}
 
 		// Accessories' Compat Layers exist, so to prevent issues Gravestones will prioritize Accessories directly over other mods
 		boolean usingAccessories = false;
 
-		//? if accessories {
-		/*if (isModLoaded("accessories")) {
+		if (isModLoaded("accessories")) {
 			AccessoriesCompat.register();
 			usingAccessories = true;
 		}
-		*///?}
 
-		//? if trinkets {
 		if (!usingAccessories && isModLoaded("trinkets")) {
 			TrinketsCompat.register();
 		}
-		//?}
 	}
 
 	private static boolean isModLoaded(String id) {
