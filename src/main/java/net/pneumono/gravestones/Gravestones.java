@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.function.Function;
 
+//? if galosphere && >=1.21 {
+/*import net.orcinus.galosphere.init.GDataComponents;
+*///?}
+
 //? if accessories {
 /*import net.pneumono.gravestones.compat.AccessoriesCompat;
 *///?}
@@ -44,6 +48,20 @@ public class Gravestones implements ModInitializer {
 
 		if (isModLoaded("spelunkery")) {
 			SkipItemCallback.EVENT.register((player, itemStack, slot) -> itemStack.isOf(Items.RECOVERY_COMPASS));
+		}
+
+		if (isModLoaded("galosphere")) {
+			SkipItemCallback.EVENT.register((player, itemStack, slot) -> {
+				//? if >=1.20.5 {
+				//? if galosphere {
+				/*return itemStack.contains(GDataComponents.PRESERVED);
+				*///?} else {
+				return false;
+				//?}
+				//?} else {
+				/*return itemStack.getNbt() != null && itemStack.getNbt().contains("Preserved");
+				*///?}
+			});
 		}
 
 		// Accessories' Compat Layers exist, so to prevent issues Gravestones will prioritize Accessories directly over other mods

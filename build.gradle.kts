@@ -12,6 +12,7 @@ java.sourceCompatibility = javaVersion
 base.archivesName.set(project.property("mod_id") as String)
 version = "${project.property("mod_version")}+${stonecutter.current.project}+${property("mod_subversion")}"
 
+val galosphere = "${property("galosphere_version")}" != "[VERSIONED]"
 val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
 val trinketsCanary = "${property("trinkets_canary_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
@@ -35,7 +36,7 @@ repositories {
 		maven("https://maven.shedaniel.me/")
 	}
 
-	// Core & Trinkets Canary
+	// Core, Trinkets Canary, Galosphere
 	exclusiveContent {
 		forRepository {
 			maven("https://api.modrinth.com/maven")
@@ -66,6 +67,7 @@ loom {
 stonecutter {
 	constants["accessories"] = accessories
 	constants["trinkets"] = trinkets || trinketsCanary
+	constants["galosphere"] = galosphere
 }
 
 dependencies {
@@ -82,6 +84,11 @@ dependencies {
 
 	// ModMenu
 	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
+
+	// Galosphere
+	if (galosphere) {
+		modCompileOnly("maven.modrinth:galosphere:${property("galosphere_version")}")
+	}
 
 	// Accessories
 	if (accessories) {
