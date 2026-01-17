@@ -85,7 +85,7 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
     //? if >=1.21.9 {
     public void renderHead(TechnicalRenderState info, MatrixStack matrices, OrderedRenderCommandQueue queue, float yaw, float pitch) {
         RenderLayer layer;
-        ProfileComponent profileComponent = info.graveOwner.getProfile();
+        ProfileComponent profileComponent = info.graveOwner == null ? null : info.graveOwner.getProfile();
         if (profileComponent != null) {
             layer = this.skinCache.get(profileComponent).getRenderLayer();
         } else {
