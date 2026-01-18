@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.GlobalPos;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public record RecentGraveHistory(UUID owner, Optional<GlobalPos> first, Optional
             GlobalPos.CODEC.optionalFieldOf("third").forGetter(RecentGraveHistory::third)
     ).apply(builder, RecentGraveHistory::new));
 
-    public RecentGraveHistory(UUID owner, GlobalPos first) {
+    public RecentGraveHistory(UUID owner, @Nullable GlobalPos first) {
         this(owner, Optional.ofNullable(first), Optional.empty(), Optional.empty());
     }
 
@@ -34,7 +35,7 @@ public record RecentGraveHistory(UUID owner, Optional<GlobalPos> first, Optional
         return list;
     }
 
-    public RecentGraveHistory getShifted(GlobalPos newPos) {
-        return new RecentGraveHistory(this.owner, Optional.of(newPos), this.first, this.second);
+    public RecentGraveHistory getShifted(@Nullable GlobalPos newPos) {
+        return new RecentGraveHistory(this.owner, Optional.ofNullable(newPos), this.first, this.second);
     }
 }

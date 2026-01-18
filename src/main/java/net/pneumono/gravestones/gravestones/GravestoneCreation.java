@@ -74,7 +74,7 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Calculate placement position
         info("Calculating gravestone placement position...");
-        GlobalPos gravestonePos = getPlacementPos(deathWorld, player, deathPos);
+        GlobalPos globalGravestonePos = getPlacementPos(deathWorld, player, deathPos);
 
         historiesFuture.thenAcceptAsync(histories -> {
             histories = new ArrayList<>(histories);
@@ -84,9 +84,9 @@ public class GravestoneCreation extends GravestoneManager {
             info("Updating gravestone history...");
             RecentGraveHistory newHistory;
             if (history == null) {
-                newHistory = new RecentGraveHistory(player.getUuid(), gravestonePos);
+                newHistory = new RecentGraveHistory(player.getUuid(), globalGravestonePos);
             } else {
-                newHistory = history.getShifted(gravestonePos);
+                newHistory = history.getShifted(globalGravestonePos);
             }
             histories.add(newHistory);
 
@@ -99,9 +99,10 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Place gravestone
         info("Placing gravestone...");
-        if (gravestonePos != null && (World)(server.getWorld(VersionUtil.getDimension(gravestonePos))) instanceof ServerWorld graveWorld) {
-            placeGravestone(server, gravestonePos);
-            Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", playerName, posToString(gravestonePos));
+
+        if (globalGravestonePos != null && (World)(server.getWorld(VersionUtil.getDimension(globalGravestonePos))) instanceof ServerWorld graveWorld) {
+            placeGravestone(graveWorld, VersionUtil.getPos(globalGravestonePos));
+            Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", playerName, posToString(globalGravestonePos));
         } else {
             GravestonesApi.onBreak(deathWorld, VersionUtil.getPos(deathPos), 0, contents == null ? new NbtCompound() : contents);
             Gravestones.LOGGER.info("Failed to place {}'s Gravestone! The items have been dropped on the ground", playerName);
@@ -110,12 +111,13 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Insert gravestone contents
         info("Inserting contents into gravestone...");
+        BlockPos gravestonePos = VersionUtil.getPos(globalGravestonePos);
         insertGravestoneContents(graveWorld, player, gravestonePos, contents);
 
         // Broadcast chat message
         info("Broadcasting chat message... (if enabled)");
         if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-            server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(VersionUtil.getPos(gravestonePos))), false);
+            server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)), false);
         }
 
         info("Damaging existing gravestones... (if enabled)");
@@ -123,7 +125,7 @@ public class GravestoneCreation extends GravestoneManager {
             // Damage existing gravestones
             RecentGraveHistory history = getHistory(new ArrayList<>(historiesFuture.get()), player.getUuid());
             if (history != null) {
-                GravestoneDecay.deathDamageOldGravestones(server, history.getList(), gravestonePos);
+                GravestoneDecay.deathDamageOldGravestones(server, history.getList(), globalGravestonePos);
             }
         } catch (ExecutionException | InterruptedException e) {
             error("Failed to damage existing gravestones", e);
@@ -131,7 +133,7 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Callbacks
         info("Invoking GravestonePlacedCallbacks...");
-        GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(deathWorld, player, deathPos, gravestonePos);
+        GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(deathWorld, player, deathPos, globalGravestonePos);
     }
 
     public static RecentGraveHistory getHistory(List<RecentGraveHistory> histories, UUID uuid) {
@@ -158,14 +160,14 @@ public class GravestoneCreation extends GravestoneManager {
         return contents;
     }
 
-    private static void insertGravestoneContents(ServerWorld world, PlayerEntity player, GlobalPos gravestonePos, NbtCompound contents) {
-        if (!(world.getBlockEntity(VersionUtil.getPos(gravestonePos)) instanceof TechnicalGravestoneBlockEntity gravestone)) return;
+    private static void insertGravestoneContents(ServerWorld world, PlayerEntity player, BlockPos gravestonePos, NbtCompound contents) {
+        if (!(world.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone)) return;
 
         gravestone.setContents(contents);
         gravestone.setGraveOwner(new GraveOwner(player.getGameProfile()));
         gravestone.setSpawnDate(GravestoneTime.READABLE.format(new Date()), world.getTime());
 
-        world.updateListeners(VersionUtil.getPos(gravestonePos), gravestone.getCachedState(), gravestone.getCachedState(), Block.NOTIFY_LISTENERS);
+        world.updateListeners(gravestonePos, gravestone.getCachedState(), gravestone.getCachedState(), Block.NOTIFY_LISTENERS);
     }
 
     private static GlobalPos getPlacementPos(ServerWorld world, PlayerEntity player, GlobalPos deathPos) {
@@ -180,12 +182,7 @@ public class GravestoneCreation extends GravestoneManager {
         return validPos;
     }
 
-    protected static void placeGravestone(MinecraftServer server, GlobalPos gravestonePos) {
-        ServerWorld world = server.getWorld(VersionUtil.getDimension(gravestonePos));
-
-        if (world == null) return;
-
-        BlockPos pos = VersionUtil.getPos(gravestonePos);
+    protected static void placeGravestone(ServerWorld world, BlockPos pos) {
         BlockState gravestoneBlock = GravestonesRegistry.GRAVESTONE_TECHNICAL.getDefaultState();
         if (world.getBlockState(pos).getFluidState().isIn(FluidTags.WATER)) {
             gravestoneBlock = gravestoneBlock.with(Properties.WATERLOGGED, true);
