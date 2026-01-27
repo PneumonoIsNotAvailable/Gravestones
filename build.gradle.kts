@@ -13,6 +13,7 @@ base.archivesName.set(project.property("mod_id") as String)
 version = "${project.property("mod_version")}+${stonecutter.current.project}+${property("mod_subversion")}"
 
 val galosphere = "${property("galosphere_version")}" != "[VERSIONED]"
+val resourceBackpacks = "${property("resource_backpacks_version")}" != "[VERSIONED]"
 val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
 val trinketsCanary = "${property("trinkets_canary_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
@@ -36,7 +37,7 @@ repositories {
 		maven("https://maven.shedaniel.me/")
 	}
 
-	// Core, Trinkets Canary, Galosphere
+	// Core, Trinkets Canary, Galosphere, Resource Backpacks
 	exclusiveContent {
 		forRepository {
 			maven("https://api.modrinth.com/maven")
@@ -65,9 +66,10 @@ loom {
 }
 
 stonecutter {
+	constants["galosphere"] = galosphere
+	constants["resource_backpacks"] = resourceBackpacks
 	constants["accessories"] = accessories
 	constants["trinkets"] = trinkets || trinketsCanary
-	constants["galosphere"] = galosphere
 }
 
 dependencies {
@@ -88,6 +90,11 @@ dependencies {
 	// Galosphere
 	if (galosphere) {
 		modCompileOnly("maven.modrinth:galosphere:${property("galosphere_version")}")
+	}
+
+	// Resource Backpacks
+	if (resourceBackpacks) {
+		modCompileOnly("maven.modrinth:resource-backpacks:${property("resource_backpacks_version")}")
 	}
 
 	// Accessories
