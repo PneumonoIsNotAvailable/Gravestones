@@ -1,2 +1,4 @@
-- Added support for 1.21.11
-- Updated to new PneumonoCore version
+- Added support for Galosphere
+- Added support for Resource Backpacks
+- Minor gravestone creation code improvements
+- Fixed gravestone block entity renderer not null-checking grave owner
