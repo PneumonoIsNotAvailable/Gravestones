@@ -2,6 +2,7 @@ plugins {
 	id("fabric-loom") version "1.14-SNAPSHOT"
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin") version "1.0.0"
+	id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
 }
 
 val javaVersion = if (stonecutter.eval(stonecutter.current.version, ">=1.20.5"))
@@ -70,6 +71,24 @@ stonecutter {
 	constants["resource_backpacks"] = resourceBackpacks
 	constants["accessories"] = accessories
 	constants["trinkets"] = trinkets || trinketsCanary
+}
+
+fletchingTable {
+
+	j52j.register("main") {
+		if (stonecutter.eval(stonecutter.current.version, ">=1.21")) {
+			extension("json", "data/**/*.json5")
+		} else {
+			extension("json", "data/gravestones/advancement/recipes/decorations/*.json5 -> /data/gravestones/advancements/recipes/decorations")
+			extension("json", "data/gravestones/loot_table/blocks/*.json5 -> /data/gravestones/loot_tables/blocks")
+			extension("json", "data/gravestones/recipe/*.json5 -> ../recipes")
+			extension("json", "data/gravestones/tags/block/*.json -> ../blocks")
+			extension("json", "data/gravestones/tags/enchantment/*.json -> ../enchantments")
+			extension("json", "data/gravestones/tags/item/*.json -> ../items")
+			extension("json", "data/minecraft/tags/block/*.json -> ../blocks")
+			extension("json", "data/minecraft/tags/block/mineable/*.json -> /data/minecraft/tags/blocks/mineable")
+		}
+	}
 }
 
 dependencies {

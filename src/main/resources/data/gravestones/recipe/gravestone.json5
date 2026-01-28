@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    //? if >=1.21.2 {
+    "S": "minecraft:stone",
+    "s": "minecraft:stone_slab",
+    //?} else {
+    /*"S": {
+      "item": "minecraft:stone"
+    },
+    "s": {
+      "item": "minecraft:stone_slab"
+    }
+    *///?}
+  },
+  "pattern": [
+    " s ",
+    "SSS",
+    "sss"
+  ],
+  "result": {
+    "count": 1,
+    //? if >=1.20.5 {
+    "id": "gravestones:gravestone"
+    //?} else {
+    /*"item": "gravestones:gravestone"
+    *///?}
+  }
+}

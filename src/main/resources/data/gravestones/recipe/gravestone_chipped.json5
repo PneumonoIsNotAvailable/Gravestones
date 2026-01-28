@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "group": "gravestone_cracking",
+  //? if >=1.21.2 {
+  "ingredient": "gravestones:gravestone",
+  //?} else {
+  /*"ingredient": {
+    "item": "gravestones:gravestone"
+  },
+  *///?}
+  //? if >=1.20.5 {
+  "result": {
+    "id": "gravestones:gravestone_chipped"
+  }
+  //?} else if >=1.20.3 {
+  /*"result": {
+    "item": "gravestones:gravestone_chipped"
+  }
+  *///?} else {
+  /*"result": "gravestones:gravestone_chipped"
+  *///?}
+}
