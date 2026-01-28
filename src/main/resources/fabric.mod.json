@@ -48,7 +48,7 @@
 			"environment": "client"
 		}
 	],
-	"accessWidener": "gravestones.accesswidener",
+	"accessWidener": "access_wideners/${aw_file}",
 	"depends": {
 		"fabricloader": "*",
 		"minecraft": ">=${min_supported} <=${max_supported}",

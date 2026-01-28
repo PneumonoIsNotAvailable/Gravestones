@@ -10,6 +10,18 @@ val javaVersion = if (stonecutter.eval(stonecutter.current.version, ">=1.20.5"))
 java.targetCompatibility = javaVersion
 java.sourceCompatibility = javaVersion
 
+val awFile =
+	if (stonecutter.eval(stonecutter.current.version, ">=1.21.9"))
+		"1.21.9.accesswidener"
+	else if (stonecutter.eval(stonecutter.current.version, ">=1.21.4"))
+		"1.21.4.accesswidener"
+	else if (stonecutter.eval(stonecutter.current.version, ">=1.20.5"))
+		"1.20.5.accesswidener"
+	else if (stonecutter.eval(stonecutter.current.version, ">=1.20.2"))
+		"1.20.2.accesswidener"
+	else
+		"1.20.accesswidener"
+
 base.archivesName.set(project.property("mod_id") as String)
 version = "${project.property("mod_version")}+${stonecutter.current.project}+${property("mod_subversion")}"
 
@@ -50,7 +62,7 @@ repositories {
 }
 
 loom {
-	accessWidenerPath = file("src/main/resources/gravestones.accesswidener")
+	accessWidenerPath = rootProject.file("src/main/resources/access_wideners/$awFile")
 
 	splitEnvironmentSourceSets()
 
@@ -157,7 +169,8 @@ tasks {
 				mutableMapOf(
 					"version" to project.property("mod_version"),
 					"min_supported" to project.property("min_supported_version"),
-					"max_supported" to project.property("max_supported_version")
+					"max_supported" to project.property("max_supported_version"),
+					"aw_file" to awFile
 				)
 			)
 		}
