@@ -44,6 +44,10 @@ public class Gravestones implements ModInitializer {
 			ResourceBackpacksCompat.register();
 		}
 
+		if (isModLoaded("backpacked")) {
+			BackpackedCompat.register();
+		}
+
 		// Accessories' Compat Layers exist, so to prevent issues Gravestones will prioritize Accessories directly over other mods
 		boolean usingAccessories = false;
 

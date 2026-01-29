@@ -27,6 +27,7 @@ version = "${project.property("mod_version")}+${stonecutter.current.project}+${p
 
 val galosphere = "${property("galosphere_version")}" != "[VERSIONED]"
 val resourceBackpacks = "${property("resource_backpacks_version")}" != "[VERSIONED]"
+val backpacked = "${property("backpacked_version")}" != "[VERSIONED]"
 val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
 val trinketsCanary = "${property("trinkets_canary_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
@@ -36,6 +37,15 @@ repositories {
 	maven("https://maven.terraformersmc.com/")
 	if (stonecutter.current.project == "1.20.3") {
 		maven("https://maven.nucleoid.xyz/")
+	}
+
+	exclusiveContent {
+		forRepository {
+			maven("https://cursemaven.com")
+		}
+		filter {
+			includeGroup("curse.maven")
+		}
 	}
 
 	// Trinkets & Trinkets Canary
@@ -81,6 +91,7 @@ loom {
 stonecutter {
 	constants["galosphere"] = galosphere
 	constants["resource_backpacks"] = resourceBackpacks
+	constants["backpacked"] = backpacked
 	constants["accessories"] = accessories
 	constants["trinkets"] = trinkets || trinketsCanary
 }
@@ -126,6 +137,11 @@ dependencies {
 	// Resource Backpacks
 	if (resourceBackpacks) {
 		modCompileOnly("maven.modrinth:resource-backpacks:${property("resource_backpacks_version")}")
+	}
+
+	// Backpacked
+	if (backpacked) {
+		modCompileOnly("curse.maven:backpacked-352835:${property("backpacked_version")}")
 	}
 
 	// Accessories
