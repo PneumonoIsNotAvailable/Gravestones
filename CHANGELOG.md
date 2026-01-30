@@ -1,4 +1,3 @@
-- Added support for Galosphere
-- Added support for Resource Backpacks
-- Minor gravestone creation code improvements
-- Fixed gravestone block entity renderer not null-checking grave owner
+- Added support for Backpacked
+- Minor code improvements
+- Fixed major issue with Resource Backpacks compatibility
