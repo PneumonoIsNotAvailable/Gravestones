@@ -1,11 +1,18 @@
 package net.pneumono.gravestones.content;
 
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.SkipItemCallback;
+
+import java.util.Optional;
 
 //? if >=1.21.11 {
 import net.minecraft.world.rule.GameRules;
@@ -15,16 +22,10 @@ import net.minecraft.world.rule.GameRules;
 
 //? if >=1.21 {
 import net.minecraft.component.EnchantmentEffectComponentTypes;
-//?} else if >=1.20.5 {
-/*import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
-*///?} else {
-/*import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
+//?}
+
+//? if <1.20.5 {
+/*import net.minecraft.registry.Registries;
 *///?}
 
 /**
@@ -35,14 +36,22 @@ public class GravestonesApiUsages {
         GravestonesApi.registerDataType(Gravestones.id("inventory"), new PlayerInventoryDataType());
         GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
 
+        GravestonesApi.addSkippedEnchantment(Identifier.of("enderio", "soulbound"));
+        GravestonesApi.addSkippedEnchantment(Identifier.of("alessandrvenchantments", "soulbound"));
+        GravestonesApi.addSkippedEnchantment(Identifier.of("enchantery", "soulbound"));
+        GravestonesApi.addSkippedEnchantment(Identifier.of("enderzoology", "soulbound"));
+        GravestonesApi.addSkippedEnchantment(Identifier.of("soulbound", "soulbound"));
+        GravestonesApi.addSkippedEnchantment(Identifier.of("soulbound_enchantment", "soulbound"));
+
         SkipItemCallback.EVENT.register((player, itemStack, slot) ->
                 itemStack.isIn(GravestonesApi.ITEM_SKIPS_GRAVESTONES) ||
                 //? if >=1.21 {
                 EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, GravestonesApi.ENCHANTMENT_SKIPS_GRAVESTONES)
                 //?} else {
-                /*hasSkippableEnchantments(itemStack)
+                /*hasTagSkippableEnchantments(itemStack)
                 *///?}
         );
+        SkipItemCallback.EVENT.register((player, itemStack, slot) -> hasSkippedEnchantments(itemStack));
         SkipItemCallback.EVENT.register((player, itemStack, slot) ->
                 //? if >=1.21 {
                 EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
@@ -68,10 +77,9 @@ public class GravestonesApiUsages {
     /*@SuppressWarnings("deprecation")
      *///?}
     //? if <1.21 {
-    /*private static boolean hasSkippableEnchantments(ItemStack stack) {
+    /*private static boolean hasTagSkippableEnchantments(ItemStack stack) {
         //? if >=1.20.5 {
-        ItemEnchantmentsComponent component = stack.getEnchantments();
-        for (RegistryEntry<Enchantment> enchantment : component.getEnchantments()) {
+        for (RegistryEntry<Enchantment> enchantment : stack.getEnchantments().getEnchantments()) {
             if (enchantment.isIn(GravestonesApi.ENCHANTMENT_SKIPS_GRAVESTONES)) {
                 return true;
             }
@@ -90,4 +98,24 @@ public class GravestonesApiUsages {
         ^///?}
     }
     *///?}
+
+    private static boolean hasSkippedEnchantments(ItemStack stack) {
+        //? if >=1.20.5 {
+        for (RegistryEntry<Enchantment> enchantment : stack.getEnchantments().getEnchantments()
+        ) {
+            Optional<RegistryKey<Enchantment>> optional = enchantment.getKey();
+            if (optional.isPresent() && GravestonesApi.isSkippedEnchantment(optional.get().getValue())) return true;
+        }
+        return false;
+        //?} else {
+        /*for (RegistryEntry<Enchantment> enchantment : EnchantmentHelper.get(stack).keySet().stream()
+                .map(Registries.ENCHANTMENT::getEntry)
+                .toList()
+        ) {
+            Optional<RegistryKey<Enchantment>> optional = enchantment.getKey();
+            if (optional.isPresent() && GravestonesApi.isSkippedEnchantment(optional.get().getValue())) return true;
+        }
+        return false;
+        *///?}
+    }
 }

@@ -9,7 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -20,10 +22,7 @@ import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 /**
@@ -54,6 +53,7 @@ import java.util.function.BiPredicate;
 public class GravestonesApi {
     private static final Map<Identifier, GravestoneDataType> DATA_TYPES = new HashMap<>();
     private static final List<BiPredicate<PlayerEntity, ItemStack>> ITEM_SKIP_PREDICATES = new ArrayList<>();
+    private static final List<Identifier> SKIPPED_ENCHANTMENTS = new ArrayList<>();
 
     public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ITEM, Gravestones.id("skips_gravestones"));
     public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.id("skips_gravestones"));
@@ -72,6 +72,51 @@ public class GravestonesApi {
     @Deprecated
     public static void registerItemSkipPredicate(BiPredicate<PlayerEntity, ItemStack> predicate) {
         ITEM_SKIP_PREDICATES.add(predicate);
+    }
+
+    /**
+     * Adds an enchantment to a list of enchantments gravestones should skip.
+     *
+     * <p>This is intended for use in versions where enchantment tags are not supported,
+     * and so {@code gravestones:skips_gravestones} cannot be used.
+     * However, this will still work regardless of version.
+     */
+    public static void addSkippedEnchantment(RegistryEntry<Enchantment> enchantment) {
+        Optional<RegistryKey<Enchantment>> optional = enchantment.getKey();
+        if (optional.isPresent()) {
+            addSkippedEnchantment(optional.get());
+        } else {
+            throw new IllegalArgumentException("Cannot register a skipped enchantment that has no key");
+        }
+    }
+
+    /**
+     * Adds an enchantment to a list of enchantments gravestones should skip.
+     *
+     * <p>This is intended for use in versions where enchantment tags are not supported,
+     * and so {@code gravestones:skips_gravestones} cannot be used.
+     * However, this will still work regardless of version.
+     */
+    public static void addSkippedEnchantment(RegistryKey<Enchantment> enchantment) {
+        addSkippedEnchantment(enchantment.getValue());
+    }
+
+    /**
+     * Adds an enchantment to a list of enchantments gravestones should skip.
+     *
+     * <p>This is intended for use in versions where enchantment tags are not supported,
+     * and so {@code gravestones:skips_gravestones} cannot be used.
+     * However, this will still work regardless of version.
+     */
+    public static void addSkippedEnchantment(Identifier id) {
+        SKIPPED_ENCHANTMENTS.add(id);
+    }
+
+    public static boolean isSkippedEnchantment(Identifier checked) {
+        for (Identifier skipped : SKIPPED_ENCHANTMENTS) {
+            if (skipped.equals(checked)) return true;
+        }
+        return false;
     }
 
     /**
