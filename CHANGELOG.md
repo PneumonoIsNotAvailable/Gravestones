@@ -1,3 +1,2 @@
-- Added support for Backpacked
-- Minor code improvements
-- Fixed major issue with Resource Backpacks compatibility
+- Fixed supported soulbound enchantments not working in certain versions
+- Added API feature for skipping enchantments across all versions
