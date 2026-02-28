@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.gravestones.GravestoneManager;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -126,16 +127,18 @@ public class GravestonesApi {
         NbtCompound contents = new NbtCompound();
 
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+            String key = entry.getKey().toString();
+            GravestoneManager.info("Creating data for Data Type '{}'...", key);
             NbtCompound data = new NbtCompound();
             try {
                 DynamicOps<NbtElement> ops = /*? if >=1.20.5 {*/player.getRegistryManager().getOps(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().writeData(data, ops, player);
             } catch (Exception e) {
-                Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to write data:", entry.getKey().toString(), e);
+                Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to write data:", key, e);
             }
 
             contents.put(
-                    entry.getKey().toString(),
+                    key,
                     data
             );
         }
@@ -154,10 +157,13 @@ public class GravestonesApi {
      * Called when gravestones are broken, including when collected.
      */
     public static void onBreak(ServerWorld world, BlockPos pos, int decay, NbtCompound contents) {
+        GravestoneManager.info("Breaking Gravestone at ({})", pos.toShortString());
+
         if (contents.isEmpty()) return;
 
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String key = entry.getKey().toString();
+            GravestoneManager.info("Processing data for Data Type '{}'...", key);
             try {
                 DynamicOps<NbtElement> ops = /*? if >=1.20.5 {*/world.getRegistryManager().getOps(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().onBreak(
