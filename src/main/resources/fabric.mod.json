@@ -23,6 +23,8 @@
 	"custom": {
 		"modmenu": {
 			"links": {
+				"modmenu.donate": "https://ko-fi.com/pneumono",
+				"modmenu.discord": "https://discord.gg/ap6wD2XUzs",
 				"modmenu.modrinth": "https://modrinth.com/project/Heh3BbSv",
 				"modmenu.wiki": "https://github.com/PneumonoIsNotAvailable/Gravestones/wiki"
 			}
