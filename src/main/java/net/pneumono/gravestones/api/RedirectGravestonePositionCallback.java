@@ -2,12 +2,11 @@ package net.pneumono.gravestones.api;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
 import net.pneumono.gravestones.gravestones.GravestonePlacement;
-import net.pneumono.gravestones.multiversion.VersionUtil;
 
 /**
  * Callback for changing the placement position of gravestones.
@@ -22,7 +21,7 @@ import net.pneumono.gravestones.multiversion.VersionUtil;
  *
  * <p>{@code GlobalPos} has a {@code dimension} field,
  * which should be used if the gravestone should be redirected to another dimension.
- * The {@code ServerWorld} provided represents the dimension in which the player died.
+ * The {@code ServerLevel} provided represents the dimension in which the player died.
  *
  * <p>If you want to avoid breaking blocks at your target position,
  * {@link GravestonePlacement#getValidPos}
@@ -42,12 +41,12 @@ import net.pneumono.gravestones.multiversion.VersionUtil;
  */
 public interface RedirectGravestonePositionCallback {
     Event<RedirectGravestonePositionCallback> EVENT = EventFactory.createArrayBacked(RedirectGravestonePositionCallback.class,
-            listeners -> (world, player, deathPos) -> {
+            listeners -> (level, player, deathPos) -> {
                 GlobalPos placementPos = null;
 
                 for (RedirectGravestonePositionCallback listener : listeners) {
-                    placementPos = listener.redirectPosition(world, player, deathPos);
-                    if (GravestonePlacement.isInvalid(world.getBlockState(VersionUtil.getPos(placementPos)))) placementPos = null;
+                    placementPos = listener.redirectPosition(level, player, deathPos);
+                    if (GravestonePlacement.isInvalid(level.getBlockState(placementPos.pos()))) placementPos = null;
                     if (placementPos != null) break;
                 }
 
@@ -55,5 +54,5 @@ public interface RedirectGravestonePositionCallback {
             }
     );
 
-    GlobalPos redirectPosition(ServerWorld world, PlayerEntity player, GlobalPos deathPos);
+    GlobalPos redirectPosition(ServerLevel level, Player player, GlobalPos deathPos);
 }

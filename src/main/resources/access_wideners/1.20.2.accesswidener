@@ -1,7 +1,7 @@
 accessWidener v2 named
 
-accessible field net/minecraft/block/entity/SkullBlockEntity EXECUTOR Ljava/util/concurrent/Executor;
-accessible method net/minecraft/block/entity/SkullBlockEntity hasTextures (Lcom/mojang/authlib/GameProfile;)Z
-accessible method net/minecraft/block/entity/SkullBlockEntity fetchProfile (Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
-accessible method net/minecraft/server/network/ServerPlayNetworkHandler filterTexts (Ljava/util/List;)Ljava/util/concurrent/CompletableFuture;
-accessible method net/minecraft/client/render/block/entity/SignBlockEntityRenderer shouldRender (Lnet/minecraft/util/math/BlockPos;I)Z
+accessible field net/minecraft/world/level/block/entity/SkullBlockEntity CHECKED_MAIN_THREAD_EXECUTOR Ljava/util/concurrent/Executor;
+accessible method net/minecraft/world/level/block/entity/SkullBlockEntity hasTextures (Lcom/mojang/authlib/GameProfile;)Z
+accessible method net/minecraft/world/level/block/entity/SkullBlockEntity fetchGameProfile (Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
+accessible method net/minecraft/server/network/ServerGamePacketListenerImpl filterTextPacket (Ljava/util/List;)Ljava/util/concurrent/CompletableFuture;
+accessible method net/minecraft/client/renderer/blockentity/SignRenderer isOutlineVisible (Lnet/minecraft/core/BlockPos;I)Z

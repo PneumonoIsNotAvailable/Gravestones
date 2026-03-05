@@ -1,14 +1,14 @@
 package net.pneumono.gravestones.api;
 
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.Containers;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.pneumono.gravestones.content.ExperienceDataType;
 import net.pneumono.gravestones.content.PlayerInventoryDataType;
 import net.pneumono.gravestones.gravestones.GravestoneManager;
@@ -40,7 +40,7 @@ public abstract class GravestoneDataType extends GravestoneManager {
      *
      * @param player The player who has died.
      */
-    public abstract void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception;
+    public abstract void writeData(CompoundTag tag, DynamicOps<Tag> ops, Player player) throws Exception;
 
     /**
      * Called when a gravestone is broken, unless it was broken by a player collecting it.
@@ -59,7 +59,7 @@ public abstract class GravestoneDataType extends GravestoneManager {
      * @param pos The position of the gravestone.
      * @param decay The decay stage of the gravestone being collected.
      */
-    public abstract void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) throws Exception;
+    public abstract void onBreak(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, int decay) throws Exception;
 
     /**
      * Called when a player collects a gravestone.
@@ -76,31 +76,31 @@ public abstract class GravestoneDataType extends GravestoneManager {
      * @param player The player collecting the gravestone.
      * @param decay The decay stage of the gravestone being collected.
      */
-    public abstract void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) throws Exception;
+    public abstract void onCollect(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, Player player, int decay) throws Exception;
 
-    public void dropStack(World world, BlockPos pos, ItemStack stack) {
+    public void dropStack(Level level, BlockPos pos, ItemStack stack) {
         if (!stack.isEmpty()) {
-            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
         }
     }
 
-    public void dropStacks(World world, BlockPos pos, Collection<ItemStack> stacks) {
+    public void dropStacks(Level level, BlockPos pos, Collection<ItemStack> stacks) {
         for (ItemStack stack : stacks) {
-            dropStack(world, pos, stack);
+            dropStack(level, pos, stack);
         }
     }
 
-    public void dropStack(PlayerEntity player, ItemStack stack) {
-        if (!player.giveItemStack(stack)) {
-            ItemEntity itemEntity = player.dropItem(stack, false);
+    public void dropStack(Player player, ItemStack stack) {
+        if (!player.addItem(stack)) {
+            ItemEntity itemEntity = player.drop(stack, false);
             if (itemEntity != null) {
-                itemEntity.resetPickupDelay();
-                itemEntity.setOwner(player.getUuid());
+                itemEntity.setNoPickUpDelay();
+                itemEntity.setTarget(player.getUUID());
             }
         }
     }
 
-    public void dropStacks(PlayerEntity player, Collection<ItemStack> stacks) {
+    public void dropStacks(Player player, Collection<ItemStack> stacks) {
         for (ItemStack stack : stacks) {
             dropStack(player, stack);
         }

@@ -2,18 +2,18 @@ package net.pneumono.gravestones.gravestones;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.math.GlobalPos;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.UUIDUtil;
 
 public record RecentGraveHistory(UUID owner, Optional<GlobalPos> first, Optional<GlobalPos> second, Optional<GlobalPos> third) {
     public static final Codec<RecentGraveHistory> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-            Uuids.INT_STREAM_CODEC.fieldOf("owner").forGetter(RecentGraveHistory::owner),
+            UUIDUtil.CODEC.fieldOf("owner").forGetter(RecentGraveHistory::owner),
             GlobalPos.CODEC.optionalFieldOf("first").forGetter(RecentGraveHistory::first),
             GlobalPos.CODEC.optionalFieldOf("second").forGetter(RecentGraveHistory::second),
             GlobalPos.CODEC.optionalFieldOf("third").forGetter(RecentGraveHistory::third)

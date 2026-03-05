@@ -2,9 +2,9 @@ package net.pneumono.gravestones.api;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Callback for cancelling gravestone placement.
@@ -24,9 +24,9 @@ import net.minecraft.util.math.GlobalPos;
  */
 public interface CancelGravestonePlacementCallback {
     Event<CancelGravestonePlacementCallback> EVENT = EventFactory.createArrayBacked(CancelGravestonePlacementCallback.class,
-            listeners -> (world, player, deathPos) -> {
+            listeners -> (level, player, deathPos) -> {
                 for (CancelGravestonePlacementCallback listener : listeners) {
-                    if (listener.shouldCancel(world, player, deathPos)) {
+                    if (listener.shouldCancel(level, player, deathPos)) {
                         return true;
                     }
                 }
@@ -35,5 +35,5 @@ public interface CancelGravestonePlacementCallback {
             }
     );
 
-    boolean shouldCancel(ServerWorld world, PlayerEntity player, GlobalPos deathPos);
+    boolean shouldCancel(ServerLevel level, Player player, GlobalPos deathPos);
 }

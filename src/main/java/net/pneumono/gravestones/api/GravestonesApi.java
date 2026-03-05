@@ -1,21 +1,21 @@
 package net.pneumono.gravestones.api;
 
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
@@ -53,12 +53,12 @@ import java.util.function.BiPredicate;
  */
 public class GravestonesApi {
     private static final Map<Identifier, GravestoneDataType> DATA_TYPES = new HashMap<>();
-    private static final List<BiPredicate<PlayerEntity, ItemStack>> ITEM_SKIP_PREDICATES = new ArrayList<>();
+    private static final List<BiPredicate<Player, ItemStack>> ITEM_SKIP_PREDICATES = new ArrayList<>();
     private static final List<Identifier> SKIPPED_ENCHANTMENTS = new ArrayList<>();
 
-    public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ITEM, Gravestones.id("skips_gravestones"));
-    public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.of(RegistryKeys.ENCHANTMENT, Gravestones.id("skips_gravestones"));
-    public static final TagKey<Block> BLOCK_GRAVESTONE_IRREPLACEABLE = TagKey.of(RegistryKeys.BLOCK, Gravestones.id("gravestone_irreplaceable"));
+    public static final TagKey<Item> ITEM_SKIPS_GRAVESTONES = TagKey.create(Registries.ITEM, Gravestones.id("skips_gravestones"));
+    public static final TagKey<Enchantment> ENCHANTMENT_SKIPS_GRAVESTONES = TagKey.create(Registries.ENCHANTMENT, Gravestones.id("skips_gravestones"));
+    public static final TagKey<Block> BLOCK_GRAVESTONE_IRREPLACEABLE = TagKey.create(Registries.BLOCK, Gravestones.id("gravestone_irreplaceable"));
 
     /**
      * Registers a type of data that gravestones save, and how gravestones should handle that data.
@@ -71,7 +71,7 @@ public class GravestonesApi {
      * @deprecated Use {@link SkipItemCallback#EVENT} instead.
      */
     @Deprecated
-    public static void registerItemSkipPredicate(BiPredicate<PlayerEntity, ItemStack> predicate) {
+    public static void registerItemSkipPredicate(BiPredicate<Player, ItemStack> predicate) {
         ITEM_SKIP_PREDICATES.add(predicate);
     }
 
@@ -82,8 +82,8 @@ public class GravestonesApi {
      * and so {@code gravestones:skips_gravestones} cannot be used.
      * However, this will still work regardless of version.
      */
-    public static void addSkippedEnchantment(RegistryEntry<Enchantment> enchantment) {
-        Optional<RegistryKey<Enchantment>> optional = enchantment.getKey();
+    public static void addSkippedEnchantment(Holder<Enchantment> enchantment) {
+        Optional<ResourceKey<Enchantment>> optional = enchantment.unwrapKey();
         if (optional.isPresent()) {
             addSkippedEnchantment(optional.get());
         } else {
@@ -98,8 +98,8 @@ public class GravestonesApi {
      * and so {@code gravestones:skips_gravestones} cannot be used.
      * However, this will still work regardless of version.
      */
-    public static void addSkippedEnchantment(RegistryKey<Enchantment> enchantment) {
-        addSkippedEnchantment(enchantment.getValue());
+    public static void addSkippedEnchantment(ResourceKey<Enchantment> enchantment) {
+        addSkippedEnchantment(VersionUtil.getId(enchantment));
     }
 
     /**
@@ -123,15 +123,15 @@ public class GravestonesApi {
     /**
      * Removes data from the player, and returns an NBT Compound with that data.
      */
-    public static NbtCompound getDataToInsert(PlayerEntity player) {
-        NbtCompound contents = new NbtCompound();
+    public static CompoundTag getDataToInsert(Player player) {
+        CompoundTag contents = new CompoundTag();
 
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String key = entry.getKey().toString();
             GravestoneManager.info("Creating data for Data Type '{}'...", key);
-            NbtCompound data = new NbtCompound();
+            CompoundTag data = new CompoundTag();
             try {
-                DynamicOps<NbtElement> ops = /*? if >=1.20.5 {*/player.getRegistryManager().getOps(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
+                DynamicOps<Tag> ops = /*? if >=1.20.5 {*/player.registryAccess().createSerializationContext(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().writeData(data, ops, player);
             } catch (Exception e) {
                 Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to write data:", key, e);
@@ -149,14 +149,14 @@ public class GravestonesApi {
     /**
      * Called when gravestones are broken, including when collected.
      */
-    public static void onBreak(ServerWorld world, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
-        onBreak(world, pos, decay, entity.getContents());
+    public static void onBreak(ServerLevel level, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
+        onBreak(level, pos, decay, entity.getContents());
     }
 
     /**
      * Called when gravestones are broken, including when collected.
      */
-    public static void onBreak(ServerWorld world, BlockPos pos, int decay, NbtCompound contents) {
+    public static void onBreak(ServerLevel level, BlockPos pos, int decay, CompoundTag contents) {
         GravestoneManager.info("Breaking Gravestone at ({})", pos.toShortString());
 
         if (contents.isEmpty()) return;
@@ -165,11 +165,11 @@ public class GravestonesApi {
             String key = entry.getKey().toString();
             GravestoneManager.info("Processing data for Data Type '{}'...", key);
             try {
-                DynamicOps<NbtElement> ops = /*? if >=1.20.5 {*/world.getRegistryManager().getOps(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
+                DynamicOps<Tag> ops = /*? if >=1.20.5 {*/level.registryAccess().createSerializationContext(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().onBreak(
                         VersionUtil.getCompoundOrEmpty(contents, key),
                         ops,
-                        world,
+                        level,
                         pos,
                         decay
                 );
@@ -182,16 +182,16 @@ public class GravestonesApi {
     /**
      * Called when gravestones are collected.
      */
-    public static void onCollect(ServerWorld world, BlockPos pos, PlayerEntity player, int decay, NbtCompound contents) {
+    public static void onCollect(ServerLevel level, BlockPos pos, Player player, int decay, CompoundTag contents) {
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
 
             String key = entry.getKey().toString();
             try {
-                DynamicOps<NbtElement> ops = /*? if >=1.20.5 {*/world.getRegistryManager().getOps(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
+                DynamicOps<Tag> ops = /*? if >=1.20.5 {*/level.registryAccess().createSerializationContext(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().onCollect(
                         VersionUtil.getCompoundOrEmpty(contents, key),
                         ops,
-                        world,
+                        level,
                         pos,
                         player,
                         decay
@@ -217,7 +217,7 @@ public class GravestonesApi {
      * <p>This should be called after {@link #onInsertItem}, as listeners may change the stack.
      *
      * <p>If the item comes from a specific slot,
-     * {@link #shouldSkipItem(PlayerEntity, ItemStack, Identifier)} should be used instead.
+     * {@link #shouldSkipItem(Player, ItemStack, Identifier)} should be used instead.
      *
      * <p>Also checks {@link InsertGravestoneItemCallback} listeners and Item Skip Predicates for backwards compatibility.
      *
@@ -227,7 +227,7 @@ public class GravestonesApi {
      * @see SkipItemCallback#EVENT
      */
     @SuppressWarnings("deprecation")
-    public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack) {
+    public static boolean shouldSkipItem(Player player, ItemStack stack) {
         return shouldSkipItem(player, stack, null);
     }
 
@@ -251,7 +251,7 @@ public class GravestonesApi {
      * @see SkipItemCallback#EVENT
      */
     @SuppressWarnings("deprecation")
-    public static boolean shouldSkipItem(PlayerEntity player, ItemStack stack, @Nullable Identifier slot) {
+    public static boolean shouldSkipItem(Player player, ItemStack stack, @Nullable Identifier slot) {
         if (InsertGravestoneItemCallback.EVENT.invoker().insertItem(player, stack)) {
             return true;
         }
@@ -260,7 +260,7 @@ public class GravestonesApi {
             return true;
         }
 
-        for (BiPredicate<PlayerEntity, ItemStack> predicate : ITEM_SKIP_PREDICATES) {
+        for (BiPredicate<Player, ItemStack> predicate : ITEM_SKIP_PREDICATES) {
             if (predicate.test(player, stack)) {
                 return true;
             }
@@ -276,13 +276,13 @@ public class GravestonesApi {
      * including ones that will be skipped.
      *
      * <p>If the item comes from a specific slot,
-     * {@link #onInsertItem(PlayerEntity, ItemStack, Identifier)} should be used instead.
+     * {@link #onInsertItem(Player, ItemStack, Identifier)} should be used instead.
      *
      * @param player The player who has died.
      * @param stack The item stack being checked.
      * @see OnInsertItemCallback#EVENT
      */
-    public static void onInsertItem(PlayerEntity player, ItemStack stack) {
+    public static void onInsertItem(Player player, ItemStack stack) {
         onInsertItem(player, stack, null);
     }
 
@@ -302,7 +302,7 @@ public class GravestonesApi {
      * @param slot The identifier of the slot holding the item stack.
      * @see OnInsertItemCallback#EVENT
      */
-    public static void onInsertItem(PlayerEntity player, ItemStack stack, @Nullable Identifier slot) {
+    public static void onInsertItem(Player player, ItemStack stack, @Nullable Identifier slot) {
         OnInsertItemCallback.EVENT.invoker().insertItem(player, stack, slot);
     }
 

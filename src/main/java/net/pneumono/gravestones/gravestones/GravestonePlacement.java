@@ -1,14 +1,14 @@
 package net.pneumono.gravestones.gravestones;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.PositionValidationCallback;
 import net.pneumono.gravestones.api.RedirectGravestonePositionCallback;
@@ -28,15 +28,15 @@ public class GravestonePlacement extends GravestoneManager {
      *
      * @see RedirectGravestonePositionCallback
      */
-    public static GlobalPos getRedirectableValidPos(ServerWorld world, PlayerEntity player, GlobalPos deathPos) {
-        GlobalPos redirected = RedirectGravestonePositionCallback.EVENT.invoker().redirectPosition(world, player, deathPos);
+    public static GlobalPos getRedirectableValidPos(ServerLevel level, Player player, GlobalPos deathPos) {
+        GlobalPos redirected = RedirectGravestonePositionCallback.EVENT.invoker().redirectPosition(level, player, deathPos);
         if (redirected != null) return redirected;
 
-        BlockPos validPos = getValidPos(world, VersionUtil.getPos(deathPos), RADIUS);
+        BlockPos validPos = getValidPos(level, deathPos.pos(), RADIUS);
         if (validPos == null) {
             return null;
         } else {
-            return VersionUtil.createGlobalPos(VersionUtil.getDimension(deathPos), validPos);
+            return VersionUtil.createGlobalPos(deathPos.dimension(), validPos);
         }
     }
 
@@ -51,22 +51,22 @@ public class GravestonePlacement extends GravestoneManager {
      * <p>Gravestones itself uses a radius of 2.
      */
     @Nullable
-    public static BlockPos getValidPos(World world, BlockPos originalPos, int radius) {
-        if (getCost(world, originalPos, originalPos) == 0) {
+    public static BlockPos getValidPos(Level level, BlockPos originalPos, int radius) {
+        if (getCost(level, originalPos, originalPos) == 0) {
             return originalPos;
         }
 
         double bestCost = -1;
         BlockPos bestPos = null;
 
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
         for (int x = -radius; x <= radius; ++x) for (int y = -radius; y <= radius; ++y) for (int z = -radius; z <= radius; ++z) {
-            mutable.set(originalPos.add(x, y, z));
+            mutable.set(originalPos.offset(x, y, z));
 
-            double cost = getCost(world, mutable, originalPos);
+            double cost = getCost(level, mutable, originalPos);
             if (cost < bestCost || (bestCost == -1 && cost != -1)) {
                 bestCost = cost;
-                bestPos = mutable.mutableCopy();
+                bestPos = mutable.mutable();
             }
         }
 
@@ -82,32 +82,32 @@ public class GravestonePlacement extends GravestoneManager {
      */
     public static boolean isInvalid(BlockState state) {
         Block block = state.getBlock();
-        return block.getHardness() < 0 ||
-                block.getBlastResistance() >= 3600000 ||
+        return block.defaultDestroyTime() < 0 ||
+                block.getExplosionResistance() >= 3600000 ||
                 block == Blocks.VOID_AIR ||
-                state.isIn(GravestonesApi.BLOCK_GRAVESTONE_IRREPLACEABLE);
+                state.is(GravestonesApi.BLOCK_GRAVESTONE_IRREPLACEABLE);
     }
 
-    private static double getCost(World world, BlockPos newPos, BlockPos origin) {
-        BlockState state = world.getBlockState(newPos);
+    private static double getCost(Level level, BlockPos newPos, BlockPos origin) {
+        BlockState state = level.getBlockState(newPos);
         if (
-                isInvalid(state) || !PositionValidationCallback.EVENT.invoker().isPositionValid(world, state, newPos)
+                isInvalid(state) || !PositionValidationCallback.EVENT.invoker().isPositionValid(level, state, newPos)
         ) {
             return -1;
         }
 
         double cost = 0;
         if (!state.getFluidState().isEmpty()) {
-            if (state.getFluidState().isIn(FluidTags.WATER)) {
+            if (state.getFluidState().is(FluidTags.WATER)) {
                 cost += 1.5;
             } else {
                 cost += 5;
             }
         }
-        if (!state.isAir()) cost += state.isReplaceable() ? 0.5 : 5;
-        if (world.getBlockState(newPos.down()).isAir()) cost += 1.5;
+        if (!state.isAir()) cost += state.canBeReplaced() ? 0.5 : 5;
+        if (level.getBlockState(newPos.below()).isAir()) cost += 1.5;
 
-        cost += origin.getSquaredDistance(newPos);
+        cost += origin.distSqr(newPos);
 
         return cost;
     }

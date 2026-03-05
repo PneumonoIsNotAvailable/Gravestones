@@ -6,14 +6,14 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.emi.trinkets.api.*;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.multiversion.VersionUtil;
@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 //? if >=1.21 {
-import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 //?}
 
 public class TrinketsDataType extends GravestoneDataType {
     private static final String KEY = "trinkets";
 
     @Override
-    public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception {
+    public void writeData(CompoundTag tag, DynamicOps<Tag> ops, Player player) throws Exception {
         TrinketComponent component = TrinketsApi.getTrinketComponent(player).orElse(null);
         if (component == null) return;
 
@@ -40,30 +40,30 @@ public class TrinketsDataType extends GravestoneDataType {
             if (shouldSkipTrinket(player, reference, stack)) return;
 
             storedTrinkets.add(new TrinketsSlot(reference, stack));
-            reference.inventory().removeStack(reference.index());
+            reference.inventory().removeItemNoUpdate(reference.index());
         });
 
-        VersionUtil.put(ops, nbt, KEY, TrinketsSlot.CODEC.listOf(), storedTrinkets);
+        VersionUtil.put(ops, tag, KEY, TrinketsSlot.CODEC.listOf(), storedTrinkets);
     }
 
     private Identifier getId(SlotReference reference) {
         SlotType slotType = reference.inventory().getSlotType();
-        return Identifier.of("trinkets",
+        return VersionUtil.createId("trinkets",
                 slotType.getGroup() + "/" + slotType.getName() + "/" + reference.index());
     }
 
     @Override
-    public void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) {
-        List<TrinketsSlot> list = VersionUtil.get(ops, nbt, KEY, TrinketsSlot.CODEC.listOf()).orElseThrow();
+    public void onBreak(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, int decay) {
+        List<TrinketsSlot> list = VersionUtil.get(ops, tag, KEY, TrinketsSlot.CODEC.listOf()).orElseThrow();
 
         for (TrinketsSlot slot : list) {
-            dropStack(world, pos, slot.stack());
+            dropStack(level, pos, slot.stack());
         }
     }
 
     @Override
-    public void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
-        List<TrinketsSlot> list = VersionUtil.get(ops, nbt, KEY, TrinketsSlot.CODEC.listOf()).orElseThrow();
+    public void onCollect(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, Player player, int decay) {
+        List<TrinketsSlot> list = VersionUtil.get(ops, tag, KEY, TrinketsSlot.CODEC.listOf()).orElseThrow();
 
         TrinketComponent trinketComponent = TrinketsApi.getTrinketComponent(player).orElse(null);
         Map<String, Map<String, TrinketInventory>> trinketInventories;
@@ -80,8 +80,8 @@ public class TrinketsDataType extends GravestoneDataType {
             for (TrinketsSlot slot : list) {
                 TrinketInventory inventory = trinketInventories.get(slot.groupName()).get(slot.slotName());
 
-                if (inventory.getStack(slot.index()).isEmpty()) {
-                    inventory.setStack(slot.index(), slot.stack());
+                if (inventory.getItem(slot.index()).isEmpty()) {
+                    inventory.setItem(slot.index(), slot.stack());
                     continue;
                 }
 
@@ -95,7 +95,7 @@ public class TrinketsDataType extends GravestoneDataType {
         }
     }
 
-    public boolean shouldSkipTrinket(PlayerEntity player, SlotReference reference, ItemStack stack) {
+    public boolean shouldSkipTrinket(Player player, SlotReference reference, ItemStack stack) {
         boolean shouldSkipItem = GravestonesApi.shouldSkipItem(player, stack);
 
         TrinketEnums.DropRule dropRule = TrinketsApi.getTrinket(stack.getItem()).getDropRule(stack, reference, player);
@@ -111,7 +111,7 @@ public class TrinketsDataType extends GravestoneDataType {
         if (dropRule == TrinketEnums.DropRule.DEFAULT) {
             boolean vanishing =
             //? if >=1.21 {
-            EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP);
+            EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP);
             //?} else {
             /*EnchantmentHelper.hasVanishingCurse(stack);
             *///?}

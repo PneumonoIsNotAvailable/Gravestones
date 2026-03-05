@@ -1,5 +1,5 @@
 plugins {
-	id("fabric-loom") version "1.14-SNAPSHOT"
+	id("fabric-loom") version "1.15-SNAPSHOT"
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin") version "1.0.0"
 	id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
@@ -117,7 +117,7 @@ fletchingTable {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft("com.mojang:minecraft:${stonecutter.current.version}")
-	mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
+	mappings(loom.officialMojangMappings())
 	modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
@@ -216,6 +216,13 @@ tasks {
 		from("LICENSE") {
 			rename {"${it}_${base.archivesName.get()}"}
 		}
+	}
+}
+
+stonecutter {
+	replacements.string {
+		direction = eval(current.version, ">=1.21.11")
+		replace("ResourceLocation", "Identifier")
 	}
 }
 

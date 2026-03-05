@@ -1,12 +1,12 @@
 package net.pneumono.gravestones.gravestones;
 
 import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.GravestoneCollectedCallback;
@@ -16,12 +16,12 @@ import net.pneumono.gravestones.multiversion.GraveOwner;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 
 public class GravestoneCollection extends GravestoneManager {
-    public static boolean collect(ServerWorld world, PlayerEntity player, BlockPos pos) {
-        if (world.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
+    public static boolean collect(ServerLevel level, Player player, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
 
             info("----- Beginning Gravestone Collection -----");
             info("If you don't want to see this, disable 'Console Info' in the configs!");
-            boolean success = collect(world, player, pos, gravestone);
+            boolean success = collect(level, player, pos, gravestone);
             info("----- Finishing Gravestone Collection -----");
 
             return success;
@@ -30,7 +30,7 @@ public class GravestoneCollection extends GravestoneManager {
         }
     }
 
-    private static boolean collect(ServerWorld world, PlayerEntity player, BlockPos pos, TechnicalGravestoneBlockEntity gravestone) {
+    private static boolean collect(ServerLevel level, Player player, BlockPos pos, TechnicalGravestoneBlockEntity gravestone) {
         // Check the player is allowed to open the gravestone
         info("Performing checks...");
         if (player instanceof FakePlayer) {
@@ -38,7 +38,7 @@ public class GravestoneCollection extends GravestoneManager {
             return false;
         }
 
-        if (player.isDead()) {
+        if (player.isDeadOrDying()) {
             info("Player cannot collect gravestone because they are dead");
             return false;
         }
@@ -46,27 +46,27 @@ public class GravestoneCollection extends GravestoneManager {
         GraveOwner graveOwner = gravestone.getGraveOwner();
         if (graveOwner == null) {
             info("Player cannot collect gravestone because it has no owner");
-            player.sendMessage(Text.translatable("gravestones.cannot_open_no_owner"), true);
+            player.displayClientMessage(Component.translatable("gravestones.cannot_open_no_owner"), true);
             return false;
         }
 
         boolean isOwner = graveOwner.getUuid().equals(VersionUtil.getId(player.getGameProfile()));
         if (!isOwner && GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
             info("Player cannot collect gravestone because they are not the owner");
-            player.sendMessage(Text.translatable("gravestones.cannot_open_wrong_player", graveOwner.getNotNullName()), true);
+            player.displayClientMessage(Component.translatable("gravestones.cannot_open_wrong_player", graveOwner.getNotNullName()), true);
             return false;
         }
         info("All checks passed");
 
         // Return gravestone contents
         info("Returning gravestone contents...");
-        GravestonesApi.onCollect(world, pos, player, gravestone.getDecay(), gravestone.getContents());
-        NbtCompound contents = gravestone.getContents();
+        GravestonesApi.onCollect(level, pos, player, gravestone.getDecay(), gravestone.getContents());
+        CompoundTag contents = gravestone.getContents();
         if (!contents.isEmpty()) {
             warn("Some gravestone contents were not returned: {}", contents);
             return false;
         }
-        gravestone.setContents(new NbtCompound());
+        gravestone.setContents(new CompoundTag());
 
         // Log grave collection
         String uuid = "";
@@ -86,28 +86,28 @@ public class GravestoneCollection extends GravestoneManager {
         // Broadcast chat message
         info("Broadcasting chat message...");
         if (GravestonesConfig.BROADCAST_COLLECT_IN_CHAT.getValue()) {
-            MutableText text;
+            MutableComponent text;
             if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
                 if (isOwner) {
-                    text = Text.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneManager.posToString(pos));
+                    text = Component.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneManager.posToString(pos));
                 } else {
-                    text = Text.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), graveOwner.getNotNullName(), GravestoneManager.posToString(pos));
+                    text = Component.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), graveOwner.getNotNullName(), GravestoneManager.posToString(pos));
                 }
             } else {
                 if (isOwner) {
-                    text = Text.translatable("gravestones.player_collected_grave", player.getName().getString());
+                    text = Component.translatable("gravestones.player_collected_grave", player.getName().getString());
                 } else {
-                    text = Text.translatable("gravestones.player_collected_others_grave", player.getName().getString(), graveOwner.getNotNullName());
+                    text = Component.translatable("gravestones.player_collected_others_grave", player.getName().getString(), graveOwner.getNotNullName());
                 }
             }
-            world.getServer().getPlayerManager().broadcast(text, false);
+            level.getServer().getPlayerList().broadcastSystemMessage(text, false);
         }
 
         // Break block
         info("Breaking gravestone...");
-        world.breakBlock(pos, true);
+        level.destroyBlock(pos, true);
 
-        GravestoneCollectedCallback.EVENT.invoker().afterGravestoneCollect(world, player, pos);
+        GravestoneCollectedCallback.EVENT.invoker().afterGravestoneCollect(level, player, pos);
 
         return true;
     }

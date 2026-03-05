@@ -1,34 +1,28 @@
 package net.pneumono.gravestones.gravestones;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.WorldSavePath;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.LevelResource;
 import net.pneumono.gravestones.multiversion.VersionUtil;
-import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
-//? if =1.20.3 {
-/*import net.minecraft.nbt.NbtTagSizeTracker;
-*///?} else if >=1.20.5 {
-import net.minecraft.nbt.NbtSizeTracker;
-//?}
-
 public class GravestoneDataSaving extends GravestoneManager {
-    protected static void saveBackup(NbtCompound contents, PlayerEntity player) {
+    protected static void saveBackup(CompoundTag contents, Player player) {
         saveBackup(contents, player, new Date());
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    protected static void saveBackup(NbtCompound contents, PlayerEntity player, Date date) {
+    protected static void saveBackup(CompoundTag contents, Player player, Date date) {
         String uuidString = VersionUtil.getId(player.getGameProfile()).toString();
         File deathsFile = new File(
-                getOrCreateGravestonesFolder(Objects.requireNonNull(MultiVersionUtil.getWorld(player).getServer())), uuidString
+                getOrCreateGravestonesFolder(Objects.requireNonNull(player.level().getServer())), uuidString
         );
 
         deathsFile.mkdirs();
@@ -40,7 +34,7 @@ public class GravestoneDataSaving extends GravestoneManager {
             path = deathsFile.toPath().resolve(GravestoneTime.FILE_SAVING.format(date) + "_" + count + ".dat");
         }
 
-        NbtCompound deathData = new NbtCompound();
+        CompoundTag deathData = new CompoundTag();
         deathData.put("contents", contents);
 
         try {
@@ -57,14 +51,14 @@ public class GravestoneDataSaving extends GravestoneManager {
     public static List<RecentGraveHistory> readHistories(MinecraftServer server) {
         Path path = getOrCreateGravestonesDataFile(server);
 
-        NbtCompound compound = new NbtCompound();
+        CompoundTag compound = new CompoundTag();
         try {
             //? if <1.20.3 {
             /*compound = NbtIo.readCompressed(path.toFile());
             *///?} else if =1.20.3 {
-            /*NbtIo.readCompressed(path, NbtTagSizeTracker.ofUnlimitedBytes());
+            /*NbtIo.readCompressed(path, NbtAccounter.unlimitedHeap());
             *///?} else {
-            compound = NbtIo.readCompressed(path, NbtSizeTracker.ofUnlimitedBytes());
+            compound = NbtIo.readCompressed(path, NbtAccounter.unlimitedHeap());
             //?}
         } catch (IOException e) {
             error("Failed to read Gravestone Data", e);
@@ -76,7 +70,7 @@ public class GravestoneDataSaving extends GravestoneManager {
     public static void writeData(MinecraftServer server, List<RecentGraveHistory> histories) {
         Path path = getOrCreateGravestonesDataFile(server);
 
-        NbtCompound compound = new NbtCompound();
+        CompoundTag compound = new CompoundTag();
         VersionUtil.put(compound, "data", RecentGraveHistory.CODEC.listOf(), histories);
 
         try {
@@ -98,7 +92,7 @@ public class GravestoneDataSaving extends GravestoneManager {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File getOrCreateGravestonesFolder(MinecraftServer server) {
-        File gravestonesFile = new File(server.getSavePath(WorldSavePath.ROOT).toString(), "gravestones");
+        File gravestonesFile = new File(server.getWorldPath(LevelResource.ROOT).toString(), "gravestones");
 
         gravestonesFile.mkdirs();
 

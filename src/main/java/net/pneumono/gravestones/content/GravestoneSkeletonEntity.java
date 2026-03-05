@@ -1,43 +1,41 @@
 package net.pneumono.gravestones.content;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
-import net.pneumono.pneumonocore.util.MultiVersionUtil;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 
-public class GravestoneSkeletonEntity extends SkeletonEntity {
-    public GravestoneSkeletonEntity(EntityType<? extends SkeletonEntity> entityType, World world) {
-        super(entityType, world);
+//? if >=1.21.11 {
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
+//?} else {
+/*import net.minecraft.world.entity.monster.Skeleton;
+*///?}
+
+public class GravestoneSkeletonEntity extends Skeleton {
+    public GravestoneSkeletonEntity(EntityType<? extends Skeleton> entityType, Level level) {
+        super(entityType, level);
     }
 
-    public GravestoneSkeletonEntity(World world) {
-        super(GravestonesRegistry.GRAVESTONE_SKELETON_ENTITY_TYPE, world);
+    public GravestoneSkeletonEntity(Level level) {
+        super(GravestonesRegistry.GRAVESTONE_SKELETON_ENTITY_TYPE, level);
     }
 
     @Override
-    //? if >=1.21.4 {
     public boolean shouldDropExperience() {
         return false;
     }
-    //?} else {
-    /*public boolean isExperienceDroppingDisabled() {
-        return true;
-    }
-    *///?}
 
     @Override
-    protected void drop(/*? if >=1.21 {*/ServerWorld world,/*?}*/ DamageSource damageSource) {}
+    protected void dropAllDeathLoot(/*? if >=1.21 {*/ServerLevel level,/*?}*/ DamageSource damageSource) {}
 
     @Override
     public void tick() {
         super.tick();
-        if (MultiVersionUtil.getWorld(this) instanceof ServerWorld world && isAlive() && age > 1200 && age % 20 == 0) {
+        if (level() instanceof ServerLevel level && isAlive() && tickCount > 1200 && tickCount % 20 == 0) {
             //? if >=1.21.2 {
-            damage(world, getDamageSources().starve(), 2);
+            hurtServer(level, damageSources().starve(), 2);
             //?} else {
-            /*damage(getDamageSources().starve(), 2);
+            /*hurt(damageSources().starve(), 2);
             *///?}
         }
     }

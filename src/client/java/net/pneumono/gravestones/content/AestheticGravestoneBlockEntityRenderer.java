@@ -1,36 +1,41 @@
 package net.pneumono.gravestones.content;
 
-import net.minecraft.block.AbstractSkullBlock;
-import net.minecraft.block.SkullBlock;
-import net.minecraft.block.entity.SignText;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.AbstractSkullBlock;
+import net.minecraft.world.level.block.SkullBlock;
+import net.minecraft.world.level.block.entity.SignText;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 
+//? if >=1.21.11 {
+import net.minecraft.client.renderer.rendertype.RenderType;
+//?} else if >=1.21.9 {
+/*import net.minecraft.client.renderer.RenderType;
+*///?}
+
 //? if >=1.21.9 {
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.command.ModelCommandRenderer;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 //?} else {
-/*import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+/*import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.jetbrains.annotations.Nullable;
 *///?}
 
 //? if >=1.20.5 {
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ProfileComponent;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.ResolvableProfile;
 //?} else {
-/*import com.mojang.authlib.GameProfile;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.Util;
+/*import net.minecraft.Util;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 *///?}
 
 //? if >=1.21.9 {
@@ -38,7 +43,7 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
 //?} else {
 /*public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBlockEntityRenderer<AestheticGravestoneBlockEntity> {
 *///?}
-    public AestheticGravestoneBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+    public AestheticGravestoneBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
     }
 
@@ -49,9 +54,9 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
 
     @Override
     //? if >=1.21.9 {
-    public void renderHead(AestheticRenderState info, MatrixStack matrices, OrderedRenderCommandQueue queue, float yaw, float pitch) {
+    public void renderHead(AestheticRenderState info, PoseStack poseStack, SubmitNodeCollector queue, float yaw, float pitch) {
     //?} else {
-    /*public void renderHead(AestheticGravestoneBlockEntity info, MatrixStack matrices, VertexConsumerProvider vertexConsumers, float yaw, float pitch, int light) {
+    /*public void renderHead(AestheticGravestoneBlockEntity info, PoseStack poseStack, MultiBufferSource bufferSource, float yaw, float pitch, int light) {
     *///?}
         ItemStack headStack = info.getHeadStack();
         if (headStack.isEmpty()) return;
@@ -61,20 +66,20 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
                 !(blockItem.getBlock() instanceof AbstractSkullBlock skullBlock)
         ) return;
 
-        SkullBlock.SkullType type = skullBlock.getSkullType();
+        SkullBlock.Type type = skullBlock.getType();
 
         //? if >=1.21.9 {
-        ProfileComponent profileComponent = headStack.get(DataComponentTypes.PROFILE);
-        RenderLayer layer;
+        ResolvableProfile profileComponent = headStack.get(DataComponents.PROFILE);
+        RenderType layer;
         if (profileComponent != null) {
-            layer = this.skinCache.get(profileComponent).getRenderLayer();
+            layer = this.skinCache.getOrDefault(profileComponent).renderType();
         } else {
-            layer = SkullBlockEntityRenderer.getCutoutRenderLayer(type, null);
+            layer = SkullBlockRenderer.getSkullRenderType(type, null);
         }
 
         renderHeadModel(
                 info,
-                matrices,
+                poseStack,
                 this.models.apply(type),
                 queue,
                 layer,
@@ -82,28 +87,28 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
                 pitch
         );
         //?} else {
-        /*VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
-                SkullBlockEntityRenderer.getRenderLayer(type, getStackProfile(headStack))
+        /*VertexConsumer vertexConsumer = bufferSource.getBuffer(
+                SkullBlockRenderer.getRenderType(type, getStackProfile(headStack))
         );
-        renderHeadModel(matrices, this.models.apply(type), vertexConsumer, yaw, pitch, light);
+        renderHeadModel(poseStack, this.models.apply(type), vertexConsumer, yaw, pitch, light);
         *///?}
     }
 
     //? if >=1.20.5 {
     @Nullable
-    private static ProfileComponent getStackProfile(ItemStack stack) {
-        return stack.get(DataComponentTypes.PROFILE);
+    private static ResolvableProfile getStackProfile(ItemStack stack) {
+        return stack.get(DataComponents.PROFILE);
     }
     //?} else {
     /*@Nullable
     private static GameProfile getStackProfile(ItemStack stack) {
         GameProfile gameProfile = null;
-        NbtCompound nbtCompound = stack.getNbt();
-        if (nbtCompound != null && !nbtCompound.isEmpty()) {
-            if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
-                gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-            } else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbtCompound.getString("SkullOwner"))) {
-                gameProfile = new GameProfile(Util.NIL_UUID, nbtCompound.getString("SkullOwner"));
+        CompoundTag tag = stack.getTag();
+        if (tag != null && !tag.isEmpty()) {
+            if (tag.contains("SkullOwner", Tag.TAG_COMPOUND)) {
+                gameProfile = NbtUtils.readGameProfile(tag.getCompound("SkullOwner"));
+            } else if (tag.contains("SkullOwner", Tag.TAG_STRING) && !Util.isBlank(tag.getString("SkullOwner"))) {
+                gameProfile = new GameProfile(Util.NIL_UUID, tag.getString("SkullOwner"));
             }
         }
 
@@ -118,8 +123,8 @@ public class AestheticGravestoneBlockEntityRenderer extends AbstractGravestoneBl
     }
 
     @Override
-    public void updateRenderState(AestheticGravestoneBlockEntity entity, AestheticRenderState state, float tickProgress, Vec3d cameraPos, ModelCommandRenderer.@Nullable CrumblingOverlayCommand crumblingOverlay) {
-        super.updateRenderState(entity, state, tickProgress, cameraPos, crumblingOverlay);
+    public void extractRenderState(AestheticGravestoneBlockEntity entity, AestheticRenderState state, float tickProgress, Vec3 cameraPos, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
+        super.extractRenderState(entity, state, tickProgress, cameraPos, crumblingOverlay);
         state.headStack = entity.getHeadStack();
     }
 

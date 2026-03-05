@@ -2,49 +2,67 @@ package net.pneumono.gravestones.block;
 
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.SignText;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.GlowInkSacItem;
+import net.minecraft.world.item.HoneycombItem;
+import net.minecraft.world.item.InkSacItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SignApplicator;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AbstractSkullBlock;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.networking.GravestoneEditorOpenS2CPayload;
-import net.pneumono.pneumonocore.util.MultiVersionUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.UUID;
 
+//? if <1.21.11
+//import net.minecraft.Util;
+
+//? if <1.21.2 && >=1.20.5 {
+/*import net.minecraft.world.ItemInteractionResult;
+*///?}
+
 //? if >=1.20.3 {
-import net.minecraft.text.PlainTextContent;
+import net.minecraft.network.chat.contents.PlainTextContents;
 //?} else {
-/*import net.minecraft.text.LiteralTextContent;
+/*import net.minecraft.network.chat.contents.LiteralContents;
 *///?}
 
 public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
-    public AestheticGravestoneBlock(Settings settings) {
-        super(settings);
+    public AestheticGravestoneBlock(Properties properties) {
+        super(properties);
     }
 
     //? if >=1.20.3 {
-    public static final MapCodec<AestheticGravestoneBlock> CODEC = AestheticGravestoneBlock.createCodec(AestheticGravestoneBlock::new);
+    public static final MapCodec<AestheticGravestoneBlock> CODEC = AestheticGravestoneBlock.simpleCodec(AestheticGravestoneBlock::new);
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
     //?}
@@ -52,10 +70,10 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
     //? if <1.20.5 {
     /*@SuppressWarnings("deprecation")
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ActionResult result = onUseWithItem(player.getStackInHand(hand), state, world, pos, player, hand, hit);
-        if (result == ActionResult.PASS) {
-            return onUse(state, world, pos, player, hit);
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        InteractionResult result = useItemOn(player.getItemInHand(hand), state, level, pos, player, hand, hit);
+        if (result == InteractionResult.PASS) {
+            return useWithoutItem(state, level, pos, player, hit);
         } else {
             return result;
         }
@@ -65,15 +83,15 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
     //? if >=1.20.5 {
     @Override
     //?}
-    protected /*? if >=1.21.2 {*/ActionResult/*?} else if >=1.20.5 {*//*ItemActionResult*//*?} else {*//*ActionResult*//*?}*/ onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
+    protected /*? if >=1.21.2 {*/InteractionResult/*?} else if >=1.20.5 {*//*ItemInteractionResult*//*?} else {*//*InteractionResult*//*?}*/ useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
         if (!(blockEntity instanceof AestheticGravestoneBlockEntity gravestone)) {
             //? if >=1.21.2 {
-            return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
             //?} else if >=1.20.5 {
-            /*return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             *///?} else {
-            /*return ActionResult.PASS;
+            /*return InteractionResult.PASS;
             *///?}
         }
         Item item = stack.getItem();
@@ -81,102 +99,102 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         boolean waxed = gravestone.isWaxed();
 
         if (!waxed && item instanceof BlockItem blockItem && blockItem.getBlock() instanceof AbstractSkullBlock && gravestone.getHeadStack().isEmpty()) {
-            if (!world.isClient()) {
-                world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_GRAVESTONE_ADD_SKULL, SoundCategory.BLOCKS);
+            if (!level.isClientSide()) {
+                level.playSound(null, blockEntity.getBlockPos(), GravestonesRegistry.SOUND_BLOCK_GRAVESTONE_ADD_SKULL, SoundSource.BLOCKS);
                 gravestone.setHeadStack(player, stack);
             }
             //? if >=1.21.2 {
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
             //?} else if >=1.20.5 {
-            /*return ItemActionResult.SUCCESS;
+            /*return ItemInteractionResult.SUCCESS;
             *///?} else {
-            /*return ActionResult.SUCCESS;
+            /*return InteractionResult.SUCCESS;
             *///?}
         }
 
-        if (!world.isClient()) {
+        if (!level.isClientSide()) {
             if (
-                    item instanceof SignChangingItem signChangingItem &&
-                    player.canModifyBlocks() &&
+                    item instanceof SignApplicator signChangingItem &&
+                    player.mayBuild() &&
                     !waxed &&
                     noOtherPlayerEditing(player, gravestone) &&
-                    signChangingItem.canUseOnSignText(gravestone.getText(), player) &&
-                    tryTextChange(world, item, gravestone)
+                    signChangingItem.canApplyToSign(gravestone.getText(), player) &&
+                    tryTextChange(level, item, gravestone)
             ) {
-                gravestone.runCommandClickEvent(player, world, pos);
-                player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-                world.emitGameEvent(GameEvent.BLOCK_CHANGE, gravestone.getPos(), GameEvent.Emitter.of(player, gravestone.getCachedState()));
+                gravestone.runCommandClickEvent(player, level, pos);
+                player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+                level.gameEvent(GameEvent.BLOCK_CHANGE, gravestone.getBlockPos(), GameEvent.Context.of(player, gravestone.getBlockState()));
                 //? if >=1.20.5 {
-                stack.decrementUnlessCreative(1, player);
+                stack.consume(1, player);
                 //?} else {
                 /*if (!player.isCreative()) {
-                    stack.decrement(1);
+                    stack.shrink(1);
                 }
                 *///?}
 
                 //? if >=1.21.2 {
-                return ActionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
                 //?} else if >=1.20.5 {
-                /*return ItemActionResult.SUCCESS;
+                /*return ItemInteractionResult.SUCCESS;
                 *///?} else {
-                /*return ActionResult.SUCCESS;
+                /*return InteractionResult.SUCCESS;
                 *///?}
             } else {
                 //? if >=1.21.2 {
-                return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+                return InteractionResult.TRY_WITH_EMPTY_HAND;
                 //?} else if >=1.20.5 {
-                /*return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                /*return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                 *///?} else {
-                /*return ActionResult.PASS;
+                /*return InteractionResult.PASS;
                 *///?}
             }
         } else {
-            if ((!(item instanceof SignChangingItem) || !player.canModifyBlocks()) && !waxed) {
+            if ((!(item instanceof SignApplicator) || !player.mayBuild()) && !waxed) {
                 //? if >=1.21.2 {
-                return ActionResult.CONSUME;
+                return InteractionResult.CONSUME;
                 //?} else if >=1.20.5 {
-                /*return ItemActionResult.CONSUME;
+                /*return ItemInteractionResult.CONSUME;
                 *///?} else {
-                /*return ActionResult.CONSUME;
+                /*return InteractionResult.CONSUME;
                 *///?}
             } else {
                 //? if >=1.21.2 {
-                return ActionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
                 //?} else if >=1.20.5 {
-                /*return ItemActionResult.SUCCESS;
+                /*return ItemInteractionResult.SUCCESS;
                 *///?} else {
-                /*return ActionResult.SUCCESS;
+                /*return InteractionResult.SUCCESS;
                 *///?}
             }
         }
     }
 
-    private static boolean tryTextChange(World world, Item item, AestheticGravestoneBlockEntity gravestone) {
+    private static boolean tryTextChange(Level level, Item item, AestheticGravestoneBlockEntity gravestone) {
         // Hardcoding all of these sucks but what else am I going to do
         if (item instanceof DyeItem dyeItem) {
-            if (gravestone.changeText(text -> text.withColor(dyeItem.getColor()))) {
-                world.playSound(null, gravestone.getPos(), SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            if (gravestone.changeText(text -> text.setColor(dyeItem.getDyeColor()))) {
+                level.playSound(null, gravestone.getBlockPos(), SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
                 return true;
             } else {
                 return false;
             }
         } else if (item instanceof GlowInkSacItem) {
-            if (gravestone.changeText(text -> text.withGlowing(true))) {
-                world.playSound(null, gravestone.getPos(), SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            if (gravestone.changeText(text -> text.setHasGlowingText(true))) {
+                level.playSound(null, gravestone.getBlockPos(), SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
                 return true;
             } else {
                 return false;
             }
         } else if (item instanceof InkSacItem) {
-            if (gravestone.changeText(text -> text.withGlowing(false))) {
-                world.playSound(null, gravestone.getPos(), SoundEvents.ITEM_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            if (gravestone.changeText(text -> text.setHasGlowingText(false))) {
+                level.playSound(null, gravestone.getBlockPos(), SoundEvents.INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
                 return true;
             } else {
                 return false;
             }
         } else if (item instanceof HoneycombItem) {
             if (gravestone.setWaxed(true)) {
-                world.syncWorldEvent(null, WorldEvents.BLOCK_WAXED, gravestone.getPos(), 0);
+                level.levelEvent(null, LevelEvent.PARTICLES_AND_SOUND_WAX_ON, gravestone.getBlockPos(), 0);
                 return true;
             } else {
                 return false;
@@ -188,34 +206,34 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
     //? >=1.20.5 {
     @Override
     //?}
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!(world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity)) return ActionResult.PASS;
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!(level.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity)) return InteractionResult.PASS;
 
-        if (world.isClient()) {
-            Util./*? if >=1.21.2 {*/getFatalOrPause/*?} else {*//*throwOrPause*//*?}*/(new IllegalStateException("Expected to only call this on server"));
+        if (level.isClientSide()) {
+            Util.pauseInIde(new IllegalStateException("Expected to only call this on server"));
         }
 
         ItemStack headStack = blockEntity.getHeadStack();
         if (!blockEntity.isWaxed() && !headStack.isEmpty()) {
-            world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_GRAVESTONE_REMOVE_SKULL, SoundCategory.BLOCKS);
-            if (!player.giveItemStack(headStack)) {
-                player.dropItem(headStack, false);
+            level.playSound(null, blockEntity.getBlockPos(), GravestonesRegistry.SOUND_BLOCK_GRAVESTONE_REMOVE_SKULL, SoundSource.BLOCKS);
+            if (!player.addItem(headStack)) {
+                player.drop(headStack, false);
             }
             blockEntity.setHeadStack(player, ItemStack.EMPTY);
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
-        boolean ranCommand = blockEntity.runCommandClickEvent(player, world, pos);
+        boolean ranCommand = blockEntity.runCommandClickEvent(player, level, pos);
         if (blockEntity.isWaxed()) {
-            world.playSound(null, blockEntity.getPos(), GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, SoundCategory.BLOCKS);
-            return ActionResult.SUCCESS;
+            level.playSound(null, blockEntity.getBlockPos(), GravestonesRegistry.SOUND_BLOCK_WAXED_GRAVESTONE_INTERACT_FAIL, SoundSource.BLOCKS);
+            return InteractionResult.SUCCESS;
         } else if (ranCommand) {
-            return ActionResult.SUCCESS;
-        } else if (noOtherPlayerEditing(player, blockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, blockEntity)) {
+            return InteractionResult.SUCCESS;
+        } else if (noOtherPlayerEditing(player, blockEntity) && player.mayBuild() && this.isTextLiteralOrEmpty(player, blockEntity)) {
             this.openEditScreen(player, blockEntity);
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }
     }
 
@@ -224,19 +242,19 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
     *///?}
     //? if <1.21.5 {
     /*@Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (world.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity) {
-            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), blockEntity.getHeadStack());
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+        if (level.getBlockEntity(pos) instanceof AestheticGravestoneBlockEntity blockEntity) {
+            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), blockEntity.getHeadStack());
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.onRemove(state, level, pos, newState, moved);
     }
     *///?}
 
-    public void openEditScreen(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
-        blockEntity.setEditor(player.getUuid());
-        if (player instanceof ServerPlayerEntity serverPlayer) {
-            BlockPos pos = blockEntity.getPos();
-            serverPlayer.networkHandler.sendPacket(new BlockUpdateS2CPacket(MultiVersionUtil.getWorld(serverPlayer), pos));
+    public void openEditScreen(Player player, AestheticGravestoneBlockEntity blockEntity) {
+        blockEntity.setEditor(player.getUUID());
+        if (player instanceof ServerPlayer serverPlayer) {
+            BlockPos pos = blockEntity.getBlockPos();
+            serverPlayer.connection.send(new ClientboundBlockUpdatePacket(serverPlayer.level(), pos));
             GravestoneEditorOpenS2CPayload payload = new GravestoneEditorOpenS2CPayload(pos);
             //? if >=1.20.5 {
             ServerPlayNetworking.send(serverPlayer, payload);
@@ -246,25 +264,25 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
-    private static boolean noOtherPlayerEditing(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
+    private static boolean noOtherPlayerEditing(Player player, AestheticGravestoneBlockEntity blockEntity) {
         UUID uUID = blockEntity.getEditor();
-        return uUID == null || uUID.equals(player.getUuid());
+        return uUID == null || uUID.equals(player.getUUID());
     }
 
-    private boolean isTextLiteralOrEmpty(PlayerEntity player, AestheticGravestoneBlockEntity blockEntity) {
+    private boolean isTextLiteralOrEmpty(Player player, AestheticGravestoneBlockEntity blockEntity) {
         SignText signText = blockEntity.getText();
-        return Arrays.stream(signText.getMessages(player.shouldFilterText()))
-                .allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof /*? if >=1.20.3 {*/PlainTextContent/*?} else {*//*LiteralTextContent*//*?}*/);
+        return Arrays.stream(signText.getMessages(player.isTextFilteringEnabled()))
+                .allMatch(message -> message.equals(CommonComponents.EMPTY) || message.getContents() instanceof /*? if >=1.20.3 {*/PlainTextContents/*?} else {*//*LiteralContents*//*?}*/);
     }
 
     @Override
-    public boolean isEnabled(FeatureSet enabledFeatures) {
+    public boolean isEnabled(FeatureFlagSet enabledFeatures) {
         return GravestonesConfig.AESTHETIC_GRAVESTONES.getValue() && super.isEnabled(enabledFeatures);
     }
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new AestheticGravestoneBlockEntity(pos, state);
     }
 }

@@ -2,15 +2,16 @@ package net.pneumono.gravestones.content;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.StackWithSlot;
@@ -23,51 +24,51 @@ public class PlayerInventoryDataType extends GravestoneDataType {
     private static final String KEY = "inventory";
 
     @Override
-    public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) {
-        NbtList list = new NbtList();
-        PlayerInventory inventory = player.getInventory();
+    public void writeData(CompoundTag tag, DynamicOps<Tag> ops, Player player) {
+        ListTag list = new ListTag();
+        Inventory inventory = player.getInventory();
 
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack itemStack = inventory.getStack(i);
-            Identifier slotIdentifier = Identifier.of("minecraft", Integer.toString(i));
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack itemStack = inventory.getItem(i);
+            Identifier slotIdentifier = VersionUtil.createId("minecraft", Integer.toString(i));
             GravestonesApi.onInsertItem(player, itemStack, slotIdentifier);
             if (!GravestonesApi.shouldSkipItem(player, itemStack, slotIdentifier) && !itemStack.isEmpty()) {
-                DataResult<NbtElement> result = StackWithSlot.CODEC.encodeStart(ops, new StackWithSlot(i, inventory.removeStack(i)));
+                DataResult<Tag> result = StackWithSlot.CODEC.encodeStart(ops, new StackWithSlot(i, inventory.removeItemNoUpdate(i)));
                 list.add(result.result().orElseThrow());
             }
         }
-        nbt.put(KEY, list);
+        tag.put(KEY, list);
     }
 
     @Override
-    public void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) {
-        NbtList list = VersionUtil.getCompoundListOrEmpty(nbt, KEY);
+    public void onBreak(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, int decay) {
+        ListTag list = VersionUtil.getCompoundListOrEmpty(tag, KEY);
 
-        for (NbtElement element : list) {
+        for (Tag element : list) {
             ItemStack stack = StackWithSlot.CODEC.decode(ops, element).result().orElseThrow().getFirst().stack();
-            dropStack(world, pos, stack);
+            dropStack(level, pos, stack);
         }
     }
 
     @Override
-    public void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
-        PlayerInventory inventory = player.getInventory();
-        NbtList list = VersionUtil.getCompoundListOrEmpty(nbt, KEY);
+    public void onCollect(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, Player player, int decay) {
+        Inventory inventory = player.getInventory();
+        ListTag list = VersionUtil.getCompoundListOrEmpty(tag, KEY);
         List<StackWithSlot> stacks = new ArrayList<>();
-        for (NbtElement element : list) {
+        for (Tag element : list) {
             stacks.add(StackWithSlot.CODEC.decode(ops, element).result().orElseThrow().getFirst());
         }
 
         List<ItemStack> remainingStacks = new ArrayList<>();
         for (StackWithSlot stackWithSlot : stacks) {
             int slot = stackWithSlot.slot();
-            if (stackWithSlot.isValidSlot(inventory.size())) {
+            if (stackWithSlot.isValidSlot(inventory.getContainerSize())) {
 
                 ItemStack stack = stackWithSlot.stack();
                 if (stack.isEmpty()) continue;
 
-                if (inventory.getStack(slot).isEmpty()) {
-                    inventory.setStack(slot, stack);
+                if (inventory.getItem(slot).isEmpty()) {
+                    inventory.setItem(slot, stack);
                     continue;
                 }
             }

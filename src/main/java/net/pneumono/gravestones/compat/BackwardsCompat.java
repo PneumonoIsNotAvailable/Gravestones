@@ -1,13 +1,13 @@
 package net.pneumono.gravestones.compat;
 
 import com.google.gson.GsonBuilder;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.level.storage.LevelResource;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
 import net.pneumono.gravestones.gravestones.RecentGraveHistory;
@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public class BackwardsCompat {
     public static void convertOldFiles(MinecraftServer server) {
-        File gravestoneFile = new File(server.getSavePath(WorldSavePath.ROOT).toString(), "gravestone_data.json");
+        File gravestoneFile = new File(server.getWorldPath(LevelResource.ROOT).toString(), "gravestone_data.json");
         if (!gravestoneFile.exists()) return;
 
         Gravestones.LOGGER.info("Old data detected! Converting to new format...");
@@ -64,7 +64,7 @@ public class BackwardsCompat {
 
     private record GravestonePosition(Identifier dimension, int posX, int posY, int posZ) {
         private Optional<GlobalPos> convert() {
-            return Optional.of(VersionUtil.createGlobalPos(RegistryKey.of(RegistryKeys.WORLD, dimension()), new BlockPos(this.posX, this.posY, this.posZ)));
+            return Optional.of(VersionUtil.createGlobalPos(ResourceKey.create(Registries.DIMENSION, dimension()), new BlockPos(this.posX, this.posY, this.posZ)));
         }
     }
 }

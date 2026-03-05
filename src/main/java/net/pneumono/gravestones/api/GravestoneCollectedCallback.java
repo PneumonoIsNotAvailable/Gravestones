@@ -2,9 +2,9 @@ package net.pneumono.gravestones.api;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Callback after a gravestone is collected.
@@ -19,12 +19,12 @@ import net.minecraft.util.math.BlockPos;
  */
 public interface GravestoneCollectedCallback {
     Event<GravestoneCollectedCallback> EVENT = EventFactory.createArrayBacked(GravestoneCollectedCallback.class,
-            listeners -> (world, player, gravePos) -> {
+            listeners -> (level, player, gravePos) -> {
                 for (GravestoneCollectedCallback listener : listeners) {
-                    listener.afterGravestoneCollect(world, player, gravePos);
+                    listener.afterGravestoneCollect(level, player, gravePos);
                 }
             }
     );
 
-    void afterGravestoneCollect(ServerWorld world, PlayerEntity player, BlockPos gravePos);
+    void afterGravestoneCollect(ServerLevel level, Player player, BlockPos gravePos);
 }

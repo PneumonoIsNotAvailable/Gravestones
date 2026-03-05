@@ -2,9 +2,9 @@ package net.pneumono.gravestones.api;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Callback for checking if a position is valid for gravestone placement.
@@ -15,7 +15,7 @@ import net.minecraft.world.World;
  * <ul>
  *     <li>The block at the position has a hardness < 0
  *     <li>The block at the position has a blast resistance 3600000
- *     <li>The block at the position is {@link net.minecraft.block.Blocks#VOID_AIR VOID_AIR}
+ *     <li>The block at the position is {@link net.minecraft.world.level.block.Blocks#VOID_AIR VOID_AIR}
  *     <li>The block at the position is in the tag {@code gravestones:gravestone:irreplaceable}
  * </ul>
  *
@@ -30,9 +30,9 @@ import net.minecraft.world.World;
  */
 public interface PositionValidationCallback {
     Event<PositionValidationCallback> EVENT = EventFactory.createArrayBacked(PositionValidationCallback.class,
-            listeners -> (world, state, deathPos) -> {
+            listeners -> (level, state, deathPos) -> {
                 for (PositionValidationCallback listener : listeners) {
-                    if (!listener.isPositionValid(world, state, deathPos)) {
+                    if (!listener.isPositionValid(level, state, deathPos)) {
                         return false;
                     }
                 }
@@ -42,5 +42,5 @@ public interface PositionValidationCallback {
     );
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean isPositionValid(World world, BlockState state, BlockPos deathPos);
+    boolean isPositionValid(Level level, BlockState state, BlockPos deathPos);
 }
