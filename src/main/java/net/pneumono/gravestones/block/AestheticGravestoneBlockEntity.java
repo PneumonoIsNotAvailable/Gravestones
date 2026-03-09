@@ -37,7 +37,6 @@ import java.util.function.UnaryOperator;
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 
 //? if >=1.21.6 {
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 //?} else {
@@ -49,6 +48,7 @@ import net.minecraft.resources.RegistryOps;
 *///?}
 
 //? if >=1.21.5 {
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.world.Containers;
 //?}
 
@@ -143,7 +143,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void applyImplicitComponents(/*? if >=1.21.6 {*//*DataComponentInput*//*?} else {*/DataComponentGetter/*?}*/ components) {
+    protected void applyImplicitComponents(/*? if >=1.21.5 {*//*DataComponentInput*//*?} else {*/DataComponentGetter/*?}*/ components) {
         super.applyImplicitComponents(components);
         this.headStack = components.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).copyOne();
     }
