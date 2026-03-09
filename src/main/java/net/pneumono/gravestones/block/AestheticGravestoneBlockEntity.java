@@ -1,7 +1,6 @@
 package net.pneumono.gravestones.block;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -36,6 +35,10 @@ import java.util.function.UnaryOperator;
 
 //? if >=1.21.11 {
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
+//?}
+
+//? if >=1.21.5 {
+import net.minecraft.core.component.DataComponentGetter;
 //?}
 
 //? if >=1.21.6 {
@@ -144,7 +147,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentGetter components) {
+    protected void applyImplicitComponents(/*? if >=1.21.5 {*/DataComponentGetter/*?} else {*//*DataComponentInput*//*?}*/ components) {
         super.applyImplicitComponents(components);
         this.headStack = components.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).copyOne();
     }
