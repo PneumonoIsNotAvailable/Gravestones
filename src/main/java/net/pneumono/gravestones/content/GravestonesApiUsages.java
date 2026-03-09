@@ -11,6 +11,7 @@ import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.api.SkipItemCallback;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.Optional;
 
@@ -18,7 +19,6 @@ import java.util.Optional;
 import net.minecraft.world.level.gamerules.GameRules;
 //?} else {
 /*import net.minecraft.world.level.GameRules;
-import net.pneumono.gravestones.multiversion.VersionUtil;
 *///?}
 
 //? if >=1.21 {
