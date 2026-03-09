@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.pneumono.gravestones.block.AbstractGravestoneBlockEntity;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import java.util.List;
 import java.util.function.Function;
@@ -42,8 +43,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.Nullable;
 //?} else {
-/*import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+/*import com.mojang.blaze3d.vertex.VertexConsumer;
 *///?}
 
 //? if >=1.21.5 {
