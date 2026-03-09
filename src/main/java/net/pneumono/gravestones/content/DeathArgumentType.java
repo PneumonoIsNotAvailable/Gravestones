@@ -7,11 +7,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import net.pneumono.gravestones.Gravestones;
 
 import java.io.File;
@@ -21,15 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-//? if =1.20.3 {
-/*import net.minecraft.nbt.NbtTagSizeTracker;
-*///?} else if >=1.20.5 {
-import net.minecraft.nbt.NbtSizeTracker;
-//?}
-
 public class DeathArgumentType implements ArgumentType<String> {
     protected static final DynamicCommandExceptionType COULD_NOT_READ = new DynamicCommandExceptionType(
-            name -> Text.literal("Could not read death file " + name)
+            name -> Component.literal("Could not read death file " + name)
     );
 
     @Override
@@ -49,9 +44,9 @@ public class DeathArgumentType implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        if (!(context.getSource() instanceof ServerCommandSource serverCommandSource)) {
-            if (context.getSource() instanceof CommandSource commandSource) {
-                return commandSource.getCompletions(context);
+        if (!(context.getSource() instanceof CommandSourceStack serverCommandSource)) {
+            if (context.getSource() instanceof SharedSuggestionProvider commandSource) {
+                return commandSource.customSuggestion(context);
             }
             return Suggestions.empty();
         }
@@ -72,32 +67,31 @@ public class DeathArgumentType implements ArgumentType<String> {
             }
         }
 
-        return CommandSource.suggestMatching(deathFiles, builder);
+        return SharedSuggestionProvider.suggest(deathFiles, builder);
     }
 
     public static DeathArgumentType death() {
         return new DeathArgumentType();
     }
 
-    public static NbtCompound getDeath(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+    public static CompoundTag getDeath(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
         File deathsFile = Gravestones.GRAVESTONES_ROOT.apply(context.getSource().getServer());
         String file = context.getArgument(name, String.class);
         File deathFile = new File(deathsFile, file);
 
-        NbtCompound nbt;
+        CompoundTag nbt;
         try {
             nbt = NbtIo.readCompressed(
                     deathFile/*? if >=1.20.3 {*/.toPath(),/*?}*/
                     //? if =1.20.3 {
-                    /*NbtTagSizeTracker.ofUnlimitedBytes()
+                    /*NbtAccounter.unlimitedHeap()
                     *///?} else if >=1.20.5 {
-                    NbtSizeTracker.ofUnlimitedBytes()
+                    NbtAccounter.unlimitedHeap()
                     //?}
             );
         } catch (IOException e) {
             throw COULD_NOT_READ.create(file);
         }
-        if (nbt == null) throw DeathArgumentType.COULD_NOT_READ.create(file);
         return nbt;
     }
 }

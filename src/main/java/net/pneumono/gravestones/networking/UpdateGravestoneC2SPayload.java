@@ -1,39 +1,38 @@
 package net.pneumono.gravestones.networking;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.pneumono.gravestones.Gravestones;
-import net.minecraft.util.Identifier;
 
 //? if >=1.20.5 {
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 //?} else {
-/*import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+/*import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 *///?}
 
-//? if >=1.20.2 {
-import net.minecraft.network.packet.CustomPayload;
- //?}
+//? if >=1.20.2
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line2, String line3, String line4) /*? if >=1.20.2 {*/implements CustomPayload/*?}*/ {
+public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line2, String line3, String line4) /*? if >=1.20.2 {*/implements CustomPacketPayload/*?}*/ {
     public static final Identifier ID = Gravestones.id("update_gravestone");
 
     //? if >=1.20.5 {
-    public static final CustomPayload.Id<UpdateGravestoneC2SPayload> PAYLOAD_ID = new Id<>(ID);
-    public static final PacketCodec<RegistryByteBuf, UpdateGravestoneC2SPayload> CODEC = PacketCodec.tuple(
-            BlockPos.PACKET_CODEC,
+    public static final CustomPacketPayload.Type<UpdateGravestoneC2SPayload> PAYLOAD_ID = new Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateGravestoneC2SPayload> CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC,
             UpdateGravestoneC2SPayload::pos,
-            PacketCodecs.STRING,
+            ByteBufCodecs.STRING_UTF8,
             UpdateGravestoneC2SPayload::line1,
-            PacketCodecs.STRING,
+            ByteBufCodecs.STRING_UTF8,
             UpdateGravestoneC2SPayload::line2,
-            PacketCodecs.STRING,
+            ByteBufCodecs.STRING_UTF8,
             UpdateGravestoneC2SPayload::line3,
-            PacketCodecs.STRING,
+            ByteBufCodecs.STRING_UTF8,
             UpdateGravestoneC2SPayload::line4,
             UpdateGravestoneC2SPayload::new
     );
@@ -53,16 +52,16 @@ public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line
 
     //? if >=1.20.5 {
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return PAYLOAD_ID;
     }
     //?} else if <1.20.5 {
-    /*public static UpdateGravestoneC2SPayload read(PacketByteBuf buf) {
-        return new UpdateGravestoneC2SPayload(buf.readBlockPos(), buf.readString(), buf.readString(), buf.readString(), buf.readString());
+    /*public static UpdateGravestoneC2SPayload read(FriendlyByteBuf buf) {
+        return new UpdateGravestoneC2SPayload(buf.readBlockPos(), buf.readUtf(), buf.readUtf(), buf.readUtf(), buf.readUtf());
     }
 
-    public PacketByteBuf write() {
-        PacketByteBuf buf = PacketByteBufs.create();
+    public FriendlyByteBuf write() {
+        FriendlyByteBuf buf = PacketByteBufs.create();
         write(buf);
         return buf;
     }
@@ -70,12 +69,12 @@ public record UpdateGravestoneC2SPayload(BlockPos pos, String line1, String line
     //? if >=1.20.2 {
     @Override
      //?}
-    public void write(PacketByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos);
-        buf.writeString(this.line1);
-        buf.writeString(this.line2);
-        buf.writeString(this.line3);
-        buf.writeString(this.line4);
+        buf.writeUtf(this.line1);
+        buf.writeUtf(this.line2);
+        buf.writeUtf(this.line3);
+        buf.writeUtf(this.line4);
     }
 
     //? if >=1.20.2 {

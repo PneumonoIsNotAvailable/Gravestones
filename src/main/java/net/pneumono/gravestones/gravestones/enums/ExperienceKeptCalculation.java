@@ -1,8 +1,7 @@
 package net.pneumono.gravestones.gravestones.enums;
 
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.function.Function;
+import net.minecraft.world.entity.player.Player;
 
 @SuppressWarnings("unused")
 public enum ExperienceKeptCalculation {
@@ -14,13 +13,13 @@ public enum ExperienceKeptCalculation {
     ONE_QUARTER(entity -> (int)(getTotalExperience(entity) / 4f)),
     VANILLA(entity -> entity.experienceLevel * 7);
 
-    private final Function<PlayerEntity, Integer> calculation;
+    private final Function<Player, Integer> calculation;
 
-    ExperienceKeptCalculation(Function<PlayerEntity, Integer> calculation) {
+    ExperienceKeptCalculation(Function<Player, Integer> calculation) {
         this.calculation = calculation;
     }
 
-    public static int getTotalExperience(PlayerEntity entity) {
+    public static int getTotalExperience(Player entity) {
         int xpFromLevel;
         int level = entity.experienceLevel;
         if (level <= 16) {
@@ -46,7 +45,7 @@ public enum ExperienceKeptCalculation {
         }
     }
 
-    public int calculateExperienceKept(PlayerEntity entity) {
+    public int calculateExperienceKept(Player entity) {
         return this.calculation.apply(entity);
     }
 }

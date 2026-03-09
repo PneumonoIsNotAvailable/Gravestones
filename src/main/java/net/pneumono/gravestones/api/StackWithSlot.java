@@ -2,7 +2,7 @@ package net.pneumono.gravestones.api;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Similar to vanilla's {@code StackWithSlot}

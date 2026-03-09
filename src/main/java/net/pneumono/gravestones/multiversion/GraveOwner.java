@@ -5,35 +5,35 @@ import com.mojang.serialization.Codec;
 
 import java.util.UUID;
 
-//? if >=1.20.5 {
-import net.minecraft.component.type.ProfileComponent;
-//?} else {
-/*import net.minecraft.util.dynamic.Codecs;
-*///?}
+//? if >=1.20.5
+import net.minecraft.world.item.component.ResolvableProfile;
+
+//? if <1.20.5
+//import net.minecraft.util.ExtraCodecs;
 
 public class GraveOwner {
     //? if >=1.20.5 {
-    public static final Codec<GraveOwner> CODEC = ProfileComponent.CODEC.xmap(GraveOwner::new, GraveOwner::getProfile);
-    private ProfileComponent profile;
+    public static final Codec<GraveOwner> CODEC = ResolvableProfile.CODEC.xmap(GraveOwner::new, GraveOwner::getProfile);
+    private ResolvableProfile profile;
 
-    public GraveOwner(ProfileComponent profile) {
+    public GraveOwner(ResolvableProfile profile) {
         this.profile = profile;
     }
 
 
     public GraveOwner(GameProfile profile) {
         //? if >=1.21.9 {
-        this(ProfileComponent.ofStatic(profile));
+        this(ResolvableProfile.createResolved(profile));
         //?} else {
-        /*this(new ProfileComponent(profile));
+        /*this(new ResolvableProfile(profile));
         *///?}
     }
 
-    public ProfileComponent getProfile() {
+    public ResolvableProfile getProfile() {
         return profile;
     }
 
-    public void setProfile(ProfileComponent profile) {
+    public void setProfile(ResolvableProfile profile) {
         this.profile = profile;
     }
 
@@ -46,7 +46,7 @@ public class GraveOwner {
     }
 
     //?} else {
-    /*public static final Codec<GraveOwner> CODEC = Codecs./^? if >=1.20.2 {^/GAME_PROFILE_WITH_PROPERTIES/^?} else {^//^GAME_PROFILE^//^?}^/.xmap(GraveOwner::new, GraveOwner::getProfile);
+    /*public static final Codec<GraveOwner> CODEC = ExtraCodecs./^? if >=1.20.2 {^/GAME_PROFILE/^?} else {^//^GAME_PROFILE^//^?}^/.xmap(GraveOwner::new, GraveOwner::getProfile);
     private GameProfile profile;
 
     public GraveOwner(GameProfile profile) {

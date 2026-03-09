@@ -5,13 +5,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mrcrayfish.backpacked.BackpackHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 
@@ -22,10 +22,10 @@ public class BackpackedDataType extends GravestoneDataType {
     public static final String KEY = "backpacks";
 
     @Override
-    public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception {
+    public void writeData(CompoundTag tag, DynamicOps<Tag> ops, Player player) throws Exception {
         List<SavedBackpack> savedBackpacks = new ArrayList<>();
 
-        DefaultedList<ItemStack> backpacks = BackpackHelper.removeAllBackpacks(player);
+        NonNullList<ItemStack> backpacks = BackpackHelper.removeAllBackpacks(player);
         for (int index = 0; index < backpacks.size(); index++) {
             ItemStack backpack = backpacks.get(index);
             if (!backpack.isEmpty()) {
@@ -33,18 +33,18 @@ public class BackpackedDataType extends GravestoneDataType {
             }
         }
 
-        VersionUtil.put(ops, nbt, KEY, SavedBackpack.CODEC.listOf(), savedBackpacks);
+        VersionUtil.put(ops, tag, KEY, SavedBackpack.CODEC.listOf(), savedBackpacks);
     }
 
     @Override
-    public void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) throws Exception {
-        List<SavedBackpack> savedBackpacks = VersionUtil.get(ops, nbt, KEY, SavedBackpack.CODEC.listOf()).orElse(new ArrayList<>());
-        savedBackpacks.forEach(backpack -> dropStack(world, pos, backpack.stack()));
+    public void onBreak(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, int decay) throws Exception {
+        List<SavedBackpack> savedBackpacks = VersionUtil.get(ops, tag, KEY, SavedBackpack.CODEC.listOf()).orElse(new ArrayList<>());
+        savedBackpacks.forEach(backpack -> dropStack(level, pos, backpack.stack()));
     }
 
     @Override
-    public void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) throws Exception {
-        List<SavedBackpack> savedBackpacks = VersionUtil.get(ops, nbt, KEY, SavedBackpack.CODEC.listOf()).orElse(new ArrayList<>());
+    public void onCollect(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, Player player, int decay) throws Exception {
+        List<SavedBackpack> savedBackpacks = VersionUtil.get(ops, tag, KEY, SavedBackpack.CODEC.listOf()).orElse(new ArrayList<>());
 
         List<ItemStack> remaining = new ArrayList<>();
         for (SavedBackpack savedBackpack : savedBackpacks) {

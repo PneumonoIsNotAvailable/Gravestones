@@ -3,13 +3,14 @@ package net.pneumono.gravestones;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
 import net.pneumono.gravestones.compat.*;
 import net.pneumono.gravestones.content.GravestonesApiUsages;
 import net.pneumono.gravestones.content.GravestonesCommands;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
+import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,6 @@ public class Gravestones implements ModInitializer {
     }
 
 	public static Identifier id(String path) {
-		return Identifier.of(MOD_ID, path);
+		return VersionUtil.createId(MOD_ID, path);
 	}
 }

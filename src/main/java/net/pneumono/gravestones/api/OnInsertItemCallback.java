@@ -2,9 +2,9 @@ package net.pneumono.gravestones.api;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -36,5 +36,5 @@ public interface OnInsertItemCallback {
             }
     );
 
-    void insertItem(PlayerEntity player, ItemStack itemStack, @Nullable Identifier slot);
+    void insertItem(Player player, ItemStack itemStack, @Nullable Identifier slot);
 }

@@ -1,18 +1,19 @@
 package net.pneumono.gravestones.gravestones;
 
-import net.minecraft.block.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
@@ -22,16 +23,15 @@ import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.multiversion.GraveOwner;
 import net.pneumono.gravestones.multiversion.VersionUtil;
-import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class GravestoneCreation extends GravestoneManager {
-    public static void create(PlayerEntity player) {
-        World world = MultiVersionUtil.getWorld(player);
-        if (!(world instanceof ServerWorld serverWorld)) {
+    public static void create(Player player) {
+        Level level = player.level();
+        if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
 
@@ -39,18 +39,18 @@ public class GravestoneCreation extends GravestoneManager {
 
         info("----- Beginning Gravestone Creation -----");
         info("If you don't want to see this, disable 'Console Info' in the configs!");
-        create(serverWorld, player);
+        create(serverLevel, player);
         info("----- Finishing Gravestone Creation -----");
     }
 
-    private static void create(ServerWorld deathWorld, PlayerEntity player) {
-        GlobalPos deathPos = VersionUtil.createGlobalPos(deathWorld.getRegistryKey(), player.getBlockPos());
-        MinecraftServer server = deathWorld.getServer();
+    private static void create(ServerLevel deathLevel, Player player) {
+        GlobalPos deathPos = VersionUtil.createGlobalPos(deathLevel.dimension(), player.blockPosition());
+        MinecraftServer server = deathLevel.getServer();
 
         // Check if placement should be cancelled
         info("Checking if Gravestone Placement should be cancelled...");
         if (CancelGravestonePlacementCallback.EVENT.invoker().shouldCancel(
-                deathWorld, player, deathPos
+                deathLevel, player, deathPos
         )) {
             info("Placement cancelled!");
             return;
@@ -65,7 +65,7 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Create contents data
         info("Creating gravestone contents data...");
-        NbtCompound contents = createContentsData(player);
+        CompoundTag contents = createContentsData(player);
         // Backup contents data
         CompletableFuture.runAsync(() -> {
             info("Backing up gravestone contents data...");
@@ -74,17 +74,17 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Calculate placement position
         info("Calculating gravestone placement position...");
-        GlobalPos globalGravestonePos = getPlacementPos(deathWorld, player, deathPos);
+        GlobalPos globalGravestonePos = getPlacementPos(deathLevel, player, deathPos);
 
         historiesFuture.thenAcceptAsync(histories -> {
             histories = new ArrayList<>(histories);
-            RecentGraveHistory history = getHistory(histories, player.getUuid());
+            RecentGraveHistory history = getHistory(histories, player.getUUID());
 
             // Create new gravestone history
             info("Updating gravestone history...");
             RecentGraveHistory newHistory;
             if (history == null) {
-                newHistory = new RecentGraveHistory(player.getUuid(), globalGravestonePos);
+                newHistory = new RecentGraveHistory(player.getUUID(), globalGravestonePos);
             } else {
                 newHistory = history.getShifted(globalGravestonePos);
             }
@@ -100,30 +100,30 @@ public class GravestoneCreation extends GravestoneManager {
         // Place gravestone
         info("Placing gravestone...");
 
-        if (globalGravestonePos != null && (World)(server.getWorld(VersionUtil.getDimension(globalGravestonePos))) instanceof ServerWorld graveWorld) {
-            placeGravestone(graveWorld, VersionUtil.getPos(globalGravestonePos));
+        if (globalGravestonePos != null && (Level)(server.getLevel(globalGravestonePos.dimension())) instanceof ServerLevel graveLevel) {
+            placeGravestone(graveLevel, globalGravestonePos.pos());
             Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", playerName, posToString(globalGravestonePos));
         } else {
-            GravestonesApi.onBreak(deathWorld, VersionUtil.getPos(deathPos), 0, contents == null ? new NbtCompound() : contents);
+            GravestonesApi.onBreak(deathLevel, deathPos.pos(), 0, contents == null ? new CompoundTag() : contents);
             Gravestones.LOGGER.info("Failed to place {}'s Gravestone! The items have been dropped on the ground", playerName);
             return;
         }
 
         // Insert gravestone contents
         info("Inserting contents into gravestone...");
-        BlockPos gravestonePos = VersionUtil.getPos(globalGravestonePos);
-        insertGravestoneContents(graveWorld, player, gravestonePos, contents);
+        BlockPos gravestonePos = globalGravestonePos.pos();
+        insertGravestoneContents(graveLevel, player, gravestonePos, contents);
 
         // Broadcast chat message
         info("Broadcasting chat message... (if enabled)");
         if (GravestonesConfig.BROADCAST_COORDINATES_IN_CHAT.getValue()) {
-            server.getPlayerManager().broadcast(Text.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)), false);
+            server.getPlayerList().broadcastSystemMessage(Component.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)), false);
         }
 
         info("Damaging existing gravestones... (if enabled)");
         try {
             // Damage existing gravestones
-            RecentGraveHistory history = getHistory(new ArrayList<>(historiesFuture.get()), player.getUuid());
+            RecentGraveHistory history = getHistory(new ArrayList<>(historiesFuture.get()), player.getUUID());
             if (history != null) {
                 GravestoneDecay.deathDamageOldGravestones(server, history.getList(), globalGravestonePos);
             }
@@ -133,7 +133,7 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Callbacks
         info("Invoking GravestonePlacedCallbacks...");
-        GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(deathWorld, player, deathPos, globalGravestonePos);
+        GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(deathLevel, player, deathPos, globalGravestonePos);
     }
 
     public static RecentGraveHistory getHistory(List<RecentGraveHistory> histories, UUID uuid) {
@@ -149,46 +149,46 @@ public class GravestoneCreation extends GravestoneManager {
         return history;
     }
 
-    private static NbtCompound createContentsData(PlayerEntity player) {
-        NbtCompound contents;
+    private static CompoundTag createContentsData(Player player) {
+        CompoundTag contents;
         try {
             contents = GravestonesApi.getDataToInsert(player);
         } catch (Exception e) {
-            return new NbtCompound();
+            return new CompoundTag();
         }
 
         return contents;
     }
 
-    private static void insertGravestoneContents(ServerWorld world, PlayerEntity player, BlockPos gravestonePos, NbtCompound contents) {
-        if (!(world.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone)) return;
+    private static void insertGravestoneContents(ServerLevel level, Player player, BlockPos gravestonePos, CompoundTag contents) {
+        if (!(level.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone)) return;
 
         gravestone.setContents(contents);
         gravestone.setGraveOwner(new GraveOwner(player.getGameProfile()));
-        gravestone.setSpawnDate(GravestoneTime.READABLE.format(new Date()), world.getTime());
+        gravestone.setSpawnDate(GravestoneTime.READABLE.format(new Date()), level.getGameTime());
 
-        world.updateListeners(gravestonePos, gravestone.getCachedState(), gravestone.getCachedState(), Block.NOTIFY_LISTENERS);
+        level.sendBlockUpdated(gravestonePos, gravestone.getBlockState(), gravestone.getBlockState(), Block.UPDATE_CLIENTS);
     }
 
-    private static GlobalPos getPlacementPos(ServerWorld world, PlayerEntity player, GlobalPos deathPos) {
-        DimensionType dimension = world.getDimension();
-        GlobalPos clampedDeathPos = VersionUtil.createGlobalPos(VersionUtil.getDimension(deathPos), VersionUtil.getPos(deathPos).withY(
-                MathHelper.clamp(VersionUtil.getPos(deathPos).getY(), dimension.minY(), dimension.minY() + dimension.height())
+    private static GlobalPos getPlacementPos(ServerLevel level, Player player, GlobalPos deathPos) {
+        DimensionType dimension = level.dimensionType();
+        GlobalPos clampedDeathPos = VersionUtil.createGlobalPos(deathPos.dimension(), deathPos.pos().atY(
+                Mth.clamp(deathPos.pos().getY(), dimension.minY(), dimension.minY() + dimension.height())
         ));
-        GlobalPos validPos = GravestonePlacement.getRedirectableValidPos(world, player, clampedDeathPos);
+        GlobalPos validPos = GravestonePlacement.getRedirectableValidPos(level, player, clampedDeathPos);
 
-        if (validPos == null || world.getServer().getWorld(VersionUtil.getDimension(validPos)) == null) return null;
+        if (validPos == null || level.getServer().getLevel(validPos.dimension()) == null) return null;
 
         return validPos;
     }
 
-    protected static void placeGravestone(ServerWorld world, BlockPos pos) {
-        BlockState gravestoneBlock = GravestonesRegistry.GRAVESTONE_TECHNICAL.getDefaultState();
-        if (world.getBlockState(pos).getFluidState().isIn(FluidTags.WATER)) {
-            gravestoneBlock = gravestoneBlock.with(Properties.WATERLOGGED, true);
+    protected static void placeGravestone(ServerLevel level, BlockPos pos) {
+        BlockState gravestoneBlock = GravestonesRegistry.GRAVESTONE_TECHNICAL.defaultBlockState();
+        if (level.getBlockState(pos).getFluidState().is(FluidTags.WATER)) {
+            gravestoneBlock = gravestoneBlock.setValue(BlockStateProperties.WATERLOGGED, true);
         }
 
-        world.breakBlock(pos, true);
-        world.setBlockState(pos, gravestoneBlock);
+        level.destroyBlock(pos, true);
+        level.setBlockAndUpdate(pos, gravestoneBlock);
     }
 }

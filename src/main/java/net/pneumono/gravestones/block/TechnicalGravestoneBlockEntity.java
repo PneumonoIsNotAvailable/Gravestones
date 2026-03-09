@@ -1,17 +1,17 @@
 package net.pneumono.gravestones.block;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
@@ -23,28 +23,29 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 //? if <1.21.9 {
-/*import net.minecraft.block.entity.SkullBlockEntity;
+/*import net.minecraft.world.level.block.entity.SkullBlockEntity;
 *///?}
 
 //? if >=1.21.6 {
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-//?} else if >=1.20.5 {
-/*import net.minecraft.registry.RegistryOps;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+//?} else {
+/*import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.RegistryOps;
 *///?}
 
 //? if >=1.21.5 {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 import net.pneumono.gravestones.api.GravestonesApi;
 //?}
 
 //? if <1.20.5 {
-/*import net.minecraft.util.Util;
+/*import net.minecraft.Util;
 *///?}
 
 public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntity {
-    private NbtCompound contents = new NbtCompound();
+    private CompoundTag contents = new CompoundTag();
     @Nullable
     private GraveOwner graveOwner;
     private String spawnDateTime;
@@ -58,10 +59,10 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     //? if >=1.21.6 {
     @Override
-    public void writeData(WriteView view) {
-        super.writeData(view);
-        view.put("contents", NbtCompound.CODEC, this.contents);
-        view.putNullable("owner", GraveOwner.CODEC, this.graveOwner);
+    public void saveAdditional(ValueOutput view) {
+        super.saveAdditional(view);
+        view.store("contents", CompoundTag.CODEC, this.contents);
+        view.storeNullable("owner", GraveOwner.CODEC, this.graveOwner);
         if (this.spawnDateTime != null) {
             view.putString("spawnDateTime", this.spawnDateTime);
         }
@@ -73,110 +74,110 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     @Override
-    public void readData(ReadView view) {
-        super.readData(view);
-        this.contents = view.read("contents", NbtCompound.CODEC).orElse(new NbtCompound());
+    public void loadAdditional(ValueInput view) {
+        super.loadAdditional(view);
+        this.contents = view.read("contents", CompoundTag.CODEC).orElse(new CompoundTag());
         this.setGraveOwner(view.read("owner", GraveOwner.CODEC).orElse(null));
-        this.spawnDateTime = view.getString("spawnDateTime", null);
-        this.spawnDateTicks = view.getLong("spawnDateTicks", 0);
-        this.deathDamage = view.getInt("deathDamage", 0);
-        this.ageDamage = view.getInt("ageDamage", 0);
+        this.spawnDateTime = view.getStringOr("spawnDateTime", null);
+        this.spawnDateTicks = view.getLongOr("spawnDateTicks", 0);
+        this.deathDamage = view.getIntOr("deathDamage", 0);
+        this.ageDamage = view.getIntOr("ageDamage", 0);
     }
     //?} else if >=1.20.5 {
     /*@Override
-    public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
-        super.writeNbt(nbt, registries);
-        RegistryOps<NbtElement> ops = registries.getOps(NbtOps.INSTANCE);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
 
-        VersionUtil.put(ops, nbt, "contents", NbtCompound.CODEC, this.contents);
+        VersionUtil.put(ops, tag, "contents", CompoundTag.CODEC, this.contents);
         if (this.graveOwner != null) {
-            VersionUtil.put(ops, nbt, "owner", GraveOwner.CODEC, this.graveOwner);
+            VersionUtil.put(ops, tag, "owner", GraveOwner.CODEC, this.graveOwner);
         }
         if (this.spawnDateTime != null) {
-            nbt.putString("spawnDateTime", this.spawnDateTime);
+            tag.putString("spawnDateTime", this.spawnDateTime);
         }
         if (this.spawnDateTicks != 0) {
-            nbt.putLong("spawnDateTicks", this.spawnDateTicks);
+            tag.putLong("spawnDateTicks", this.spawnDateTicks);
         }
-        nbt.putInt("deathDamage", this.deathDamage);
-        nbt.putInt("ageDamage", this.ageDamage);
+        tag.putInt("deathDamage", this.deathDamage);
+        tag.putInt("ageDamage", this.ageDamage);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
-        super.readNbt(nbt, registries);
-        RegistryOps<NbtElement> ops = registries.getOps(NbtOps.INSTANCE);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+        RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
 
-        this.contents = VersionUtil.get(ops, nbt, "contents", NbtCompound.CODEC).orElse(new NbtCompound());
-        this.setGraveOwner(VersionUtil.get(ops, nbt, "owner", GraveOwner.CODEC).orElse(null));
-        this.spawnDateTime = nbt.getString("spawnDateTime"/^? if >=1.21.5 {^//^, null^//^?}^/);
-        this.spawnDateTicks = nbt.getLong("spawnDateTicks"/^? if >=1.21.5 {^//^, 0^//^?}^/);
-        this.deathDamage = nbt.getInt("deathDamage"/^? if >=1.21.5 {^//^, 0^//^?}^/);
-        this.ageDamage = nbt.getInt("ageDamage"/^? if >=1.21.5 {^//^, 0^//^?}^/);
+        this.contents = VersionUtil.get(ops, tag, "contents", CompoundTag.CODEC).orElse(new CompoundTag());
+        this.setGraveOwner(VersionUtil.get(ops, tag, "owner", GraveOwner.CODEC).orElse(null));
+        this.spawnDateTime = tag.getString("spawnDateTime")/^? if >=1.21.5 {^//^.orElse(null)^//^?}^/;
+        this.spawnDateTicks = tag.getLong("spawnDateTicks")/^? if >=1.21.5 {^//^.orElse(0L)^//^?}^/;
+        this.deathDamage = tag.getInt("deathDamage")/^? if >=1.21.5 {^//^.orElse(0)^//^?}^/;
+        this.ageDamage = tag.getInt("ageDamage")/^? if >=1.21.5 {^//^.orElse(0)^//^?}^/;
     }
     *///?} else {
     /*@Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
-        VersionUtil.put(nbt, "contents", NbtCompound.CODEC, this.contents);
+        VersionUtil.put(tag, "contents", CompoundTag.CODEC, this.contents);
         if (this.graveOwner != null) {
-            VersionUtil.put(nbt, "owner", GraveOwner.CODEC, this.graveOwner);
+            VersionUtil.put(tag, "owner", GraveOwner.CODEC, this.graveOwner);
         }
         if (this.spawnDateTime != null) {
-            nbt.putString("spawnDateTime", this.spawnDateTime);
+            tag.putString("spawnDateTime", this.spawnDateTime);
         }
         if (this.spawnDateTicks != 0) {
-            nbt.putLong("spawnDateTicks", this.spawnDateTicks);
+            tag.putLong("spawnDateTicks", this.spawnDateTicks);
         }
-        nbt.putInt("deathDamage", this.deathDamage);
-        nbt.putInt("ageDamage", this.ageDamage);
+        tag.putInt("deathDamage", this.deathDamage);
+        tag.putInt("ageDamage", this.ageDamage);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
-        this.contents = VersionUtil.get(nbt, "contents", NbtCompound.CODEC).orElse(new NbtCompound());
-        this.setGraveOwner(VersionUtil.get(nbt, "owner", GraveOwner.CODEC).orElse(null));
-        this.spawnDateTime = nbt.getString("spawnDateTime");
-        this.spawnDateTicks = nbt.getLong("spawnDateTicks");
-        this.deathDamage = nbt.getInt("deathDamage");
-        this.ageDamage = nbt.getInt("ageDamage");
+        this.contents = VersionUtil.get(tag, "contents", CompoundTag.CODEC).orElse(new CompoundTag());
+        this.setGraveOwner(VersionUtil.get(tag, "owner", GraveOwner.CODEC).orElse(null));
+        this.spawnDateTime = tag.getString("spawnDateTime");
+        this.spawnDateTicks = tag.getLong("spawnDateTicks");
+        this.deathDamage = tag.getInt("deathDamage");
+        this.ageDamage = tag.getInt("ageDamage");
     }
     *///?}
 
     //? if >=1.21.5 {
     @Override
-    public void onBlockReplaced(BlockPos pos, BlockState oldState) {
-        if (getWorld() instanceof ServerWorld serverWorld) {
-            GravestonesApi.onBreak(serverWorld, pos, getDecay(oldState), this);
+    public void preRemoveSideEffects(BlockPos pos, BlockState oldState) {
+        if (getLevel() instanceof ServerLevel serverLevel) {
+            GravestonesApi.onBreak(serverLevel, pos, getDecay(oldState), this);
         }
-        super.onBlockReplaced(pos, oldState);
+        super.preRemoveSideEffects(pos, oldState);
     }
     //?}
 
-    public static void tick(World world, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
-        if (world.isClient() || world.getTime() % 20 != 0) {
+    public static void tick(Level level, BlockPos blockPos, BlockState state, TechnicalGravestoneBlockEntity entity) {
+        if (level.isClientSide() || level.getGameTime() % 20 != 0) {
             return;
         }
 
-        GravestoneDecay.timeDecayGravestone(world, blockPos, state);
+        GravestoneDecay.timeDecayGravestone(level, blockPos, state);
 
-        if (GravestonesConfig.SPAWN_GRAVESTONE_SKELETONS.getValue() && world.getTime() % 900 == 0 && isOwnerNearby(world, entity, blockPos)) {
-            spawnSkeletons(world, entity, blockPos);
+        if (GravestonesConfig.SPAWN_GRAVESTONE_SKELETONS.getValue() && level.getGameTime() % 900 == 0 && isOwnerNearby(level, entity, blockPos)) {
+            spawnSkeletons(level, entity, blockPos);
         }
     }
 
-    private static boolean isOwnerNearby(World world, TechnicalGravestoneBlockEntity entity, BlockPos blockPos) {
+    private static boolean isOwnerNearby(Level level, TechnicalGravestoneBlockEntity entity, BlockPos blockPos) {
         GraveOwner graveOwner = entity.getGraveOwner();
         if (graveOwner == null) {
             return false;
         }
 
-        Box box = /*? if >=1.20.3 {*/Box.enclosing/*?} else {*//*new Box*//*?}*/(blockPos.down(30).south(50).west(50), blockPos.up(30).north(50).east(50));
-        for (Entity nearbyEntity : world.getOtherEntities(null, box)) {
-            if (nearbyEntity instanceof PlayerEntity player && VersionUtil.getId(player.getGameProfile()).equals(graveOwner.getUuid())) {
+        AABB box = /*? if >=1.20.3 {*/AABB.encapsulatingFullBlocks/*?} else {*//*new AABB*//*?}*/(blockPos.below(30).south(50).west(50), blockPos.above(30).north(50).east(50));
+        for (Entity nearbyEntity : level.getEntities(null, box)) {
+            if (nearbyEntity instanceof Player player && VersionUtil.getId(player.getGameProfile()).equals(graveOwner.getUuid())) {
                 return true;
             }
         }
@@ -184,20 +185,20 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return false;
     }
 
-    private static void spawnSkeletons(World world, TechnicalGravestoneBlockEntity entity, BlockPos blockPos) {
-        int entityCount = entity.countEntities(world);
+    private static void spawnSkeletons(Level level, TechnicalGravestoneBlockEntity entity, BlockPos blockPos) {
+        int entityCount = entity.countEntities(level);
 
         if (entityCount >= 5) {
             return;
         }
 
-        GravestoneSkeletonEntity spawned = new GravestoneSkeletonEntity(world);
+        GravestoneSkeletonEntity spawned = new GravestoneSkeletonEntity(level);
 
         List<BlockPos> possiblePos = new ArrayList<>();
         for (int x = -5; x < 6; ++x) {
             for (int y = -5; y < 6; ++y) {
                 for (int z = -5; z < 6; ++z) {
-                    possiblePos.add(new BlockPos(entity.getPos().getX() + x, entity.getPos().getY() + y, entity.getPos().getZ() + z));
+                    possiblePos.add(new BlockPos(entity.getBlockPos().getX() + x, entity.getBlockPos().getY() + y, entity.getBlockPos().getZ() + z));
                 }
             }
         }
@@ -210,18 +211,18 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             possiblePos.remove(randInt);
 
             boolean tooFar = false;
-            while (world.getBlockState(possible.down()).isAir() && !tooFar) {
-                if (possible.down().getY() < blockPos.down(5).getY()) {
+            while (level.getBlockState(possible.below()).isAir() && !tooFar) {
+                if (possible.below().getY() < blockPos.below(5).getY()) {
                     tooFar = true;
                 }
-                possible = possible.down();
+                possible = possible.below();
             }
 
             if (tooFar) {
                 continue;
             }
 
-            if (world.getBlockState(possible).isAir() && world.getBlockState(possible.up()).isAir()) {
+            if (level.getBlockState(possible).isAir() && level.getBlockState(possible.above()).isAir()) {
                 finalPos = possible;
                 break;
             }
@@ -231,25 +232,25 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
             finalPos = blockPos;
         }
 
-        spawned.setPos(finalPos.getX() + 0.5, finalPos.getY() + 0.1, finalPos.getZ() + 0.5);
-        spawned.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, -1));
+        spawned.setPosRaw(finalPos.getX() + 0.5, finalPos.getY() + 0.1, finalPos.getZ() + 0.5);
+        spawned.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1));
         if (random.nextFloat() > 0.5) {
-            spawned.equipStack(EquipmentSlot.MAINHAND, Items.BOW.getDefaultStack());
-            spawned.equipStack(EquipmentSlot.HEAD, Items.LEATHER_HELMET.getDefaultStack());
+            spawned.setItemSlot(EquipmentSlot.MAINHAND, Items.BOW.getDefaultInstance());
+            spawned.setItemSlot(EquipmentSlot.HEAD, Items.LEATHER_HELMET.getDefaultInstance());
         } else {
-            spawned.equipStack(EquipmentSlot.HEAD, Items.IRON_HELMET.getDefaultStack());
+            spawned.setItemSlot(EquipmentSlot.HEAD, Items.IRON_HELMET.getDefaultInstance());
         }
-        spawned.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0);
-        spawned.setEquipmentDropChance(EquipmentSlot.HEAD, 0);
+        spawned.setDropChance(EquipmentSlot.MAINHAND, 0);
+        spawned.setDropChance(EquipmentSlot.HEAD, 0);
 
-        world.spawnEntity(spawned);
-        TechnicalGravestoneBlock.createSoulParticles(world, finalPos);
-        TechnicalGravestoneBlock.createSoulParticles(world, blockPos);
+        level.addFreshEntity(spawned);
+        TechnicalGravestoneBlock.createSoulParticles(level, finalPos);
+        TechnicalGravestoneBlock.createSoulParticles(level, blockPos);
     }
 
-    private int countEntities(World world) {
-        Box box = /*? if >=1.20.3 {*/Box.enclosing/*?} else {*//*new Box*//*?}*/(getPos().down(15).south(15).west(15), getPos().up(15).north(15).east(15));
-        List<Entity> entities = world.getOtherEntities(null, box);
+    private int countEntities(Level level) {
+        AABB box = /*? if >=1.20.3 {*/AABB.encapsulatingFullBlocks/*?} else {*//*new AABB*//*?}*/(getBlockPos().below(15).south(15).west(15), getBlockPos().above(15).north(15).east(15));
+        List<Entity> entities = level.getEntities(null, box);
         int entityCount = 0;
         for (Entity nearbyEntity : entities) {
             if (nearbyEntity instanceof GravestoneSkeletonEntity) {
@@ -260,49 +261,49 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     public int getDecay() {
-        return getDecay(Objects.requireNonNull(this.getWorld()).getBlockState(this.getPos()));
+        return getDecay(Objects.requireNonNull(this.getLevel()).getBlockState(this.getBlockPos()));
     }
 
     public static int getDecay(BlockState state) {
-        return state.get(TechnicalGravestoneBlock.DAMAGE);
+        return state.getValue(TechnicalGravestoneBlock.DAMAGE);
     }
 
-    public NbtCompound getContents() {
+    public CompoundTag getContents() {
         return this.contents;
     }
 
-    public void setContents(NbtCompound contents) {
+    public void setContents(CompoundTag contents) {
         this.contents = contents;
-        this.markDirty();
+        this.setChanged();
     }
 
     public void setGraveOwner(@Nullable GraveOwner graveOwner) {
         this.graveOwner = graveOwner;
 
         //? if >=1.21.9 {
-        this.markDirty();
+        this.setChanged();
         //?} else if >=1.20.5 {
-        /*if (this.graveOwner != null && !this.graveOwner.getProfile().isCompleted()) {
-            this.graveOwner.getProfile().getFuture().thenAcceptAsync(profile -> {
+        /*if (this.graveOwner != null && !this.graveOwner.getProfile().isResolved()) {
+            this.graveOwner.getProfile().resolve().thenAcceptAsync(profile -> {
                 this.graveOwner.setProfile(profile);
-                this.markDirty();
-            }, SkullBlockEntity.EXECUTOR);
+                this.setChanged();
+            }, SkullBlockEntity.CHECKED_MAIN_THREAD_EXECUTOR);
         } else {
-            this.markDirty();
+            this.setChanged();
         }
         *///?} else if >=1.20.2 {
         /*if (this.graveOwner != null && !Util.isBlank(this.graveOwner.getName()) && !SkullBlockEntity.hasTextures(this.graveOwner.getProfile())) {
-            SkullBlockEntity.fetchProfile(this.graveOwner.getName()).thenAcceptAsync(profile -> {
+            SkullBlockEntity.fetchGameProfile(this.graveOwner.getName()).thenAcceptAsync(profile -> {
                 this.graveOwner.setProfile(profile.orElse(this.graveOwner.getProfile()));
-                this.markDirty();
-            }, SkullBlockEntity.EXECUTOR);
+                this.setChanged();
+            }, SkullBlockEntity.CHECKED_MAIN_THREAD_EXECUTOR);
         } else {
-            this.markDirty();
+            this.setChanged();
         }
         *///?} else {
-        /*SkullBlockEntity.loadProperties(this.graveOwner == null ? null : this.graveOwner.getProfile(), profile -> {
+        /*SkullBlockEntity.updateGameprofile(this.graveOwner == null ? null : this.graveOwner.getProfile(), profile -> {
             this.graveOwner.setProfile(profile);
-            this.markDirty();
+            this.setChanged();
         });
         *///?}
     }
@@ -318,7 +319,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     public void setAgeDamage(int ageDamage) {
         if (this.getAgeDamage() != ageDamage) {
             this.ageDamage = ageDamage;
-            this.markDirty();
+            this.setChanged();
         }
     }
 
@@ -328,7 +329,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     public void setDeathDamage(int deathDamage) {
         this.deathDamage = deathDamage;
-        this.markDirty();
+        this.setChanged();
     }
 
     @Nullable
@@ -339,7 +340,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     public void setSpawnDate(String spawnDateTime, long spawnDateTicks) {
         this.spawnDateTime = spawnDateTime;
         this.spawnDateTicks = spawnDateTicks;
-        this.markDirty();
+        this.setChanged();
     }
 
     public String getSpawnDateTime() {

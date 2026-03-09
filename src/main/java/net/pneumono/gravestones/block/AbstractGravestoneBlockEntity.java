@@ -1,19 +1,16 @@
 package net.pneumono.gravestones.block;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-
-//? if >=1.20.5 {
-import net.minecraft.registry.RegistryWrapper;
-//?}
 
 public abstract class AbstractGravestoneBlockEntity extends BlockEntity {
     public AbstractGravestoneBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -22,18 +19,18 @@ public abstract class AbstractGravestoneBlockEntity extends BlockEntity {
 
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
     //? if >=1.20.5 {
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createComponentlessNbt(registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        return this.saveCustomOnly(registryLookup);
     }
     //?} else {
-    /*public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    /*public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
     *///?}
 

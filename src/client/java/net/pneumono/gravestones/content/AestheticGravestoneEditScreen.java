@@ -1,50 +1,47 @@
 package net.pneumono.gravestones.content;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.block.Block;
-import net.minecraft.block.entity.SignText;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.SelectionManager;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.font.TextFieldHelper;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.CommonColors;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.SignText;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 import org.jetbrains.annotations.Nullable;
 
+
 //? if >=1.21.9 {
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 //?} else {
 /*import org.lwjgl.glfw.GLFW;
 *///?}
 
 //? if >=1.21.6 {
-import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.renderer.RenderPipelines;
 //?} else {
-/*import net.minecraft.client.render.RenderLayer;
+/*import net.minecraft.client.renderer.RenderType;
 *///?}
 
 //? if >=1.21.4 {
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
 //?} else {
-/*import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
+/*import net.minecraft.client.renderer.blockentity.SignRenderer;
 *///?}
 
-//? if >=1.21.2 {
-import net.minecraft.util.math.ColorHelper;
-//?}
-
-//? if >=1.21 {
-import net.minecraft.util.Colors;
-//?}
+//? if >=1.21.2
+import net.minecraft.util.ARGB;
 
 //? if <1.20.2 {
-/*import net.minecraft.client.render.DiffuseLighting;
+/*import com.mojang.blaze3d.platform.Lighting;
 *///?}
 
 import java.util.Objects;
@@ -59,18 +56,18 @@ public class AestheticGravestoneEditScreen extends Screen {
     private int ticksSinceOpened;
     private int currentRow;
     @Nullable
-    private SelectionManager selectionManager;
+    private TextFieldHelper selectionManager;
     private final Identifier texture;
 
     public AestheticGravestoneEditScreen(AestheticGravestoneBlockEntity blockEntity, boolean filtered) {
-        super(Text.translatable("gravestones.edit_text"));
+        super(Component.translatable("gravestones.edit_text"));
         this.blockEntity = blockEntity;
         this.text = blockEntity.getText();
-        this.messages = IntStream.range(0, 4).mapToObj(line -> this.text.getMessage(line, filtered)).map(Text::getString).toArray(String[]::new);
-        World world = blockEntity.getWorld();
+        this.messages = IntStream.range(0, 4).mapToObj(line -> this.text.getMessage(line, filtered)).map(Component::getString).toArray(String[]::new);
+        Level level = blockEntity.getLevel();
         Block block;
-        if (world != null) {
-            block = world.getBlockState(blockEntity.getPos()).getBlock();
+        if (level != null) {
+            block = level.getBlockState(blockEntity.getBlockPos()).getBlock();
         } else {
             block = GravestonesRegistry.GRAVESTONE;
         }
@@ -92,16 +89,16 @@ public class AestheticGravestoneEditScreen extends Screen {
 
     @Override
     protected void init() {
-        Objects.requireNonNull(this.client);
-        this.addDrawableChild(
-                ButtonWidget.builder(ScreenTexts.DONE, button -> this.finishEditing()).dimensions(this.width / 2 - 100, this.height / 4 + 144, 200, 20).build()
+        Objects.requireNonNull(this.minecraft);
+        this.addRenderableWidget(
+                Button.builder(CommonComponents.GUI_DONE, button -> this.finishEditing()).bounds(this.width / 2 - 100, this.height / 4 + 144, 200, 20).build()
         );
-        this.selectionManager = new SelectionManager(
+        this.selectionManager = new TextFieldHelper(
                 () -> this.messages[this.currentRow],
                 this::setCurrentRowMessage,
-                SelectionManager.makeClipboardGetter(this.client),
-                SelectionManager.makeClipboardSetter(this.client),
-                string -> this.client.textRenderer.getWidth(string) <= TEXT_WIDTH
+                TextFieldHelper.createClipboardGetter(this.minecraft),
+                TextFieldHelper.createClipboardSetter(this.minecraft),
+                string -> this.minecraft.font.width(string) <= TEXT_WIDTH
         );
     }
 
@@ -114,29 +111,29 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     private boolean canEdit() {
-        return this.client != null
-                && this.client.player != null
+        return this.minecraft != null
+                && this.minecraft.player != null
                 && !this.blockEntity.isRemoved()
-                && !this.blockEntity.isPlayerTooFarToEdit(this.client.player.getUuid());
+                && !this.blockEntity.isPlayerTooFarToEdit(this.minecraft.player.getUUID());
     }
 
     @Override
     //? if >=1.21.9 {
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(KeyEvent input) {
     //?} else {
     /*public boolean keyPressed(int input, int scanCode, int modifiers) {
     *///?}
         Objects.requireNonNull(this.selectionManager);
         if (isUp(input)) {
             this.currentRow = this.currentRow - 1 & 3;
-            this.selectionManager.putCursorAtEnd();
+            this.selectionManager.setCursorToEnd();
             return true;
         } else if (isDownOrEnter(input)) {
             this.currentRow = this.currentRow + 1 & 3;
-            this.selectionManager.putCursorAtEnd();
+            this.selectionManager.setCursorToEnd();
             return true;
         } else {
-            if (this.selectionManager.handleSpecialKey(input)) {
+            if (this.selectionManager.keyPressed(input)) {
                 return true;
             } else {
                 //? if >=1.21.9 {
@@ -149,7 +146,7 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     //? if >=1.21.9 {
-    public boolean isUp(KeyInput input) {
+    public boolean isUp(KeyEvent input) {
         return input.isUp();
     }
     //?} else {
@@ -159,8 +156,8 @@ public class AestheticGravestoneEditScreen extends Screen {
     *///?}
 
     //? if >=1.21.9 {
-    public boolean isDownOrEnter(KeyInput input) {
-        return input.isDown() || input.isEnter();
+    public boolean isDownOrEnter(KeyEvent input) {
+        return input.isDown() || input.isConfirmation();
     }
     //?} else {
     /*public boolean isDownOrEnter(int input) {
@@ -170,43 +167,43 @@ public class AestheticGravestoneEditScreen extends Screen {
 
     @Override
     //? if >=1.21.9 {
-    public boolean charTyped(CharInput input) {
+    public boolean charTyped(CharacterEvent input) {
     //?} else {
     /*public boolean charTyped(char input, int modifiers) {
     *///?}
-        Objects.requireNonNull(this.selectionManager).insert(input);
+        Objects.requireNonNull(this.selectionManager).charTyped(input);
         return true;
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         //? if <1.20.2 {
-        /*DiffuseLighting.disableGuiDepthLighting();
+        /*Lighting.setupForFlatItems();
         this.renderBackground(context);
         *///?}
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 40, 16777215);
+        context.drawCenteredString(this.font, this.title, this.width / 2, 40, 16777215);
         this.renderGravestone(context);
         //? if <1.20.2 {
-        /*DiffuseLighting.enableGuiDepthLighting();
+        /*Lighting.setupFor3DItems();
         *///?}
         super.render(context, mouseX, mouseY, deltaTicks);
     }
 
     //? if >=1.20.2 {
     @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-        this.renderInGameBackground(context);
+    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+        this.renderTransparentBackground(context);
     }
     //?}
 
     @Override
-    public void close() {
+    public void onClose() {
         this.finishEditing();
     }
 
     @Override
     public void removed() {
-        UpdateGravestoneC2SPayload payload = new UpdateGravestoneC2SPayload(this.blockEntity.getPos(), this.messages[0], this.messages[1], this.messages[2], this.messages[3]);
+        UpdateGravestoneC2SPayload payload = new UpdateGravestoneC2SPayload(this.blockEntity.getBlockPos(), this.messages[0], this.messages[1], this.messages[2], this.messages[3]);
         //? if >=1.20.5 {
         ClientPlayNetworking.send(payload);
         //?} else {
@@ -215,38 +212,38 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
-    private void renderGravestone(DrawContext context) {
+    private void renderGravestone(GuiGraphics context) {
         //? if >=1.21.6 {
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(this.width / 2.0F, 125.0F);
-        context.getMatrices().pushMatrix();
+        context.pose().pushMatrix();
+        context.pose().translate(this.width / 2.0F, 125.0F);
+        context.pose().pushMatrix();
         this.renderGravestoneBackground(context);
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
         this.renderGravestoneText(context);
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
         //?} else {
-        /*context.getMatrices().push();
-        context.getMatrices().translate(this.width / 2.0F, 125.0F, 50.0F);
-        context.getMatrices().push();
+        /*context.pose().pushPose();
+        context.pose().translate(this.width / 2.0F, 125.0F, 50.0F);
+        context.pose().pushPose();
         this.renderGravestoneBackground(context);
-        context.getMatrices().pop();
+        context.pose().popPose();
         this.renderGravestoneText(context);
-        context.getMatrices().pop();
+        context.pose().popPose();
         *///?}
     }
 
-    protected void renderGravestoneBackground(DrawContext context) {
+    protected void renderGravestoneBackground(GuiGraphics context) {
         //? if >=1.21.6 {
-        context.getMatrices().scale(7.0F, 7.0F);
+        context.pose().scale(7.0F, 7.0F);
         //?} else {
-        /*context.getMatrices().scale(7.0F, 7.0F, 1.0F);
+        /*context.pose().scale(7.0F, 7.0F, 1.0F);
         *///?}
-        context.drawTexture(
-                /*? if >=1.21.6 {*/RenderPipelines.GUI_TEXTURED,/*?} else if >=1.21.2 {*//*RenderLayer::getGuiTextured,*//*?}*/
+        context.blit(
+                /*? if >=1.21.6 {*/RenderPipelines.GUI_TEXTURED,/*?} else if >=1.21.2 {*//*RenderType::guiTextured,*//*?}*/
                 this.texture,
                 -8, -8,
                 0.0F, 0.0F,
@@ -255,29 +252,29 @@ public class AestheticGravestoneEditScreen extends Screen {
         );
     }
 
-    private void renderGravestoneText(DrawContext context) {
-        int color = this.text.isGlowing() ? this.text.getColor().getSignColor() : /*? if >=1.21.4 {*/AbstractSignBlockEntityRenderer.getTextColor(this.text)/*?} else {*//*SignBlockEntityRenderer.getColor(this.text)*//*?}*/;
+    private void renderGravestoneText(GuiGraphics context) {
+        int color = this.text.hasGlowingText() ? this.text.getColor().getTextColor() : /*? if >=1.21.4 {*/AbstractSignRenderer.getDarkColor(this.text)/*?} else {*//*SignRenderer.getDarkColor(this.text)*//*?}*/;
         boolean shouldFlashCursor = this.ticksSinceOpened / 6 % 2 == 0;
         Objects.requireNonNull(this.selectionManager);
-        int selectionStart = this.selectionManager.getSelectionStart();
-        int selectionEnd = this.selectionManager.getSelectionEnd();
+        int selectionStart = this.selectionManager.getCursorPos();
+        int selectionEnd = this.selectionManager.getSelectionPos();
         int lineHeightOffset = 4 * TEXT_LINE_HEIGHT / 2;
         int adjustedY = this.currentRow * TEXT_LINE_HEIGHT - lineHeightOffset;
 
         for (int i = 0; i < this.messages.length; i++) {
             String message = this.messages[i];
             if (message != null) {
-                if (this.textRenderer.isRightToLeft()) {
-                    message = this.textRenderer.mirror(message);
+                if (this.font.isBidirectional()) {
+                    message = this.font.bidirectionalShaping(message);
                 }
 
-                int x = -this.textRenderer.getWidth(message) / 2;
-                context.drawText(this.textRenderer, message, x, i * TEXT_LINE_HEIGHT - lineHeightOffset, color, false);
+                int x = -this.font.width(message) / 2;
+                context.drawString(this.font, message, x, i * TEXT_LINE_HEIGHT - lineHeightOffset, color, false);
                 if (i == this.currentRow && selectionStart >= 0 && shouldFlashCursor) {
-                    int substringWidth = this.textRenderer.getWidth(message.substring(0, Math.min(selectionStart, message.length())));
-                    int adjustedX = substringWidth - this.textRenderer.getWidth(message) / 2;
+                    int substringWidth = this.font.width(message.substring(0, Math.min(selectionStart, message.length())));
+                    int adjustedX = substringWidth - this.font.width(message) / 2;
                     if (selectionStart >= message.length()) {
-                        context.drawText(this.textRenderer, "_", adjustedX, adjustedY, color, false);
+                        context.drawString(this.font, "_", adjustedX, adjustedY, color, false);
                     }
                 }
             }
@@ -286,26 +283,26 @@ public class AestheticGravestoneEditScreen extends Screen {
         for (int i = 0; i < this.messages.length; i++) {
             String message = this.messages[i];
             if (message != null && i == this.currentRow && selectionStart >= 0) {
-                int substringWidth = this.textRenderer.getWidth(message.substring(0, Math.min(selectionStart, message.length())));
-                int adjustedX = substringWidth - this.textRenderer.getWidth(message) / 2;
+                int substringWidth = this.font.width(message.substring(0, Math.min(selectionStart, message.length())));
+                int adjustedX = substringWidth - this.font.width(message) / 2;
                 if (shouldFlashCursor && selectionStart < message.length()) {
-                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, /*? if >=1.21.2 {*/ColorHelper.fullAlpha(color)/*?} else {*//*-16777216 | color*//*?}*/);
+                    context.fill(adjustedX, adjustedY - 1, adjustedX + 1, adjustedY + TEXT_LINE_HEIGHT, /*? if >=1.21.2 {*/ARGB.opaque(color)/*?} else {*//*-16777216 | color*//*?}*/);
                 }
 
                 if (selectionEnd != selectionStart) {
                     int start = Math.min(selectionStart, selectionEnd);
                     int end = Math.max(selectionStart, selectionEnd);
-                    int widthStart = this.textRenderer.getWidth(message.substring(0, start)) - this.textRenderer.getWidth(message) / 2;
-                    int widthEnd = this.textRenderer.getWidth(message.substring(0, end)) - this.textRenderer.getWidth(message) / 2;
+                    int widthStart = this.font.width(message.substring(0, start)) - this.font.width(message) / 2;
+                    int widthEnd = this.font.width(message.substring(0, end)) - this.font.width(message) / 2;
                     int startX = Math.min(widthStart, widthEnd);
                     int endX = Math.max(widthStart, widthEnd);
                     context.fill(
-                            /*? if >=1.21.6 {*/RenderPipelines.GUI_TEXT_HIGHLIGHT/*?} else {*//*RenderLayer.getGuiTextHighlight()*//*?}*/,
+                            /*? if >=1.21.6 {*/RenderPipelines.GUI_TEXT_HIGHLIGHT/*?} else {*//*RenderType.guiTextHighlight()*//*?}*/,
                             startX,
                             adjustedY,
                             endX,
                             adjustedY + TEXT_LINE_HEIGHT,
-                            /*? if >=1.21 {*/Colors.BLUE/*?} else {*//*-16776961*//*?}*/
+                            /*? if >=1.21 {*/CommonColors.BLUE/*?} else {*//*-16776961*//*?}*/
                     );
                 }
             }
@@ -314,11 +311,11 @@ public class AestheticGravestoneEditScreen extends Screen {
 
     private void setCurrentRowMessage(String message) {
         this.messages[this.currentRow] = message;
-        this.text = this.text.withMessage(this.currentRow, Text.literal(message));
+        this.text = this.text.setMessage(this.currentRow, Component.literal(message));
         this.blockEntity.setText(this.text);
     }
 
     private void finishEditing() {
-        Objects.requireNonNull(this.client).setScreen(null);
+        Objects.requireNonNull(this.minecraft).setScreen(null);
     }
 }

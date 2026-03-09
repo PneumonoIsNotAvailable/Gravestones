@@ -7,18 +7,17 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import io.wispforest.accessories.api.slot.SlotReference;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.pneumono.gravestones.api.GravestoneDataType;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.multiversion.VersionUtil;
-import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +46,11 @@ import io.wispforest.accessories.misc.AccessoriesGameRules;
 /^import io.wispforest.accessories.Accessories;
 ^///?}
 
-//? if >=1.21.4 {
-import net.minecraft.world.GameRules;
-//?}
+//? if >=1.21.11 {
+import net.minecraft.world.level.gamerules.GameRules;
+//?} else >=1.21.4 {
+/^import net.minecraft.world.level.GameRules;
+^///?}
 
 public class AccessoriesDataType extends GravestoneDataType {
     private static final String KEY = "accessories";
@@ -58,12 +59,12 @@ public class AccessoriesDataType extends GravestoneDataType {
     @SuppressWarnings("UnstableApiUsage")
     //?}
     @Override
-    public void writeData(NbtCompound nbt, DynamicOps<NbtElement> ops, PlayerEntity player) throws Exception {
-        MinecraftServer server = MultiVersionUtil.getWorld(player).getServer();
+    public void writeData(CompoundTag tag, DynamicOps<Tag> ops, Player player) throws Exception {
+        MinecraftServer server = player.level().getServer();
         //? if >=1.21.9 {
-        GameRules.Key<GameRules.BooleanRule> gameRule = AccessoriesGameRules.RULE_KEEP_ACCESSORY_INVENTORY;
+        GameRules.Key<GameRules.BooleanValue> gameRule = AccessoriesGameRules.RULE_KEEP_ACCESSORY_INVENTORY;
         //?} else if >=1.21.4 {
-        /^GameRules.Key<GameRules.BooleanRule> gameRule = Accessories.RULE_KEEP_ACCESSORY_INVENTORY;
+        /^GameRules.Key<GameRules.BooleanValue> gameRule = Accessories.RULE_KEEP_ACCESSORY_INVENTORY;
         ^///?}
         if (server == null /^? if >=1.21.4 {^/|| server.getGameRules().getBoolean(gameRule)/^?}^/) {
             return;
@@ -84,11 +85,11 @@ public class AccessoriesDataType extends GravestoneDataType {
             //?} else {
             /^ExpandedSimpleContainer accessories = container.getAccessories();
             ^///?}
-            for (int index = 0; index < accessories.size(); ++index) {
-                ItemStack stack = accessories.getStack(index);
-                GravestonesApi.onInsertItem(player, stack, Objects.requireNonNull(Identifier.tryParse(name)).withSuffixedPath("/" + index + "/" + "normal"));
+            for (int index = 0; index < accessories.getContainerSize(); ++index) {
+                ItemStack stack = accessories.getItem(index);
+                GravestonesApi.onInsertItem(player, stack, Objects.requireNonNull(Identifier.tryParse(name)).withSuffix("/" + index + "/" + "normal"));
                 if (!GravestonesApi.shouldSkipItem(player, stack) && !stack.isEmpty()) {
-                    accessories.removeStack(index);
+                    accessories.setItem(index, ItemStack.EMPTY);
                     list.add(new SlotReferencePrimitive(stack, name, index, false));
                 }
             }
@@ -98,36 +99,36 @@ public class AccessoriesDataType extends GravestoneDataType {
             //?} else {
             /^ExpandedSimpleContainer cosmetics = container.getCosmeticAccessories();
             ^///?}
-            for (int index = 0; index < cosmetics.size(); ++index) {
-                ItemStack stack = cosmetics.getStack(index);
-                GravestonesApi.onInsertItem(player, stack, Objects.requireNonNull(Identifier.tryParse(name)).withSuffixedPath("/" + index + "/" + "cosmetic"));
+            for (int index = 0; index < cosmetics.getContainerSize(); ++index) {
+                ItemStack stack = cosmetics.getItem(index);
+                GravestonesApi.onInsertItem(player, stack, Objects.requireNonNull(Identifier.tryParse(name)).withSuffix("/" + index + "/" + "cosmetic"));
                 if (!GravestonesApi.shouldSkipItem(player, stack) && !stack.isEmpty()) {
-                    cosmetics.removeStack(index);
+                    cosmetics.setItem(index, ItemStack.EMPTY);
                     list.add(new SlotReferencePrimitive(stack, name, index, true));
                 }
             }
         }
 
-        VersionUtil.put(ops, nbt, KEY, SlotReferencePrimitive.CODEC.listOf(), list);
+        VersionUtil.put(ops, tag, KEY, SlotReferencePrimitive.CODEC.listOf(), list);
     }
 
     @Override
-    public void onBreak(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, int decay) {
-        List<SlotReferencePrimitive> list = VersionUtil.get(ops, nbt, KEY, SlotReferencePrimitive.CODEC.listOf()).orElse(null);
+    public void onBreak(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, int decay) {
+        List<SlotReferencePrimitive> list = VersionUtil.get(ops, tag, KEY, SlotReferencePrimitive.CODEC.listOf()).orElse(null);
         if (list == null || list.isEmpty()) return;
 
-        dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack).toList());
+        dropStacks(level, pos, list.stream().map(SlotReferencePrimitive::stack).toList());
     }
 
     @Override
-    public void onCollect(NbtCompound nbt, DynamicOps<NbtElement> ops, World world, BlockPos pos, PlayerEntity player, int decay) {
-        List<SlotReferencePrimitive> list = VersionUtil.get(ops, nbt, KEY, SlotReferencePrimitive.CODEC.listOf()).orElse(null);
+    public void onCollect(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, Player player, int decay) {
+        List<SlotReferencePrimitive> list = VersionUtil.get(ops, tag, KEY, SlotReferencePrimitive.CODEC.listOf()).orElse(null);
         if (list == null || list.isEmpty()) return;
 
         AccessoriesCapability capability = AccessoriesCapability.get(player);
         if (capability == null) {
             warn("Player {} does not have an AccessoriesCapability. Any accessories will be dropped on the ground", player.getName().getString());
-            dropStacks(world, pos, list.stream().map(SlotReferencePrimitive::stack).toList());
+            dropStacks(level, pos, list.stream().map(SlotReferencePrimitive::stack).toList());
             return;
         }
 
@@ -162,7 +163,7 @@ public class AccessoriesDataType extends GravestoneDataType {
             /^ExpandedSimpleContainer accessories = primitive.cosmetic ? container.getCosmeticAccessories() : container.getAccessories();
             ^///?}
 
-            ItemStack oldStack = accessories.getStack(index);
+            ItemStack oldStack = accessories.getItem(index);
 
             boolean canUnequipOldStack =
             //? if >=1.21.2 {
@@ -186,14 +187,14 @@ public class AccessoriesDataType extends GravestoneDataType {
                 /^AccessoriesAPI.getOrDefaultAccessory(oldStack);
                 ^///?}
                 ItemStack splitStack = newStack.split(accessory.maxStackSize(newStack));
-                accessories.setStack(index, splitStack);
+                accessories.setItem(index, splitStack);
                 if (!newStack.isEmpty()) {
                     remaining.add(newStack);
                 }
             }
         }
 
-        dropStacks(world, pos, remaining);
+        dropStacks(level, pos, remaining);
     }
 
     public record SlotReferencePrimitive(ItemStack stack, String slotName, int index, boolean cosmetic) {
