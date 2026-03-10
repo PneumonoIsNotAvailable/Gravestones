@@ -5,6 +5,7 @@
 ![A screenshot of a gravestone in front of a cliff. Written on the gravestone is the name Pneumono_, and the date and time of death.](images/gravestone.png)
 
 Gravestones adds blocks which store your items on death.
+You just right-click, and your items will go back to their original positions.
 
 It's a fairly standard grave mod, but with nicer, vanilla-style textures,
 extra config options to help tailor the mod to specific servers, and the option to use gravestones in builds.
