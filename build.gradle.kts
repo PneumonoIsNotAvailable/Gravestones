@@ -260,10 +260,12 @@ publishMods {
 		}
 	}
 
-	discord {
-		webhookUrl = discordToken
+	if (stonecutter.current.project == "1.21.11") {
+		discord {
+			webhookUrl = discordToken
 
-		content = changelog.map { "# Gravestones version ${project.version}\n<@&1472490332783378472>\n" + it }
+			content = changelog.map { "# Gravestones version ${project.property("mod_version")}\n<@&1472490332783378472>\n" + it }
+		}
 	}
 }
 
