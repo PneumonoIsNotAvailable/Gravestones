@@ -21,6 +21,9 @@ public class GravestonesConfig {
     public static final EnumConfiguration<DecayTimeType> DECAY_TIME_TYPE = register("decay_time_type", new EnumConfiguration<>(
             DecayTimeType.TICKS, new ConfigSettings().category("decay").loadType(LoadType.INSTANT)
     ));
+    public static final BoundedIntegerConfiguration DAMAGE_TO_BREAK = register("damage_to_break", new BoundedIntegerConfiguration(
+            3, 1, 20, new ConfigSettings().category("decay").loadType(LoadType.INSTANT)
+    ));
     public static final BooleanConfiguration AESTHETIC_DECAY = register("aesthetic_decay", new BooleanConfiguration(
             false, new ConfigSettings().category("decay").loadType(LoadType.INSTANT)
     ));

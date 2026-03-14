@@ -116,7 +116,17 @@ public class GravestoneDecay extends GravestoneManager {
         return broken;
     }
 
+    // If the gravestone is damaged above the damage to break, break immediately (3)
+    // If the gravestone is undamaged, show as undamaged (0)
+    // If the gravestone is one step away from breaking, show as final decay stage (2)
+    // Else, calculate distance from breaking normally (0-2)
     public static int calculateDecayStage(int totalDamage) {
-        return totalDamage;
+        int damageToBreak = GravestonesConfig.DAMAGE_TO_BREAK.getValue();
+
+        if (totalDamage >= damageToBreak) return 3;
+        if (totalDamage <= 0) return 0;
+        if (totalDamage + 1 == damageToBreak) return 2;
+
+        return (3 * totalDamage) / damageToBreak;
     }
 }

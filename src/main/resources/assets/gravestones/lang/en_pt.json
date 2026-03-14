@@ -57,6 +57,8 @@
     "configs.gravestones.decay_time_type.real_time": "Days in all",
     "configs.gravestones.decay_time_type.ticks": "Days at sea",
     "configs.gravestones.decay_time_type.tooltip": "If yer Dead Man's Chest be weathered every moon (Days in all), or only while ye be upon th' waves (Days at sea). Unloadin' yer chunks won't save yer chests!",
+    "configs.gravestones.damage_to_break": "Weatherin' t' break",
+    "configs.gravestones.damage_to_break.tooltip": "The number o' times yer Dead Man's Chest can be weathered before it be broken",
     "configs.gravestones.aesthetic_decay": "Beautiful Weatherin'",
     "configs.gravestones.aesthetic_decay.tooltip": "If th' weatherin' o' yer Dead Man's Chest be purely visual, or if it affects yer booty.",
     "configs.gravestones.store_experience": "Bury Knowledge",
