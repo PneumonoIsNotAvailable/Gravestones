@@ -264,6 +264,10 @@ publishMods {
 		discord {
 			webhookUrl = discordToken
 
+			username = "Gravestones Updates"
+
+			avatarUrl = "https://github.com/PneumonoIsNotAvailable/Gravestones/blob/master/src/main/resources/assets/gravestones/icon.png?raw=true"
+
 			content = changelog.map { "# Gravestones version ${project.property("mod_version")}\n<@&1472490332783378472>\n" + it }
 		}
 	}
