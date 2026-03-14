@@ -1,2 +1,7 @@
-- Fixed supported soulbound enchantments not working in certain versions
-- Added API feature for skipping enchantments across all versions
+- Migrated to Mojang Mappings
+- Added 'Damage to Break' config
+  - Controls the amount of damage a gravestone can take before breaking
+- Added additional links to the Mod Menu page
+- Added Brazilian Portuguese translation
+- Changed format and location of gravestone history files
+- Slightly improved error logging for Gravestone Data Types and backwards compatibility
