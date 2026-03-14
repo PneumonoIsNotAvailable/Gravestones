@@ -58,9 +58,10 @@ public class GravestoneCreation extends GravestoneManager {
         info("Placement not cancelled");
 
         // Read gravestone history
-        CompletableFuture<List<RecentGraveHistory>> historiesFuture = CompletableFuture.supplyAsync(() -> {
+        UUID uuid = player.getUUID();
+        CompletableFuture<GravestoneHistory> historyFuture = CompletableFuture.supplyAsync(() -> {
             info("Reading gravestone history...");
-            return GravestoneDataSaving.readHistories(server);
+            return GravestoneDataSaving.readHistory(server, uuid);
         });
 
         // Create contents data
@@ -76,26 +77,40 @@ public class GravestoneCreation extends GravestoneManager {
         info("Calculating gravestone placement position...");
         GlobalPos globalGravestonePos = getPlacementPos(deathLevel, player, deathPos);
 
-        historiesFuture.thenAcceptAsync(histories -> {
-            histories = new ArrayList<>(histories);
-            RecentGraveHistory history = getHistory(histories, player.getUUID());
-
-            // Create new gravestone history
+        // Add new gravestone position to gravestone history
+        historyFuture = historyFuture.thenApplyAsync(history -> {
             info("Updating gravestone history...");
-            RecentGraveHistory newHistory;
-            if (history == null) {
-                newHistory = new RecentGraveHistory(player.getUUID(), globalGravestonePos);
-            } else {
-                newHistory = history.getShifted(globalGravestonePos);
-            }
-            histories.add(newHistory);
+            history.getPositions().add(globalGravestonePos);
 
-            // Write new gravestone history
-            info("Writing updated gravestone history...");
-            GravestoneDataSaving.writeData(server, histories);
+            return history;
         });
 
         String playerName = VersionUtil.getName(player.getGameProfile());
+
+        // Damage existing gravestones
+        info("Damaging existing gravestones... (if enabled)");
+        GravestoneHistory history = new GravestoneHistory();
+        List<GlobalPos> positionsToRemove = new ArrayList<>();
+        try {
+            history = historyFuture.get();
+            List<GlobalPos> positionsToCheck = new ArrayList<>(history.getPositions());
+            positionsToCheck.remove(globalGravestonePos);
+            positionsToRemove.addAll(GravestoneDecay.deathDamageOldGravestones(server, positionsToCheck));
+        } catch (ExecutionException | InterruptedException e) {
+            error("Failed to damage existing gravestones", e);
+        }
+
+        // Remove broken/non-existent gravestones from history
+        for (GlobalPos brokenPos : positionsToRemove) {
+            history.getPositions().remove(brokenPos);
+        }
+
+        // Write new gravestone history
+        GravestoneHistory finalHistory = history;
+        CompletableFuture.runAsync(() -> {
+            info("Writing updated gravestone history...");
+            GravestoneDataSaving.writeHistory(server, uuid, finalHistory);
+        });
 
         // Place gravestone
         info("Placing gravestone...");
@@ -120,33 +135,9 @@ public class GravestoneCreation extends GravestoneManager {
             server.getPlayerList().broadcastSystemMessage(Component.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)), false);
         }
 
-        info("Damaging existing gravestones... (if enabled)");
-        try {
-            // Damage existing gravestones
-            RecentGraveHistory history = getHistory(new ArrayList<>(historiesFuture.get()), player.getUUID());
-            if (history != null) {
-                GravestoneDecay.deathDamageOldGravestones(server, history.getList(), globalGravestonePos);
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            error("Failed to damage existing gravestones", e);
-        }
-
         // Callbacks
         info("Invoking GravestonePlacedCallbacks...");
         GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(deathLevel, player, deathPos, globalGravestonePos);
-    }
-
-    public static RecentGraveHistory getHistory(List<RecentGraveHistory> histories, UUID uuid) {
-        RecentGraveHistory history = null;
-        for (int i = 0; i < histories.size(); ++i) {
-            RecentGraveHistory checkedHistory = histories.get(i);
-            if (checkedHistory.owner().equals(uuid)) {
-                history = histories.remove(i);
-                break;
-            }
-        }
-
-        return history;
     }
 
     private static CompoundTag createContentsData(Player player) {

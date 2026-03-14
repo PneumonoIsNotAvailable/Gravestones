@@ -17,8 +17,8 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
+import net.pneumono.gravestones.gravestones.GravestoneHistory;
 import net.pneumono.gravestones.gravestones.GravestoneManager;
-import net.pneumono.gravestones.gravestones.RecentGraveHistory;
 import net.pneumono.gravestones.multiversion.GraveOwner;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 
@@ -62,16 +62,9 @@ public class GravestonesCommands {
                                 .then(literal("player")
                                         .then(argument("player", EntityArgument.player())
                                                 .executes(context -> {
-                                                    List<RecentGraveHistory> histories = GravestoneDataSaving.readHistories(context.getSource().getServer());
-
                                                     UUID uuid = VersionUtil.getId(EntityArgument.getPlayer(context, "player").getGameProfile());
-                                                    List<GlobalPos> positions = null;
-                                                    for (RecentGraveHistory history : histories) {
-                                                        if (history.owner().equals(uuid)) {
-                                                            positions = history.getList();
-                                                            break;
-                                                        }
-                                                    }
+                                                    GravestoneHistory history = GravestoneDataSaving.readHistory(context.getSource().getServer(), uuid);
+                                                    List<GlobalPos> positions = history.getPositions();
 
                                                     if (positions == null) {
                                                         Gravestones.LOGGER.error("Could not find gravestone data file!");

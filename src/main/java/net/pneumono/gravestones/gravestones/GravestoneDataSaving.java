@@ -48,30 +48,35 @@ public class GravestoneDataSaving extends GravestoneManager {
         }
     }
 
-    public static List<RecentGraveHistory> readHistories(MinecraftServer server) {
-        Path path = getOrCreateGravestonesDataFile(server);
+    public static GravestoneHistory readHistory(MinecraftServer server, UUID uuid) {
+        Path path = getOrCreateGravestoneHistoryFile(server, uuid);
+
+        if (!path.toFile().exists()) {
+            info("Gravestone History file for {} does not exist! Creating new Gravestone History...", uuid);
+            return new GravestoneHistory();
+        }
 
         CompoundTag compound = new CompoundTag();
         try {
             //? if <1.20.3 {
             /*compound = NbtIo.readCompressed(path.toFile());
-            *///?} else if =1.20.3 {
+             *///?} else if =1.20.3 {
             /*NbtIo.readCompressed(path, NbtAccounter.unlimitedHeap());
-            *///?} else {
+             *///?} else {
             compound = NbtIo.readCompressed(path, NbtAccounter.unlimitedHeap());
             //?}
         } catch (IOException e) {
-            error("Failed to read Gravestone Data", e);
+            error("Failed to read Gravestone History for {}", uuid, e);
         }
 
-        return VersionUtil.get(compound, "data", RecentGraveHistory.CODEC.listOf()).orElse(new ArrayList<>());
+        return VersionUtil.get(compound, "data", GravestoneHistory.CODEC).orElse(new GravestoneHistory());
     }
 
-    public static void writeData(MinecraftServer server, List<RecentGraveHistory> histories) {
-        Path path = getOrCreateGravestonesDataFile(server);
+    public static void writeHistory(MinecraftServer server, UUID uuid, GravestoneHistory history) {
+        Path path = getOrCreateGravestoneHistoryFile(server, uuid);
 
         CompoundTag compound = new CompoundTag();
-        VersionUtil.put(compound, "data", RecentGraveHistory.CODEC.listOf(), histories);
+        VersionUtil.put(compound, "data", GravestoneHistory.CODEC, history);
 
         try {
             //? if >=1.20.3 {
@@ -80,14 +85,14 @@ public class GravestoneDataSaving extends GravestoneManager {
             /*NbtIo.writeCompressed(compound, path.toFile());
             *///?}
         } catch (IOException e) {
-            error("Failed to write Gravestone Data", e);
+            error("Failed to write Gravestone History for {}", uuid, e);
         }
     }
 
-    public static Path getOrCreateGravestonesDataFile(MinecraftServer server) {
+    public static Path getOrCreateGravestoneHistoryFile(MinecraftServer server, UUID uuid) {
         File gravestoneFile = getOrCreateGravestonesFolder(server);
 
-        return gravestoneFile.toPath().resolve("data.dat");
+        return gravestoneFile.toPath().resolve(uuid.toString()).resolve("data.dat");
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

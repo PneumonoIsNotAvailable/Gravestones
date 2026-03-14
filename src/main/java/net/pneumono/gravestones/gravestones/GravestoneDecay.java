@@ -12,7 +12,6 @@ import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlock;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.enums.DecayTimeType;
-import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,24 +51,36 @@ public class GravestoneDecay extends GravestoneManager {
         updateTotalGravestoneDamage(level, pos, state, entity);
     }
 
-    protected static void deathDamageOldGravestones(MinecraftServer server, List<GlobalPos> oldGravePositions, GlobalPos newPos) {
+    /**
+     * @return List of newly broken gravestones
+     */
+    protected static List<GlobalPos> deathDamageOldGravestones(MinecraftServer server, List<GlobalPos> oldGravePositions) {
         if (!GravestonesConfig.DECAY_WITH_DEATHS.getValue()) {
-            return;
+            return oldGravePositions;
         }
 
+        List<GlobalPos> clearedPositions = new ArrayList<>();
         List<GlobalPos> checkedPositions = new ArrayList<>();
-        checkedPositions.add(newPos);
+
         for (GlobalPos oldPos : oldGravePositions) {
             if (checkedPositions.contains(oldPos)) {
+                clearedPositions.add(oldPos);
                 continue;
             }
 
-            GravestoneDecay.incrementDeathDamage(server, oldPos);
+            if (GravestoneDecay.incrementDeathDamage(server, oldPos)) {
+                clearedPositions.add(oldPos);
+            }
             checkedPositions.add(oldPos);
         }
+
+        return clearedPositions;
     }
 
-    public static void incrementDeathDamage(MinecraftServer server, GlobalPos globalPos) {
+    /**
+     * @return {@code true} if the gravestone was broken or not present, {@code false} otherwise
+     */
+    public static boolean incrementDeathDamage(MinecraftServer server, GlobalPos globalPos) {
         ServerLevel level = server.getLevel(globalPos.dimension());
         BlockPos pos = globalPos.pos();
 
@@ -77,27 +88,32 @@ public class GravestoneDecay extends GravestoneManager {
                 level == null ||
                 !(level.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity entity) ||
                 entity.getGraveOwner() == null
-        ) return;
+        ) return true;
 
         entity.setDeathDamage(entity.getDeathDamage() + 1);
-        updateTotalGravestoneDamage(level, pos, level.getBlockState(pos), entity);
+        return updateTotalGravestoneDamage(level, pos, level.getBlockState(pos), entity);
     }
 
-    public static void updateTotalGravestoneDamage(Level level, BlockPos pos, BlockState state, TechnicalGravestoneBlockEntity entity) {
+    /**
+     * @return {@code true} if the gravestone was broken, {@code false} otherwise
+     */
+    public static boolean updateTotalGravestoneDamage(Level level, BlockPos pos, BlockState state, TechnicalGravestoneBlockEntity entity) {
         int decayStage = calculateDecayStage(entity.getTotalDamage());
-        if (decayStage == state.getValue(TechnicalGravestoneBlock.DAMAGE)) return;
+        boolean broken = decayStage >= 3;
+        if (decayStage == state.getValue(TechnicalGravestoneBlock.DAMAGE)) return broken;
 
-        if (decayStage >= 3) {
+        if (broken) {
             if (GravestonesApi.shouldDecayAffectGameplay()) {
                 level.destroyBlock(pos, true);
             } else {
-                return;
+                return true;
             }
         } else if (decayStage >= 0) {
             level.setBlockAndUpdate(pos, state.setValue(TechnicalGravestoneBlock.DAMAGE, decayStage));
         }
 
         entity.setChanged();
+        return broken;
     }
 
     public static int calculateDecayStage(int totalDamage) {
