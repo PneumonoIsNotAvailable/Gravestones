@@ -60,7 +60,7 @@ public class GravestoneCollection extends GravestoneManager {
 
         // Return gravestone contents
         info("Returning gravestone contents...");
-        GravestonesApi.onCollect(level, pos, player, gravestone.getDecay(), gravestone.getContents());
+        GravestonesApi.onCollect(level, pos, player, gravestone.getTotalDamage(), gravestone.getContents());
         CompoundTag contents = gravestone.getContents();
         if (!contents.isEmpty()) {
             warn("Some gravestone contents were not returned: {}", contents);

@@ -84,19 +84,23 @@ public class GravestoneDecay extends GravestoneManager {
     }
 
     public static void updateTotalGravestoneDamage(Level level, BlockPos pos, BlockState state, TechnicalGravestoneBlockEntity entity) {
-        int totalDamage = entity.getTotalDamage();
-        if (totalDamage == state.getValue(TechnicalGravestoneBlock.DAMAGE)) return;
+        int decayStage = calculateDecayStage(entity.getTotalDamage());
+        if (decayStage == state.getValue(TechnicalGravestoneBlock.DAMAGE)) return;
 
-        if (totalDamage >= 3) {
+        if (decayStage >= 3) {
             if (GravestonesApi.shouldDecayAffectGameplay()) {
                 level.destroyBlock(pos, true);
             } else {
                 return;
             }
-        } else if (totalDamage >= 0) {
-            level.setBlockAndUpdate(pos, state.setValue(TechnicalGravestoneBlock.DAMAGE, totalDamage));
+        } else if (decayStage >= 0) {
+            level.setBlockAndUpdate(pos, state.setValue(TechnicalGravestoneBlock.DAMAGE, decayStage));
         }
 
         entity.setChanged();
+    }
+
+    public static int calculateDecayStage(int totalDamage) {
+        return totalDamage;
     }
 }

@@ -151,7 +151,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState oldState) {
         if (getLevel() instanceof ServerLevel serverLevel) {
-            GravestonesApi.onBreak(serverLevel, pos, getDecay(oldState), this);
+            GravestonesApi.onBreak(serverLevel, pos, getTotalDamage(), this);
         }
         super.preRemoveSideEffects(pos, oldState);
     }
@@ -260,10 +260,16 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         return entityCount;
     }
 
+    /**
+     * @return The decay stage of the Gravestone. NOT the total damage.
+     */
     public int getDecay() {
         return getDecay(Objects.requireNonNull(this.getLevel()).getBlockState(this.getBlockPos()));
     }
 
+    /**
+     * @return The decay stage of the Gravestone. NOT the total damage.
+     */
     public static int getDecay(BlockState state) {
         return state.getValue(TechnicalGravestoneBlock.DAMAGE);
     }
