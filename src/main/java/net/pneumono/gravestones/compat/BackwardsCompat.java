@@ -14,7 +14,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
-import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.gravestones.GravestoneDataSaving;
 import net.pneumono.gravestones.gravestones.GravestoneHistory;
 import net.pneumono.gravestones.multiversion.VersionUtil;
@@ -91,7 +90,7 @@ public class BackwardsCompat {
         Path dataFile = GravestoneDataSaving.getOrCreateGravestonesFolder(server).toPath().resolve("data.dat");
         if (!dataFile.toFile().exists()) return;
 
-        Gravestones.LOGGER.info("Found old gravestone history file! Converting to new format...");
+        LOGGER.info("Found old gravestone history file! Converting to new format...");
 
         CompoundTag compound = new CompoundTag();
         try {
