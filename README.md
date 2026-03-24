@@ -19,7 +19,7 @@ By default, all gravestones decay over time and due to subsequent deaths. This i
 
 ![A screenshot of a gravestone with large cracks and growths of moss. Written on the gravestone is the name Pneumono_, and the date and time of death.](images/decayed.png)
 
-After 3 stages of decay, the gravestone breaks entirely, spilling its contents onto the ground (after which the vanilla 5-minute despawn timer applies).
+After a configurable amount of decay, the gravestone breaks entirely, spilling its contents onto the ground (after which the vanilla 5-minute despawn timer applies).
 
 ### Aesthetic Gravestones
 Gravestones also includes craftable "aesthetic gravestones", which allow builders to use the gravestone blocks without having their builds at risk of damage.
