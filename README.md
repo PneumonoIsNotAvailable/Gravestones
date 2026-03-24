@@ -66,6 +66,6 @@ and rename it to the appropriate locale code
 Then simply go through all the English phrases and translate them.
 
 ### Dependencies
-Gravestones depends on my core mod, [PneumonoCore](https://modrinth.com/project/ZLKQjA7t).
+Gravestones depends on [PneumonoCore](https://modrinth.com/project/ZLKQjA7t).
 
 [Download Gravestones on Modrinth](https://modrinth.com/project/Heh3BbSv)
