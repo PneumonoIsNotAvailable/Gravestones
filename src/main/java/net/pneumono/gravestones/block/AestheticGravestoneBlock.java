@@ -15,14 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DyeItem;
-import net.minecraft.world.item.GlowInkSacItem;
-import net.minecraft.world.item.HoneycombItem;
-import net.minecraft.world.item.InkSacItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SignApplicator;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -39,6 +32,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.UUID;
+
+//? if >=26.1
+import net.minecraft.core.component.DataComponents;
 
 //? if <1.21.11
 //import net.minecraft.Util;
@@ -118,8 +114,8 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
                     player.mayBuild() &&
                     !waxed &&
                     noOtherPlayerEditing(player, gravestone) &&
-                    signChangingItem.canApplyToSign(gravestone.getText(), player) &&
-                    tryTextChange(level, item, gravestone)
+                    signChangingItem.canApplyToSign(gravestone.getText()/*? if >=26.1 {*/, stack/*?}*/, player) &&
+                    tryTextChange(level, stack, gravestone)
             ) {
                 gravestone.runCommandClickEvent(player, level, pos);
                 player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
@@ -169,10 +165,18 @@ public class AestheticGravestoneBlock extends AbstractGravestoneBlock {
         }
     }
 
-    private static boolean tryTextChange(Level level, Item item, AestheticGravestoneBlockEntity gravestone) {
+    private static boolean tryTextChange(Level level, ItemStack stack, AestheticGravestoneBlockEntity gravestone) {
         // Hardcoding all of these sucks but what else am I going to do
+        Item item = stack.getItem();
         if (item instanceof DyeItem dyeItem) {
-            if (gravestone.changeText(text -> text.setColor(dyeItem.getDyeColor()))) {
+
+            //? if >=26.1 {
+            DyeColor color = stack.get(DataComponents.DYE);
+            //?} else {
+            /*DyeColor color = dyeItem.getDyeColor();
+            *///?}
+
+            if (color != null && gravestone.changeText(text -> text.setColor(color))) {
                 level.playSound(null, gravestone.getBlockPos(), SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
                 return true;
             } else {

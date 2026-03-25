@@ -1,7 +1,6 @@
 package net.pneumono.gravestones.content;
 
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -38,6 +37,12 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+//? if >=26.1 {
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+//?} else {
+/*import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+*///?}
 
 //? if >=1.20.5 {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -142,18 +147,26 @@ public class GravestonesRegistry {
                 SingletonArgumentInfo.contextFree(DeathArgumentType::new)
         );
 
-        ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(content -> {
+        //? if >=26.1 {
+        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(content -> {
             content.accept(GRAVESTONE);
             content.accept(GRAVESTONE_CHIPPED);
             content.accept(GRAVESTONE_DAMAGED);
         });
+        //?} else {
+        /*ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(content -> {
+            content.accept(GRAVESTONE);
+            content.accept(GRAVESTONE_CHIPPED);
+            content.accept(GRAVESTONE_DAMAGED);
+        });
+        *///?}
 
         Registry.register(BuiltInRegistries.CUSTOM_STAT, "gravestones_collected", GRAVESTONES_COLLECTED);
         Stats.CUSTOM.get(GRAVESTONES_COLLECTED, StatFormatter.DEFAULT);
 
         //? if >=1.20.5 {
-        PayloadTypeRegistry.playS2C().register(GravestoneEditorOpenS2CPayload.PAYLOAD_ID, GravestoneEditorOpenS2CPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(UpdateGravestoneC2SPayload.PAYLOAD_ID, UpdateGravestoneC2SPayload.CODEC);
+        PayloadTypeRegistry./*? if >=26.1 {*/clientboundPlay()/*?} else {*//*playS2C()*//*?}*/.register(GravestoneEditorOpenS2CPayload.PAYLOAD_ID, GravestoneEditorOpenS2CPayload.CODEC);
+        PayloadTypeRegistry./*? if >=26.1 {*/serverboundPlay()/*?} else {*//*playC2S()*//*?}*/.register(UpdateGravestoneC2SPayload.PAYLOAD_ID, UpdateGravestoneC2SPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(UpdateGravestoneC2SPayload.PAYLOAD_ID, (payload, context) -> {
             List<String> list = Stream.of(payload.getText()).map(ChatFormatting::stripFormatting).collect(Collectors.toList());

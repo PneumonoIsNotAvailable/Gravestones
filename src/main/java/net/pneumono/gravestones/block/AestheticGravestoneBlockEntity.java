@@ -6,10 +6,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.network.FilteredText;
 import net.minecraft.world.entity.LivingEntity;
@@ -182,7 +179,11 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         Level level = this.level;
         if (level instanceof ServerLevel serverLevel) {
             try {
-                return ComponentUtils.updateForEntity(AestheticGravestoneBlockEntity.createCommandSource(null, serverLevel, this.worldPosition), text, null, 0);
+                //? if >=26.1 {
+                return ComponentUtils.resolve(ResolutionContext.create(AestheticGravestoneBlockEntity.createCommandSource(null, serverLevel, this.worldPosition)), text);
+                //?} else {
+                /*return ComponentUtils.updateForEntity(AestheticGravestoneBlockEntity.createCommandSource(null, serverLevel, this.worldPosition), text, null, 0);
+                *///?}
             } catch (CommandSyntaxException ignored) {}
         }
         return text;

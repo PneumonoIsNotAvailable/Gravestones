@@ -46,14 +46,14 @@ public class GravestoneCollection extends GravestoneManager {
         GraveOwner graveOwner = gravestone.getGraveOwner();
         if (graveOwner == null) {
             info("Player cannot collect gravestone because it has no owner");
-            player.displayClientMessage(Component.translatable("gravestones.cannot_open_no_owner"), true);
+            message(player, Component.translatable("gravestones.cannot_open_no_owner"));
             return false;
         }
 
         boolean isOwner = graveOwner.getUuid().equals(VersionUtil.getId(player.getGameProfile()));
         if (!isOwner && GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
             info("Player cannot collect gravestone because they are not the owner");
-            player.displayClientMessage(Component.translatable("gravestones.cannot_open_wrong_player", graveOwner.getNotNullName()), true);
+            message(player, Component.translatable("gravestones.cannot_open_wrong_player", graveOwner.getNotNullName()));
             return false;
         }
         info("All checks passed");
@@ -110,5 +110,13 @@ public class GravestoneCollection extends GravestoneManager {
         GravestoneCollectedCallback.EVENT.invoker().afterGravestoneCollect(level, player, pos);
 
         return true;
+    }
+
+    private static void message(Player player, Component component) {
+        //? if >=26.1 {
+        player.sendOverlayMessage(component);
+        //?} else {
+        /*player.displayClientMessage(component, true);
+        *///?}
     }
 }

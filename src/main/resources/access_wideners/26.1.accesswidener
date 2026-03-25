@@ -1,0 +1,4 @@
+accessWidener v2 official
+
+accessible method net/minecraft/server/network/ServerGamePacketListenerImpl filterTextPacket (Ljava/util/List;)Ljava/util/concurrent/CompletableFuture;
+accessible method net/minecraft/client/renderer/blockentity/AbstractSignRenderer isOutlineVisible (Lnet/minecraft/core/BlockPos;)Z

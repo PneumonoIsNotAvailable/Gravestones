@@ -1,27 +1,15 @@
 plugins {
-	id("fabric-loom") version "1.15-SNAPSHOT"
+	id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin") version "1.0.0"
 	id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
 }
 
-val javaVersion = if (stonecutter.eval(stonecutter.current.version, ">=1.20.5"))
-	JavaVersion.VERSION_21 else JavaVersion.VERSION_17
+val javaVersion = JavaVersion.VERSION_25
 java.targetCompatibility = javaVersion
 java.sourceCompatibility = javaVersion
 
-val awFile =
-	if (stonecutter.eval(stonecutter.current.version, ">=1.21.9"))
-		"1.21.9.accesswidener"
-	else if (stonecutter.eval(stonecutter.current.version, ">=1.21.4"))
-		"1.21.4.accesswidener"
-	else if (stonecutter.eval(stonecutter.current.version, ">=1.20.5"))
-		"1.20.5.accesswidener"
-	else if (stonecutter.eval(stonecutter.current.version, ">=1.20.2"))
-		"1.20.2.accesswidener"
-	else
-		"1.20.accesswidener"
-
+val awFile = "26.1.accesswidener"
 base.archivesName.set(project.property("mod_id") as String)
 version = "${project.property("mod_version")}+${stonecutter.current.project}+${property("mod_subversion")}"
 
@@ -35,9 +23,6 @@ val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${pr
 repositories {
 	// Mod Menu
 	maven("https://maven.terraformersmc.com/")
-	if (stonecutter.current.project == "1.20.3") {
-		maven("https://maven.nucleoid.xyz/")
-	}
 
 	exclusiveContent {
 		forRepository {
@@ -97,68 +82,55 @@ stonecutter {
 }
 
 fletchingTable {
-
 	j52j.register("main") {
-		if (stonecutter.eval(stonecutter.current.version, ">=1.21")) {
-			extension("json", "data/**/*.json5")
-		} else {
-			extension("json", "data/gravestones/advancement/recipes/decorations/*.json5 -> /data/gravestones/advancements/recipes/decorations")
-			extension("json", "data/gravestones/loot_table/blocks/*.json5 -> /data/gravestones/loot_tables/blocks")
-			extension("json", "data/gravestones/recipe/*.json5 -> ../recipes")
-			extension("json", "data/gravestones/tags/block/*.json -> ../blocks")
-			extension("json", "data/gravestones/tags/enchantment/*.json -> ../enchantments")
-			extension("json", "data/gravestones/tags/item/*.json -> ../items")
-			extension("json", "data/minecraft/tags/block/*.json -> ../blocks")
-			extension("json", "data/minecraft/tags/block/mineable/*.json -> /data/minecraft/tags/blocks/mineable")
-		}
+		extension("json", "data/**/*.json5")
 	}
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft("com.mojang:minecraft:${stonecutter.current.version}")
-	mappings(loom.officialMojangMappings())
-	modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
+	implementation("net.fabricmc:fabric-loader:${property("loader_version")}")
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
+	implementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
 
 	// Core mod
-	modImplementation("maven.modrinth:pneumono_core:${property("core_version")}")
+	implementation("maven.modrinth:pneumono_core:${property("core_version")}")
 
 	// ModMenu
-	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
+	implementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
 	// Galosphere
 	if (galosphere) {
-		modCompileOnly("maven.modrinth:galosphere:${property("galosphere_version")}")
+		compileOnly("maven.modrinth:galosphere:${property("galosphere_version")}")
 	}
 
 	// Resource Backpacks
 	if (resourceBackpacks) {
-		modCompileOnly("maven.modrinth:resource-backpacks:${property("resource_backpacks_version")}")
+		compileOnly("maven.modrinth:resource-backpacks:${property("resource_backpacks_version")}")
 	}
 
 	// Backpacked
 	if (backpacked) {
-		modCompileOnly("curse.maven:backpacked-352835:${property("backpacked_version")}")
+		compileOnly("curse.maven:backpacked-352835:${property("backpacked_version")}")
 	}
 
 	// Accessories
 	if (accessories) {
-		modCompileOnly("io.wispforest:accessories-fabric:${property("accessories_version")}")
-		modCompileOnly("io.wispforest:owo-lib:${property("owo_version")}")
+		compileOnly("io.wispforest:accessories-fabric:${property("accessories_version")}")
+		compileOnly("io.wispforest:owo-lib:${property("owo_version")}")
 	}
 
 	// Trinkets
 	if (trinkets) {
-		modCompileOnly("dev.emi:trinkets:${property("trinkets_version")}")
+		compileOnly("dev.emi:trinkets:${property("trinkets_version")}")
 		if (stonecutter.current.project == "1.20.2") {
-			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0")
+			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0")
 		}
 	}
 	if (trinketsCanary) {
-		modCompileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
+		compileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
 		val ccaVersion = when (stonecutter.current.project) {
 			"1.21.4" -> "6.2.2"
 			"1.21.5" -> "6.3.1"
@@ -168,8 +140,8 @@ dependencies {
 			else -> "null"
 		}
 		if (ccaVersion != "null") {
-			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${ccaVersion}")
-			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${ccaVersion}")
+			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${ccaVersion}")
+			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${ccaVersion}")
 		}
 	}
 }
@@ -191,8 +163,7 @@ tasks {
 			)
 		}
 
-		val mixins = if (stonecutter.eval(stonecutter.current.version, ">=1.20.3"))
-			"LivingEntityMixin" else "ExplosionMixin\", \"LivingEntityMixin"
+		val mixins = "LivingEntityMixin"
 
 		filesMatching("gravestones.mixins.json") {
 			expand(
@@ -204,7 +175,7 @@ tasks {
 	}
 
 	withType<JavaCompile> {
-		val java = if (stonecutter.eval(stonecutter.current.version, ">=1.20.5")) 21 else 17
+		val java = 25
 		options.release.set(java)
 	}
 
@@ -227,8 +198,8 @@ stonecutter {
 }
 
 publishMods {
-	file = tasks.remapJar.get().archiveFile
-	additionalFiles.from(tasks.remapSourcesJar.get().archiveFile)
+	file = tasks.jar.map { it.archiveFile.get() }
+	additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 	displayName = "Gravestones ${project.version}"
 	version = "${project.version}"
 	changelog = rootProject.file("CHANGELOG.md").readText()
@@ -260,7 +231,7 @@ publishMods {
 		}
 	}
 
-	if (stonecutter.current.project == "1.21.11") {
+	if (stonecutter.current.project == "26.1") {
 		discord {
 			webhookUrl = discordToken
 

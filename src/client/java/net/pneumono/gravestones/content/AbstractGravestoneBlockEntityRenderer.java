@@ -19,6 +19,12 @@ import com.mojang.math.Axis;
 import java.util.List;
 import java.util.function.Function;
 
+//? if >=26.1 {
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+//?} else if >=1.21.9 {
+/*import net.minecraft.client.renderer.state.CameraRenderState;
+*///?}
+
 //? if >=1.21.11 {
 import net.minecraft.client.renderer.rendertype.RenderType;
 //?} else if >=1.21.9 {
@@ -38,7 +44,6 @@ import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.Nullable;

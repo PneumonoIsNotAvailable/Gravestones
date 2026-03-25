@@ -1,7 +1,6 @@
 package net.pneumono.gravestones.content;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.font.TextFieldHelper;
 import net.minecraft.client.gui.screens.Screen;
@@ -16,6 +15,12 @@ import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
 import net.pneumono.gravestones.networking.UpdateGravestoneC2SPayload;
 import org.jetbrains.annotations.Nullable;
+
+//? if >=26.1 {
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+//?} else {
+/*import net.minecraft.client.gui.GuiGraphics;
+*///?}
 
 
 //? if >=1.21.9 {
@@ -176,25 +181,30 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void /*? if >=26.1 {*/extractRenderState(GuiGraphicsExtractor/*?} else {*//*render(GuiGraphics*//*?}*/ context, int mouseX, int mouseY, float deltaTicks) {
         //? if <1.20.2 {
         /*Lighting.setupForFlatItems();
         this.renderBackground(context);
         *///?}
-        context.drawCenteredString(this.font, this.title, this.width / 2, 40, 16777215);
+        context./*? if >=26.1 {*/centeredText/*?} else {*//*drawCenteredString*//*?}*/(this.font, this.title, this.width / 2, 40, 16777215);
         this.renderGravestone(context);
         //? if <1.20.2 {
         /*Lighting.setupFor3DItems();
         *///?}
-        super.render(context, mouseX, mouseY, deltaTicks);
+        super./*? if >=26.1 {*/extractRenderState/*?} else {*//*render*//*?}*/(context, mouseX, mouseY, deltaTicks);
     }
 
-    //? if >=1.20.2 {
+    //? if >=26.1 {
     @Override
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float tickProgress) {
+        this.extractTransparentBackground(graphics);
+    }
+    //?} else if >=1.20.2 {
+    /*@Override
     public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         this.renderTransparentBackground(context);
     }
-    //?}
+    *///?}
 
     @Override
     public void onClose() {
@@ -216,7 +226,7 @@ public class AestheticGravestoneEditScreen extends Screen {
         return false;
     }
 
-    private void renderGravestone(GuiGraphics context) {
+    private void renderGravestone(/*? if >=26.1 {*/GuiGraphicsExtractor/*?} else {*//*GuiGraphics*//*?}*/ context) {
         //? if >=1.21.6 {
         context.pose().pushMatrix();
         context.pose().translate(this.width / 2.0F, 125.0F);
@@ -236,7 +246,7 @@ public class AestheticGravestoneEditScreen extends Screen {
         *///?}
     }
 
-    protected void renderGravestoneBackground(GuiGraphics context) {
+    protected void renderGravestoneBackground(/*? if >=26.1 {*/GuiGraphicsExtractor/*?} else {*//*GuiGraphics*//*?}*/ context) {
         //? if >=1.21.6 {
         context.pose().scale(7.0F, 7.0F);
         //?} else {
@@ -252,7 +262,7 @@ public class AestheticGravestoneEditScreen extends Screen {
         );
     }
 
-    private void renderGravestoneText(GuiGraphics context) {
+    private void renderGravestoneText(/*? if >=26.1 {*/GuiGraphicsExtractor/*?} else {*//*GuiGraphics*//*?}*/ context) {
         int color = this.text.hasGlowingText() ? this.text.getColor().getTextColor() : /*? if >=1.21.4 {*/AbstractSignRenderer.getDarkColor(this.text)/*?} else {*//*SignRenderer.getDarkColor(this.text)*//*?}*/;
         boolean shouldFlashCursor = this.ticksSinceOpened / 6 % 2 == 0;
         Objects.requireNonNull(this.selectionManager);
@@ -269,12 +279,12 @@ public class AestheticGravestoneEditScreen extends Screen {
                 }
 
                 int x = -this.font.width(message) / 2;
-                context.drawString(this.font, message, x, i * TEXT_LINE_HEIGHT - lineHeightOffset, color, false);
+                context./*? if >=26.1 {*/text/*?} else {*//*drawString*//*?}*/(this.font, message, x, i * TEXT_LINE_HEIGHT - lineHeightOffset, color, false);
                 if (i == this.currentRow && selectionStart >= 0 && shouldFlashCursor) {
                     int substringWidth = this.font.width(message.substring(0, Math.min(selectionStart, message.length())));
                     int adjustedX = substringWidth - this.font.width(message) / 2;
                     if (selectionStart >= message.length()) {
-                        context.drawString(this.font, "_", adjustedX, adjustedY, color, false);
+                        context./*? if >=26.1 {*/text/*?} else {*//*drawString*//*?}*/(this.font, "_", adjustedX, adjustedY, color, false);
                     }
                 }
             }
