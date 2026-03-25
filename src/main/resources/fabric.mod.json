@@ -39,9 +39,6 @@
 		],
 		"client": [
 			"net.pneumono.gravestones.GravestonesClient"
-		],
-		"modmenu": [
-			"net.pneumono.gravestones.compat.ModMenuCompat"
 		]
 	},
 	"mixins": [

@@ -126,7 +126,7 @@ dependencies {
 	modImplementation("maven.modrinth:pneumono_core:${property("core_version")}")
 
 	// ModMenu
-	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
+	modRuntimeOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
 	// Galosphere
 	if (galosphere) {
