@@ -51,7 +51,7 @@
 	"accessWidener": "access_wideners/${aw_file}",
 	"depends": {
 		"fabricloader": "*",
-		"minecraft": ">=${min_supported} <=${max_supported}",
+		"minecraft": "${supported_versions}",
 		"java": "*",
 		"fabric-api": "*",
 		"pneumonocore": ">=1.3.0"
