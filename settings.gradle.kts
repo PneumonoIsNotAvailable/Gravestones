@@ -17,9 +17,9 @@ stonecutter {
 	create(rootProject) {
 		fun controlledVersions(vararg versions: String) = versions.forEach {
 			if (stonecutter.eval(it, ">=26.1")) {
-				version(it).buildscript = "build.fabric_noremap.gradle.kts"
+				version(it).buildscript = "build.noremap.gradle.kts"
 			} else {
-				version(it).buildscript = "build.fabric_remap.gradle.kts"
+				version(it).buildscript = "build.remap.gradle.kts"
 			}
 		}
 
