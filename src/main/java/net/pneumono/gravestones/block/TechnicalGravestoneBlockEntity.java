@@ -16,6 +16,7 @@ import net.pneumono.gravestones.GravestonesConfig;
 import net.pneumono.gravestones.content.GravestoneSkeletonEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneDecay;
+import net.pneumono.gravestones.gravestones.GravestoneManager;
 import net.pneumono.gravestones.multiversion.GraveOwner;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.jetbrains.annotations.Nullable;
@@ -151,6 +152,7 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState oldState) {
         if (getLevel() instanceof ServerLevel serverLevel) {
+            GravestoneManager.info("Breaking Gravestone at ({})", pos.toShortString());
             GravestonesApi.onBreak(serverLevel, pos, getTotalDamage(), this);
         }
         super.preRemoveSideEffects(pos, oldState);

@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.gravestones.GravestoneCollection;
+import net.pneumono.gravestones.gravestones.GravestoneManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -102,6 +103,7 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
             createSoulParticles(level, pos);
 
             if (level instanceof ServerLevel serverLevel && level.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity blockEntity) {
+                GravestoneManager.info("Breaking Gravestone at ({})", pos.toShortString());
                 GravestonesApi.onBreak(serverLevel, pos, state.getValue(TechnicalGravestoneBlock.DAMAGE), blockEntity);
             }
         }

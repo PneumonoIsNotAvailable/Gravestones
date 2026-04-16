@@ -60,10 +60,9 @@ public class GravestoneCollection extends GravestoneManager {
 
         // Return gravestone contents
         info("Returning gravestone contents...");
-        GravestonesApi.onCollect(level, pos, player, gravestone.getTotalDamage(), gravestone.getContents());
-        CompoundTag contents = gravestone.getContents();
-        if (!contents.isEmpty()) {
-            warn("Some gravestone contents were not returned: {}", contents);
+        boolean success = GravestonesApi.onCollect(level, pos, player, gravestone.getTotalDamage(), gravestone.getContents());
+        if (!success) {
+            error("Some gravestone contents had errors, so gravestone collection failed.");
             return false;
         }
         gravestone.setContents(new CompoundTag());

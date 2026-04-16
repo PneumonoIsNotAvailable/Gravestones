@@ -148,18 +148,22 @@ public class GravestonesApi {
 
     /**
      * Called when gravestones are broken, including when collected.
+     *
+     * @return {@code true} if no errors were thrown, {@code false} otherwise.
      */
-    public static void onBreak(ServerLevel level, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
-        onBreak(level, pos, decay, entity.getContents());
+    public static boolean onBreak(ServerLevel level, BlockPos pos, int decay, TechnicalGravestoneBlockEntity entity) {
+        return onBreak(level, pos, decay, entity.getContents());
     }
 
     /**
      * Called when gravestones are broken, including when collected.
+     *
+     * @return {@code true} if no errors were thrown, {@code false} otherwise.
      */
-    public static void onBreak(ServerLevel level, BlockPos pos, int decay, CompoundTag contents) {
-        GravestoneManager.info("Breaking Gravestone at ({})", pos.toShortString());
+    public static boolean onBreak(ServerLevel level, BlockPos pos, int decay, CompoundTag contents) {
+        boolean success = true;
 
-        if (contents.isEmpty()) return;
+        if (contents.isEmpty()) return true;
 
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String key = entry.getKey().toString();
@@ -173,19 +177,33 @@ public class GravestonesApi {
                         pos,
                         decay
                 );
+                contents.remove(key);
             } catch (Exception e) {
                 Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to drop contents:", key, e);
+                success = false;
             }
         }
+
+        if (!contents.isEmpty()) {
+            Gravestones.LOGGER.warn("Some Gravestone Data could not be dropped by registered Gravestone Data Types: {}", contents);
+        }
+
+        return success;
     }
 
     /**
      * Called when gravestones are collected.
+     *
+     * @return {@code true} if no errors were thrown, {@code false} otherwise.
      */
-    public static void onCollect(ServerLevel level, BlockPos pos, Player player, int decay, CompoundTag contents) {
-        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
+    public static boolean onCollect(ServerLevel level, BlockPos pos, Player player, int decay, CompoundTag contents) {
+        boolean success = true;
 
+        if (contents.isEmpty()) return true;
+
+        for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String key = entry.getKey().toString();
+            GravestoneManager.info("Processing data for Data Type '{}'...", key);
             try {
                 DynamicOps<Tag> ops = /*? if >=1.20.5 {*/level.registryAccess().createSerializationContext(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().onCollect(
@@ -199,8 +217,15 @@ public class GravestonesApi {
                 contents.remove(key);
             } catch (Exception e) {
                 Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to return contents:", key, e);
+                success = false;
             }
         }
+
+        if (!contents.isEmpty()) {
+            Gravestones.LOGGER.warn("Some Gravestone Data could not be collected by registered Gravestone Data Types: {}", contents);
+        }
+
+        return success;
     }
 
     /**
