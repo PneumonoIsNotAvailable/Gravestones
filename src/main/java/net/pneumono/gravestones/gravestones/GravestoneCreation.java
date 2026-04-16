@@ -68,6 +68,12 @@ public class GravestoneCreation extends GravestoneManager {
         info("Calculating gravestone placement position...");
         GlobalPos globalGravestonePos = getPlacementPos(deathLevel, player, deathPos);
 
+        String playerName = VersionUtil.getName(player.getGameProfile());
+        if (globalGravestonePos == null || !((Level)(server.getLevel(globalGravestonePos.dimension())) instanceof ServerLevel graveLevel)) {
+            Gravestones.LOGGER.info("Failed to place {}'s Gravestone! The items have been dropped on the ground", playerName);
+            return;
+        }
+
         // Add new gravestone position to gravestone history
         historyFuture = historyFuture.thenApplyAsync(history -> {
             info("Updating gravestone history...");
@@ -75,8 +81,6 @@ public class GravestoneCreation extends GravestoneManager {
 
             return history;
         });
-
-        String playerName = VersionUtil.getName(player.getGameProfile());
 
         // Damage existing gravestones
         info("Damaging existing gravestones... (if enabled)");
@@ -114,15 +118,8 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Place gravestone
         info("Placing gravestone...");
-
-        if (globalGravestonePos != null && (Level)(server.getLevel(globalGravestonePos.dimension())) instanceof ServerLevel graveLevel) {
-            placeGravestone(graveLevel, globalGravestonePos.pos());
-            Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", playerName, posToString(globalGravestonePos));
-        } else {
-            GravestonesApi.onBreak(deathLevel, deathPos.pos(), 0, contents == null ? new CompoundTag() : contents);
-            Gravestones.LOGGER.info("Failed to place {}'s Gravestone! The items have been dropped on the ground", playerName);
-            return;
-        }
+        placeGravestone(graveLevel, globalGravestonePos.pos());
+        Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", playerName, posToString(globalGravestonePos));
 
         // Insert gravestone contents
         info("Inserting contents into gravestone...");
