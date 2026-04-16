@@ -134,7 +134,7 @@ public class GravestonesApi {
                 DynamicOps<Tag> ops = /*? if >=1.20.5 {*/player.registryAccess().createSerializationContext(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().writeData(data, ops, player);
             } catch (Exception e) {
-                Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to write data:", key, e);
+                Gravestones.LOGGER.error("Gravestone Data Type '{}' failed to write data:", key, e);
             }
 
             contents.put(
@@ -167,7 +167,7 @@ public class GravestonesApi {
 
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String key = entry.getKey().toString();
-            GravestoneManager.info("Processing data for Data Type '{}'...", key);
+            GravestoneManager.info("Processing data for Gravestone Data Type '{}'...", key);
             try {
                 DynamicOps<Tag> ops = /*? if >=1.20.5 {*/level.registryAccess().createSerializationContext(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().onBreak(
@@ -179,7 +179,7 @@ public class GravestonesApi {
                 );
                 contents.remove(key);
             } catch (Exception e) {
-                Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to drop contents:", key, e);
+                Gravestones.LOGGER.error("Gravestone Data Type '{}' failed to drop contents:", key, e);
                 success = false;
             }
         }
@@ -203,7 +203,7 @@ public class GravestonesApi {
 
         for (Map.Entry<Identifier, GravestoneDataType> entry : DATA_TYPES.entrySet()) {
             String key = entry.getKey().toString();
-            GravestoneManager.info("Processing data for Data Type '{}'...", key);
+            GravestoneManager.info("Processing data for Gravestone Data Type '{}'...", key);
             try {
                 DynamicOps<Tag> ops = /*? if >=1.20.5 {*/level.registryAccess().createSerializationContext(NbtOps.INSTANCE)/*?} else {*//*NbtOps.INSTANCE*//*?}*/;
                 entry.getValue().onCollect(
@@ -216,7 +216,7 @@ public class GravestonesApi {
                 );
                 contents.remove(key);
             } catch (Exception e) {
-                Gravestones.LOGGER.error("Gravestones Data Type '{}' failed to return contents:", key, e);
+                Gravestones.LOGGER.error("Gravestone Data Type '{}' failed to return contents:", key, e);
                 success = false;
             }
         }
