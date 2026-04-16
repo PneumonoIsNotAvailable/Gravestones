@@ -64,15 +64,6 @@ public class GravestoneCreation extends GravestoneManager {
             return GravestoneDataSaving.readHistory(server, uuid);
         });
 
-        // Create contents data
-        info("Creating gravestone contents data...");
-        CompoundTag contents = createContentsData(player);
-        // Backup contents data
-        CompletableFuture.runAsync(() -> {
-            info("Backing up gravestone contents data...");
-            GravestoneDataSaving.saveBackup(contents, player);
-        });
-
         // Calculate placement position
         info("Calculating gravestone placement position...");
         GlobalPos globalGravestonePos = getPlacementPos(deathLevel, player, deathPos);
@@ -110,6 +101,15 @@ public class GravestoneCreation extends GravestoneManager {
         CompletableFuture.runAsync(() -> {
             info("Writing updated gravestone history...");
             GravestoneDataSaving.writeHistory(server, uuid, finalHistory);
+        });
+
+        // Create contents data
+        info("Creating gravestone contents data...");
+        CompoundTag contents = createContentsData(player);
+        // Backup contents data
+        CompletableFuture.runAsync(() -> {
+            info("Backing up gravestone contents data...");
+            GravestoneDataSaving.saveBackup(contents, player);
         });
 
         // Place gravestone
