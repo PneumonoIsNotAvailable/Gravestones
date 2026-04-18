@@ -26,6 +26,9 @@ public class Gravestones implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Initializing Gravestones");
 		GravestonesConfig.registerGravestonesConfigs();
+		if (GravestonesConfig.CONSOLE_INFO.getValue()) {
+			LOGGER.info("Gravestones initialized with 'Console Info' config enabled. Disable it if you don't want to see a lot of debug messages here!");
+		}
 
 		ServerLifecycleEvents.SERVER_STARTED.register(BackwardsCompat::convertOldFiles);
 
