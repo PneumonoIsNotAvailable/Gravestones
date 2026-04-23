@@ -37,7 +37,7 @@
   "commands.gravestones.getdata.gravestone.no_gravestone": "No gravestone at that position!",
   "commands.gravestones.getdata.player.cannot_find": "Could not find gravestones data file!",
   "commands.gravestones.getdata.player.cannot_read": "Could not read gravestones data file!",
-  "commands.gravestones.getdata.player.grave_data": "%1$s has graves at the following locations: %2$s, %3$s, %4$s",
+  "commands.gravestones.getdata.player.grave_data": "%1$s has graves at the following locations: %2$s",
   "commands.gravestones.getuuid": "%1$s has UUID %2$s",
 
   "configs.gravestones.screen_title": "Gravestones Configs",

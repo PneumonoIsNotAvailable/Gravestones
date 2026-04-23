@@ -37,7 +37,7 @@
     "commands.gravestones.getdata.gravestone.no_gravestone": "There be no Dead Man's Chests here!",
     "commands.gravestones.getdata.player.cannot_find": "Th' log o' Dead Man's Chests could not be found!",
     "commands.gravestones.getdata.player.cannot_read": "Th' log o' Dead Man's Chests could not be read!",
-    "commands.gravestones.getdata.player.grave_data": "%1$s's Dead Man's Chests be buried towards: %2$s, %3$s, %4$s",
+    "commands.gravestones.getdata.player.grave_data": "%1$s's Dead Man's Chests be buried towards: %2$s",
     "commands.gravestones.getuuid": "%1$s has UUID %2$s",
 
     "configs.gravestones.screen_title": "Dead Man's Chests Pirate Code",

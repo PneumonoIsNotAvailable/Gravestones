@@ -11,6 +11,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.pneumono.gravestones.Gravestones;
@@ -73,12 +74,16 @@ public class GravestonesCommands {
                                                     }
 
                                                     ServerPlayer player = EntityArgument.getPlayer(context, "player");
-                                                    Component first = GravestoneManager.posToText(positions.get(0));
-                                                    Component second = GravestoneManager.posToText(positions.get(1));
-                                                    Component third = GravestoneManager.posToText(positions.get(2));
+                                                    MutableComponent text = Component.empty();
+                                                    if (!positions.isEmpty()) {
+                                                        text.append(GravestoneManager.posToText(positions.get(0)));
+                                                        for (int i = 1; i < positions.size(); ++i) {
+                                                            text.append(", ");
+                                                            text.append(GravestoneManager.posToText(positions.get(i)));
+                                                        }
+                                                    }
                                                     context.getSource().sendSuccess(() -> Component.translatable("commands.gravestones.getdata.player.grave_data",
-                                                            player.getDisplayName(),
-                                                            first, second, third
+                                                            player.getDisplayName(), text
                                                     ), false);
 
                                                     return 1;

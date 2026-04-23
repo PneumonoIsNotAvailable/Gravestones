@@ -37,7 +37,7 @@
   "commands.gravestones.getdata.gravestone.no_gravestone": "No die box ther!!",
   "commands.gravestones.getdata.player.cannot_find": "Kitteh cant find die box fiel!",
   "commands.gravestones.getdata.player.cannot_read": "Kitteh cant reed die box fiel!",
-  "commands.gravestones.getdata.player.grave_data": "%1$s haz die boxz arund: %2$s, %3$s, %4$s",
+  "commands.gravestones.getdata.player.grave_data": "%1$s haz die boxz arund: %2$s",
   "commands.gravestones.getuuid": "%1$s haz cat ID %2$s",
 
   "configs.gravestones.screen_title": "Die box settinz",
