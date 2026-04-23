@@ -89,10 +89,14 @@ public class GravestoneDataSaving extends GravestoneManager {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static Path getOrCreateGravestoneHistoryFile(MinecraftServer server, UUID uuid) {
-        File gravestoneFile = getOrCreateGravestonesFolder(server);
+        File gravestoneFile = getOrCreateGravestonesFolder(server).toPath()
+                .resolve(uuid.toString()).toFile();
 
-        return gravestoneFile.toPath().resolve(uuid.toString()).resolve("data.dat");
+        gravestoneFile.mkdirs();
+
+        return gravestoneFile.toPath().resolve("data.dat");
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
