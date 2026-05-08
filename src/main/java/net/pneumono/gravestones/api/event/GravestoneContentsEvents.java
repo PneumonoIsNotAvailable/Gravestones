@@ -15,7 +15,7 @@ public class GravestoneContentsEvents {
     private static final List<Pair<Identifier, SkipItem>> SKIP_ITEM_LISTENERS = new ArrayList<>();
     private static final List<Pair<Identifier, InsertItem>> INSERT_ITEM_LISTENERS = new ArrayList<>();
 
-    public static boolean runSkipItem(Player player, ItemStack stack, @Nullable Identifier slot) {
+    public static boolean invokeSkipItem(Player player, ItemStack stack, @Nullable Identifier slot) {
         for (Pair<Identifier, SkipItem> pair : SKIP_ITEM_LISTENERS) {
             Identifier id = pair.getFirst();
             GravestoneManager.info("Running SkipItem listener '{}'", id);
@@ -28,7 +28,7 @@ public class GravestoneContentsEvents {
         return false;
     }
 
-    public static void runInsertItem(Player player, ItemStack stack, @Nullable Identifier slot) {
+    public static void invokeInsertItem(Player player, ItemStack stack, @Nullable Identifier slot) {
         for (Pair<Identifier, InsertItem> pair : INSERT_ITEM_LISTENERS) {
             Identifier id = pair.getFirst();
             GravestoneManager.info("Running InsertItem listener '{}'", id);

@@ -274,7 +274,7 @@ public class GravestonesApi {
      * @see GravestoneContentsEvents.SkipItem
      */
     public static boolean shouldSkipItem(Player player, ItemStack stack, @Nullable Identifier slot) {
-        if (GravestoneContentsEvents.runSkipItem(player, stack, slot)) {
+        if (GravestoneContentsEvents.invokeSkipItem(player, stack, slot)) {
             return true;
         }
 
@@ -333,7 +333,7 @@ public class GravestonesApi {
      * @see GravestoneContentsEvents.InsertItem
      */
     public static void onInsertItem(Player player, ItemStack stack, @Nullable Identifier slot) {
-        GravestoneContentsEvents.runInsertItem(player, stack, slot);
+        GravestoneContentsEvents.invokeInsertItem(player, stack, slot);
         DeprecatedEventHandler.onInsertItemCallback(player, stack, slot);
     }
 

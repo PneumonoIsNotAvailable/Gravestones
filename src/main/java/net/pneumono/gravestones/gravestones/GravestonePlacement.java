@@ -147,7 +147,7 @@ public class GravestonePlacement extends GravestoneManager {
     private static double getNewCost(ServerLevel level, BlockPos newPos, BlockPos origin) {
         BlockState state = level.getBlockState(newPos);
         if (
-                !GravestonePlacementEvents.runValidatePosition(level, state, origin) || !DeprecatedEventHandler.positionValidationCallback(level, state, newPos)
+                !GravestonePlacementEvents.invokeValidatePosition(level, state, origin) || !DeprecatedEventHandler.positionValidationCallback(level, state, newPos)
         ) {
             return -1;
         }

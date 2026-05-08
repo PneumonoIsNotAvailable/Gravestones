@@ -22,7 +22,7 @@ public class GravestonePlacementEvents {
     private static final List<Pair<Identifier, BeforePlace>> BEFORE_PLACE_LISTENERS = new ArrayList<>();
     private static final List<Pair<Identifier, AfterPlace>> AFTER_PLACE_LISTENERS = new ArrayList<>();
 
-    public static boolean runCancelPlace(MinecraftServer server, Player player, GlobalPos deathPos) {
+    public static boolean invokeCancelPlace(MinecraftServer server, Player player, GlobalPos deathPos) {
         for (Pair<Identifier, CancelPlace> pair : CANCEL_PLACE_LISTENERS) {
             Identifier id = pair.getFirst();
             GravestoneManager.info("Running CancelPlace listener '{}'", id);
@@ -35,7 +35,7 @@ public class GravestonePlacementEvents {
         return false;
     }
 
-    public static void runBeforePlace(MinecraftServer server, Player player, GlobalPos deathPos) {
+    public static void invokeBeforePlace(MinecraftServer server, Player player, GlobalPos deathPos) {
         for (Pair<Identifier, BeforePlace> pair : BEFORE_PLACE_LISTENERS) {
             Identifier id = pair.getFirst();
             GravestoneManager.info("Running BeforePlace listener '{}'", id);
@@ -44,7 +44,7 @@ public class GravestonePlacementEvents {
         }
     }
 
-    public static void runAfterPlace(MinecraftServer server, Player player, GlobalPos deathPos, GlobalPos placementPos) {
+    public static void invokeAfterPlace(MinecraftServer server, Player player, GlobalPos deathPos, GlobalPos placementPos) {
         for (Pair<Identifier, AfterPlace> pair : AFTER_PLACE_LISTENERS) {
             Identifier id = pair.getFirst();
             GravestoneManager.info("Running AfterPlace listener '{}'", id);
@@ -53,7 +53,7 @@ public class GravestonePlacementEvents {
         }
     }
 
-    public static GlobalPos runRedirectPosition(MinecraftServer server, Player player, GlobalPos pos) {
+    public static GlobalPos invokeRedirectPosition(MinecraftServer server, Player player, GlobalPos pos) {
         for (Pair<Identifier, RedirectPosition> pair : REDIRECT_POSITION_LISTENERS) {
             Identifier id = pair.getFirst();
             GravestoneManager.info("Running RedirectPosition listener '{}'", id);
@@ -67,7 +67,7 @@ public class GravestonePlacementEvents {
         return pos;
     }
 
-    public static boolean runValidatePosition(ServerLevel level, BlockState state, BlockPos pos) {
+    public static boolean invokeValidatePosition(ServerLevel level, BlockState state, BlockPos pos) {
         for (Pair<Identifier, ValidatePosition> pair : VALIDATE_POSITION_LISTENERS) {
             Identifier id = pair.getFirst();
             GravestoneManager.info("Running ValidatePosition listener '{}'", id);

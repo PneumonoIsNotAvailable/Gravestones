@@ -35,8 +35,8 @@ public class GravestoneCollection extends GravestoneManager {
     }
 
     private static boolean collect(ServerLevel level, Player player, BlockPos pos, TechnicalGravestoneBlockEntity gravestone) {
-        // Check the player is allowed to open the gravestone
-        info("Performing checks...");
+        // Check if collection should be canceled
+        info("Checking if gravestone collection should be canceled...");
         if (player instanceof FakePlayer) {
             info("Player cannot collect gravestone because they are a FakePlayer");
             return false;
@@ -63,21 +63,22 @@ public class GravestoneCollection extends GravestoneManager {
 
         MinecraftServer server = level.getServer();
         GlobalPos globalPos = MultiVersionUtil.createGlobalPos(level.dimension(), pos);
-        Component component = GravestoneCollectionEvents.runCancelCollect(server, player, globalPos, gravestone);
+        Component component = GravestoneCollectionEvents.invokeCancelCollect(server, player, globalPos, gravestone);
         if (component != null) {
             message(player, component);
+            info("Collection canceled");
         }
 
-        info("All checks passed");
+        info("Collection not canceled");
 
-        // Run BeforeCollect listeners
-        GravestoneCollectionEvents.runBeforeCollect(server, player, globalPos, gravestone);
+        // Invoke BeforeCollect listeners
+        GravestoneCollectionEvents.invokeBeforeCollect(server, player, globalPos, gravestone);
 
         // Return gravestone contents
-        info("Returning gravestone contents...");
+        info("Extracting contents from gravestone...");
         boolean success = GravestonesApi.onCollect(level, pos, player, gravestone.getTotalDamage(), gravestone.getContents());
         if (!success) {
-            error("Some gravestone contents had errors, so gravestone collection failed.");
+            error("Some gravestone contents had errors, so gravestone collection failed. Position: {}", posToString(globalPos));
             return false;
         }
         gravestone.setContents(new CompoundTag());
@@ -121,10 +122,11 @@ public class GravestoneCollection extends GravestoneManager {
         info("Breaking gravestone...");
         level.destroyBlock(pos, true);
 
+        // Invoke AfterCollect listeners (and deprecated event listeners)
+        info("Invoking deprecated GravestoneCollectedCallbacks...");
         DeprecatedEventHandler.gravestoneCollectedCallback(level, player, pos);
-
-        // Run AfterCollect listeners
-        GravestoneCollectionEvents.runAfterCollect(server, player, globalPos);
+        info("Invoking AfterCollect listeners...");
+        GravestoneCollectionEvents.invokeAfterCollect(server, player, globalPos);
 
         return true;
     }

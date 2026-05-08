@@ -19,7 +19,7 @@ public class GravestoneCollectionEvents {
     private static final List<Pair<Identifier, BeforeCollect>> BEFORE_COLLECT_LISTENERS = new ArrayList<>();
     private static final List<Pair<Identifier, AfterCollect>> AFTER_COLLECT_LISTENERS = new ArrayList<>();
 
-    public static Component runCancelCollect(
+    public static Component invokeCancelCollect(
             MinecraftServer server, Player player, GlobalPos pos, TechnicalGravestoneBlockEntity gravestone
     ) {
         for (Pair<Identifier, CancelCollect> pair : CANCEL_COLLECT_LISTENERS) {
@@ -35,7 +35,7 @@ public class GravestoneCollectionEvents {
         return null;
     }
 
-    public static void runBeforeCollect(
+    public static void invokeBeforeCollect(
             MinecraftServer server, Player player, GlobalPos pos, TechnicalGravestoneBlockEntity gravestone
     ) {
         for (Pair<Identifier, BeforeCollect> pair : BEFORE_COLLECT_LISTENERS) {
@@ -46,7 +46,7 @@ public class GravestoneCollectionEvents {
         }
     }
 
-    public static void runAfterCollect(MinecraftServer server, Player player, GlobalPos pos) {
+    public static void invokeAfterCollect(MinecraftServer server, Player player, GlobalPos pos) {
         for (Pair<Identifier, AfterCollect> pair : AFTER_COLLECT_LISTENERS) {
             Identifier id = pair.getFirst();
             GravestoneManager.info("Running AfterCollect listener '{}'", id);

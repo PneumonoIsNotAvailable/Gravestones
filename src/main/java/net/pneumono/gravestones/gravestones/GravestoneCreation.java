@@ -45,17 +45,17 @@ public class GravestoneCreation extends GravestoneManager {
         GlobalPos deathPos = VersionUtil.createGlobalPos(deathLevel.dimension(), player.blockPosition());
         MinecraftServer server = deathLevel.getServer();
 
-        // Check if placement should be cancelled
-        info("Checking if Gravestone Placement should be cancelled...");
-        if (GravestonePlacementEvents.runCancelPlace(server, player, deathPos) ||
+        // Check if placement should be canceled
+        info("Checking if gravestone placement should be canceled...");
+        if (GravestonePlacementEvents.invokeCancelPlace(server, player, deathPos) ||
                 DeprecatedEventHandler.cancelGravestonePlacementCallback(deathLevel, player, deathPos)) {
-            info("Placement cancelled!");
+            info("Placement canceled");
             return;
         }
-        info("Placement not cancelled");
+        info("Placement not canceled");
 
-        // Run BeforePlace listeners
-        GravestonePlacementEvents.runBeforePlace(server, player, deathPos);
+        // Invoke BeforePlace listeners
+        GravestonePlacementEvents.invokeBeforePlace(server, player, deathPos);
 
         // Read gravestone history
         UUID uuid = player.getUUID();
@@ -70,7 +70,7 @@ public class GravestoneCreation extends GravestoneManager {
 
         String playerName = VersionUtil.getName(player.getGameProfile());
         if (globalGravestonePos == null || !((Level)(server.getLevel(globalGravestonePos.dimension())) instanceof ServerLevel graveLevel)) {
-            Gravestones.LOGGER.info("Failed to place {}'s Gravestone! The items have been dropped on the ground", playerName);
+            Gravestones.LOGGER.info("Failed to place {}'s gravestone! The items have been dropped on the ground", playerName);
             return;
         }
 
@@ -119,7 +119,7 @@ public class GravestoneCreation extends GravestoneManager {
         // Place gravestone
         info("Placing gravestone...");
         placeGravestone(graveLevel, globalGravestonePos.pos());
-        Gravestones.LOGGER.info("Placed {}'s Gravestone at {}", playerName, posToString(globalGravestonePos));
+        Gravestones.LOGGER.info("Placed {}'s gravestone at {}", playerName, posToString(globalGravestonePos));
 
         // Insert gravestone contents
         info("Inserting contents into gravestone...");
@@ -132,11 +132,11 @@ public class GravestoneCreation extends GravestoneManager {
             server.getPlayerList().broadcastSystemMessage(Component.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)), false);
         }
 
-        // Run AfterPlace listeners (and invoke deprecated event)
+        // Invoke AfterPlace listeners (and deprecated event listeners)
         info("Invoking deprecated GravestonePlacedCallbacks...");
         DeprecatedEventHandler.gravestonePlacedCallback(deathLevel, player, deathPos, globalGravestonePos);
         info("Invoking AfterPlace listeners...");
-        GravestonePlacementEvents.runAfterPlace(server, player, deathPos, globalGravestonePos);
+        GravestonePlacementEvents.invokeAfterPlace(server, player, deathPos, globalGravestonePos);
     }
 
     private static CompoundTag createContentsData(Player player) {
@@ -174,7 +174,7 @@ public class GravestoneCreation extends GravestoneManager {
             }
 
             prevPos = pos;
-            pos = GravestonePlacementEvents.runRedirectPosition(level.getServer(), player, pos);
+            pos = GravestonePlacementEvents.invokeRedirectPosition(level.getServer(), player, pos);
         }
 
         return pos;
