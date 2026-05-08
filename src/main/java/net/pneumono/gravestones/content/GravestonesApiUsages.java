@@ -16,6 +16,7 @@ import net.pneumono.gravestones.api.event.GravestonePlacementEvents;
 import net.pneumono.gravestones.gravestones.GravestonePlacement;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 
+import java.util.Objects;
 import java.util.Optional;
 
 //? if >=1.21.11 {
@@ -91,9 +92,11 @@ public class GravestonesApiUsages {
         GravestonePlacementEvents.registerCancelPlace(
                 Gravestones.id("keep_inventory"),
                 (server, player, pos) -> {
-                    //? if >=1.21.11 {
+                    //? if >=26.1 {
                     boolean keepInv = server.getGameRules().get(GameRules.KEEP_INVENTORY);
-                    //?} else {
+                    //?} else if >=1.21.11 {
+                    /*boolean keepInv = Objects.requireNonNull(server.getLevel(pos.dimension())).getGameRules().get(GameRules.KEEP_INVENTORY);
+                    *///?} else {
                     /*boolean keepInv = server.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
                     *///?}
                     return keepInv && !GravestonesConfig.SPAWN_GRAVESTONES_WITH_KEEPINV.getValue();
