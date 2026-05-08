@@ -3,7 +3,7 @@ package net.pneumono.gravestones.compat;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.api.event.GravestoneContentsEvents;
 
-//? if galosphere {
+//? if galosphere && >=1.20.5 {
 /*import net.orcinus.galosphere.init.GDataComponents;
 *///?}
 
@@ -14,7 +14,7 @@ public class GalosphereCompat {
             //? if >=1.20.5 {
             return itemStack.has(GDataComponents.PRESERVED);
             //?} else {
-            /^return itemStack.getNbt() != null && itemStack.getNbt().contains("Preserved");
+            /^return itemStack.getTag() != null && itemStack.getTag().contains("preserved");
             ^///?}
         });
         *///?}
