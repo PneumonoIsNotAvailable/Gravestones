@@ -38,7 +38,7 @@ public class GravestoneCollection extends GravestoneManager {
     private static boolean collect(ServerLevel level, Player player, BlockPos pos, TechnicalGravestoneBlockEntity gravestone) {
         // Check if collection should be canceled
         info("Checking if gravestone collection should be canceled...");
-        if (player instanceof FakePlayer) {
+        if (player instanceof FakePlayer && !GravestonesConfig.ALLOW_FAKE_PLAYERS.getValue()) {
             info("Player cannot collect gravestone because they are a FakePlayer");
             return false;
         }

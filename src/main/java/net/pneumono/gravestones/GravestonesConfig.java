@@ -66,6 +66,9 @@ public class GravestonesConfig {
     public static final BooleanConfiguration SPAWN_GRAVESTONES_WITH_KEEPINV = register("spawn_gravestones_with_keepinv", new BooleanConfiguration(
             false, new ConfigSettings().loadType(LoadType.INSTANT)
     ));
+    public static final BooleanConfiguration ALLOW_FAKE_PLAYERS = register("allow_fake_players", new BooleanConfiguration(
+            false, new ConfigSettings().loadType(LoadType.INSTANT)
+    ));
 
     public static final BooleanConfiguration SHOW_HEADS = register("show_heads", new BooleanConfiguration(
             true, new ConfigSettings().clientSide().category("clientside").loadType(LoadType.INSTANT)
