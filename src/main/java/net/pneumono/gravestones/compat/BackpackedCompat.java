@@ -6,7 +6,7 @@ import net.pneumono.gravestones.api.GravestonesApi;
 public class BackpackedCompat {
     public static void register() {
         //? if backpacked {
-        /*GravestonesApi.registerDataType(Gravestones.id("backpacked"), new BackpackedDataType());
-        *///?}
+        GravestonesApi.registerDataType(Gravestones.id("backpacked"), new BackpackedDataType());
+        //?}
     }
 }
