@@ -22,6 +22,7 @@ import net.pneumono.pneumonocore.util.MultiVersionUtil;
 public class GravestoneCollection extends GravestoneManager {
     public static boolean collect(ServerLevel level, Player player, BlockPos pos) {
         if (level.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
+            checkConsoleInfoConfig();
 
             info("----- Beginning Gravestone Collection -----");
             info("If you don't want to see this, disable 'Console Info' in the configs!");
