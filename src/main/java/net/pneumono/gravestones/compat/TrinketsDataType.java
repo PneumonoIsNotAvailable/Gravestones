@@ -56,7 +56,7 @@ public class TrinketsDataType extends GravestoneDataType {
     }
 
     private Identifier getId(/*? if >=26.1 {*/TrinketSlotAccess/*?} else {*//*SlotReference*//*?}*/ reference) {
-        SlotType slotType = reference.inventory()./*? if >=26.1 {*/slotType/*getSlotType*//*?}*/();
+        SlotType slotType = reference.inventory()./*? if >=26.1 {*/slotType/*?} else {*//*getSlotType*//*?}*/();
         //? if >=26.1 {
         return VersionUtil.createId("trinkets",
                 slotType.group() + "/" + slotType.getId() + "/" + reference.index());
@@ -167,8 +167,8 @@ public class TrinketsDataType extends GravestoneDataType {
 
         public TrinketsSlot(/*? if >=26.1 {*/TrinketSlotAccess/*?} else {*//*SlotReference*//*?}*/ slot, ItemStack stack) {
             this(
-                    slot.inventory()./*? if >=26.1 {*/slotType/*getSlotType*//*?}*/()./*? if >=26.1 {*/group/*getGroup*//*?}*/(),
-                    slot.inventory()./*? if >=26.1 {*/slotType/*getSlotType*//*?}*/()./*? if >=26.1 {*/getId/*getName*//*?}*/(),
+                    slot.inventory()./*? if >=26.1 {*/slotType/*?} else {*//*getSlotType*//*?}*/()./*? if >=26.1 {*/group/*?} else {*//*getGroup*//*?}*/(),
+                    slot.inventory()./*? if >=26.1 {*/slotType/*?} else {*//*getSlotType*//*?}*/()./*? if >=26.1 {*/getId/*?} else {*//*getName*//*?}*/(),
                     slot.index(),
                     stack
             );
