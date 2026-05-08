@@ -18,6 +18,7 @@ val resourceBackpacks = "${property("resource_backpacks_version")}" != "[VERSION
 val backpacked = "${property("backpacked_version")}" != "[VERSIONED]"
 val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
 val trinketsCanary = "${property("trinkets_canary_version")}" != "[VERSIONED]"
+val trinketsUpdated = "${property("trinkets_updated_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
 
 repositories {
@@ -36,6 +37,11 @@ repositories {
 	// Trinkets & Trinkets Canary
 	if (trinkets || trinketsCanary) {
 		maven("https://maven.ladysnake.org/releases")
+	}
+
+	// Trinkets Updated
+	if (trinketsUpdated) {
+		maven("https://maven.nucleoid.xyz/releases")
 	}
 
 	// Accessories
@@ -78,7 +84,7 @@ stonecutter {
 	constants["resource_backpacks"] = resourceBackpacks
 	constants["backpacked"] = backpacked
 	constants["accessories"] = accessories
-	constants["trinkets"] = trinkets || trinketsCanary
+	constants["trinkets"] = trinkets || trinketsCanary || trinketsUpdated
 }
 
 fletchingTable {
@@ -143,6 +149,9 @@ dependencies {
 			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${ccaVersion}")
 			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${ccaVersion}")
 		}
+	}
+	if (trinketsUpdated) {
+		compileOnly("eu.pb4:trinkets:${property("trinkets_updated_version")}")
 	}
 }
 
