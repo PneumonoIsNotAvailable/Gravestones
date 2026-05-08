@@ -45,6 +45,7 @@
   "configs.category.gravestones.decay": "Gravestone Decay",
   "configs.category.gravestones.experience": "Experience Storage",
   "configs.category.gravestones.multiplayer": "Multiplayer",
+  "configs.category.gravestones.technical": "Technical",
   "configs.category.gravestones.clientside": "Client-Side",
 
   "configs.gravestones.decay_with_deaths": "Death Decay",

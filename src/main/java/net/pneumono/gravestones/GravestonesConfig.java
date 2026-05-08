@@ -54,6 +54,16 @@ public class GravestonesConfig {
             false, new ConfigSettings().category("multiplayer").loadType(LoadType.INSTANT)
     ));
 
+    public static final BooleanConfiguration CONSOLE_INFO = register("console_info", new BooleanConfiguration(
+            false, new ConfigSettings().category("technical").loadType(LoadType.INSTANT)
+    ));
+    public static final BooleanConfiguration ALLOW_FAKE_PLAYERS = register("allow_fake_players", new BooleanConfiguration(
+            false, new ConfigSettings().category("technical").loadType(LoadType.INSTANT)
+    ));
+    public static final BooleanConfiguration SPAWN_GRAVESTONES_WITH_KEEPINV = register("spawn_gravestones_with_keepinv", new BooleanConfiguration(
+            false, new ConfigSettings().category("technical").loadType(LoadType.INSTANT)
+    ));
+
     public static final BooleanConfiguration AESTHETIC_GRAVESTONES = register("aesthetic_gravestones", new BooleanConfiguration(
             true, new ConfigSettings().loadType(LoadType.RESTART)
     ));
@@ -63,21 +73,12 @@ public class GravestonesConfig {
     public static final BooleanConfiguration SPAWN_GRAVESTONES_IN_CREATIVE = register("spawn_gravestones_in_creative", new BooleanConfiguration(
             true, new ConfigSettings().loadType(LoadType.INSTANT)
     ));
-    public static final BooleanConfiguration SPAWN_GRAVESTONES_WITH_KEEPINV = register("spawn_gravestones_with_keepinv", new BooleanConfiguration(
-            false, new ConfigSettings().loadType(LoadType.INSTANT)
-    ));
-    public static final BooleanConfiguration ALLOW_FAKE_PLAYERS = register("allow_fake_players", new BooleanConfiguration(
-            false, new ConfigSettings().loadType(LoadType.INSTANT)
-    ));
 
     public static final BooleanConfiguration SHOW_HEADS = register("show_heads", new BooleanConfiguration(
             true, new ConfigSettings().clientSide().category("clientside").loadType(LoadType.INSTANT)
     ));
     public static final EnumConfiguration<TimeFormat> TIME_FORMAT = register("time_format", new EnumConfiguration<>(
             TimeFormat.MMDDYYYY, new ConfigSettings().clientSide().category("clientside").loadType(LoadType.INSTANT)
-    ));
-    public static final BooleanConfiguration CONSOLE_INFO = register("console_info", new BooleanConfiguration(
-            false, new ConfigSettings().clientSide().category("clientside").loadType(LoadType.INSTANT)
     ));
 
     public static <T extends AbstractConfiguration<?>> T register(String name, T config) {
