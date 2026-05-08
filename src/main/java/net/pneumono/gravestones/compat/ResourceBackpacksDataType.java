@@ -1,7 +1,7 @@
 package net.pneumono.gravestones.compat;
 
 //? if resource_backpacks {
-/*import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -59,4 +59,4 @@ public class ResourceBackpacksDataType extends GravestoneDataType {
         });
     }
 }
-*///?}
+//?}
