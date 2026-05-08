@@ -5,18 +5,13 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+import net.pneumono.gravestones.api.event.GravestoneCollectionEvents;
 
 /**
- * Callback after a gravestone is collected.
- *
- * <p>Called after all other gravestone processing. At this point the contents have been returned to the player,
- * and the gravestone block itself has been broken.
- *
- * <p>Should not be used for collecting custom contents from graves.
- * If you need to add custom contents, see {@link GravestoneDataType}
- *
- * @see GravestoneDataType
+ * @deprecated Use {@link GravestoneCollectionEvents.AfterCollect} instead.
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
+@Deprecated(forRemoval = true)
 public interface GravestoneCollectedCallback {
     Event<GravestoneCollectedCallback> EVENT = EventFactory.createArrayBacked(GravestoneCollectedCallback.class,
             listeners -> (level, player, gravePos) -> {

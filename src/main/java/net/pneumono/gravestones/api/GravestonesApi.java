@@ -18,6 +18,9 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
+import net.pneumono.gravestones.api.event.GravestoneCollectionEvents;
+import net.pneumono.gravestones.api.event.GravestoneContentsEvents;
+import net.pneumono.gravestones.api.event.GravestonePlacementEvents;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.gravestones.GravestoneManager;
 import net.pneumono.gravestones.multiversion.VersionUtil;
@@ -36,20 +39,16 @@ import java.util.function.BiPredicate;
  * </ul>
  *
  * <p>Most mods will not need to use anything other than the tags,
- * {@link SkipItemCallback} and {@link OnInsertItemCallback} (for items with different behavior on death)
+ * {@link GravestoneContentsEvents.SkipItem}, and {@link GravestoneContentsEvents.InsertItem} (for items with different behavior on death)
  * and {@link #registerDataType} (for custom data that also needs to be saved on death).
  *
  * <p>There is a page on the <a href="https://github.com/PneumonoIsNotAvailable/Gravestones/wiki">Gravestones Wiki</a>
  * for Gravestones' API features, however the documentation here is more detailed and likely to be up-to-date.
  *
  * @see GravestoneDataType
- * @see CancelGravestonePlacementCallback
- * @see RedirectGravestonePositionCallback
- * @see PositionValidationCallback
- * @see SkipItemCallback
- * @see OnInsertItemCallback
- * @see GravestonePlacedCallback
- * @see GravestoneCollectedCallback
+ * @see GravestonePlacementEvents
+ * @see GravestoneContentsEvents
+ * @see GravestoneCollectionEvents
  */
 public class GravestonesApi {
     private static final Map<Identifier, GravestoneDataType> DATA_TYPES = new HashMap<>();
@@ -68,7 +67,7 @@ public class GravestonesApi {
     }
 
     /**
-     * @deprecated Use {@link SkipItemCallback#EVENT} instead.
+     * @deprecated Use {@link GravestoneContentsEvents.SkipItem} instead.
      */
     @Deprecated
     public static void registerItemSkipPredicate(BiPredicate<Player, ItemStack> predicate) {
@@ -236,7 +235,7 @@ public class GravestonesApi {
     }
 
     /**
-     * Checks all registered {@link SkipItemCallback} listeners,
+     * Invokes all {@link GravestoneContentsEvents.SkipItem} listeners,
      * to see whether an item stack should be skipped by gravestone processing.
      *
      * <p>This should be called after {@link #onInsertItem}, as listeners may change the stack.
@@ -244,44 +243,46 @@ public class GravestonesApi {
      * <p>If the item comes from a specific slot,
      * {@link #shouldSkipItem(Player, ItemStack, Identifier)} should be used instead.
      *
-     * <p>Also checks {@link InsertGravestoneItemCallback} listeners and Item Skip Predicates for backwards compatibility.
+     * <p>Also invokes deprecated event listeners and Item Skip Predicates for backwards compatibility.
      *
      * @param player The player who has died.
      * @param stack The item stack being checked.
      * @return Whether the item should be skipped.
-     * @see SkipItemCallback#EVENT
+     * @see GravestoneContentsEvents.SkipItem
      */
-    @SuppressWarnings("deprecation")
     public static boolean shouldSkipItem(Player player, ItemStack stack) {
         return shouldSkipItem(player, stack, null);
     }
 
     /**
-     * Checks all registered {@link SkipItemCallback} listeners,
+     * Checks all {@link GravestoneContentsEvents.SkipItem} listeners,
      * to see whether an item stack should be skipped by gravestone processing.
      *
-     * <p>This should be called after {@link #onInsertItem}, as that may make changes the stack.
+     * <p>This should be called after {@link #onInsertItem}, as listeners may change the stack.
      *
      * <p>Slot identifiers should always use the mod they originate from as a namespace,
      * to maintain compatibility with other mods.
      * Slot identifiers do not need to match perfectly to the actual slots themselves,
      * and simply need to be unique for each slot.
      *
-     * <p>Also checks {@link InsertGravestoneItemCallback} listeners and Item Skip Predicates for backwards compatibility.
+     * <p>Also invokes deprecated event listeners and Item Skip Predicates for backwards compatibility.
      *
      * @param player The player who has died.
      * @param stack The item stack being checked.
      * @param slot The identifier of the slot holding the item stack.
      * @return Whether the item should be skipped.
-     * @see SkipItemCallback#EVENT
+     * @see GravestoneContentsEvents.SkipItem
      */
-    @SuppressWarnings("deprecation")
     public static boolean shouldSkipItem(Player player, ItemStack stack, @Nullable Identifier slot) {
-        if (InsertGravestoneItemCallback.EVENT.invoker().insertItem(player, stack)) {
+        if (GravestoneContentsEvents.runSkipItem(player, stack, slot)) {
             return true;
         }
 
-        if (SkipItemCallback.EVENT.invoker().insertItem(player, stack, slot)) {
+        if (DeprecatedEventHandler.insertGravestoneItemCallback(player, stack)) {
+            return true;
+        }
+
+        if (DeprecatedEventHandler.skipItemCallback(player, stack, slot)) {
             return true;
         }
 
@@ -295,7 +296,7 @@ public class GravestonesApi {
     }
 
     /**
-     * Invokes all {@link OnInsertItemCallback} listeners.
+     * Invokes all {@link GravestoneContentsEvents.InsertItem} listeners.
      *
      * <p>Should be called for each item stack before being inserted into a gravestone,
      * including ones that will be skipped.
@@ -303,16 +304,18 @@ public class GravestonesApi {
      * <p>If the item comes from a specific slot,
      * {@link #onInsertItem(Player, ItemStack, Identifier)} should be used instead.
      *
+     * <p>Also invokes deprecated event listeners, for backwards compatibility.
+     *
      * @param player The player who has died.
      * @param stack The item stack being checked.
-     * @see OnInsertItemCallback#EVENT
+     * @see GravestoneContentsEvents.InsertItem
      */
     public static void onInsertItem(Player player, ItemStack stack) {
         onInsertItem(player, stack, null);
     }
 
     /**
-     * Invokes all {@link OnInsertItemCallback} listeners.
+     * Invokes all {@link GravestoneContentsEvents.InsertItem} listeners.
      *
      * <p>Should be called for each item stack before being inserted into a gravestone,
      * including ones that will be skipped.
@@ -322,13 +325,16 @@ public class GravestonesApi {
      * Slot identifiers do not need to match perfectly to the actual slots themselves,
      * and simply need to be unique for each slot.
      *
+     * <p>Also invokes deprecated event listeners, for backwards compatibility.
+     *
      * @param player The player who has died.
      * @param stack The item stack being checked.
      * @param slot The identifier of the slot holding the item stack.
-     * @see OnInsertItemCallback#EVENT
+     * @see GravestoneContentsEvents.InsertItem
      */
     public static void onInsertItem(Player player, ItemStack stack, @Nullable Identifier slot) {
-        OnInsertItemCallback.EVENT.invoker().insertItem(player, stack, slot);
+        GravestoneContentsEvents.runInsertItem(player, stack, slot);
+        DeprecatedEventHandler.onInsertItemCallback(player, stack, slot);
     }
 
     /**

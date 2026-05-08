@@ -1,16 +1,19 @@
 package net.pneumono.gravestones.content;
 
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
 import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.api.SkipItemCallback;
+import net.pneumono.gravestones.api.event.GravestoneContentsEvents;
+import net.pneumono.gravestones.api.event.GravestonePlacementEvents;
+import net.pneumono.gravestones.gravestones.GravestonePlacement;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 
 import java.util.Optional;
@@ -30,7 +33,7 @@ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 *///?}
 
 /**
- * Contains usages of the Gravestones API by Gravestones itself. These can be used as examples if necessary.
+ * Contains usages of the Gravestones API by Gravestones itself. These can be used as examples.
  */
 public class GravestonesApiUsages {
     public static void register() {
@@ -44,7 +47,7 @@ public class GravestonesApiUsages {
         GravestonesApi.addSkippedEnchantment(VersionUtil.createId("soulbound", "soulbound"));
         GravestonesApi.addSkippedEnchantment(VersionUtil.createId("soulbound_enchantment", "soulbound"));
 
-        SkipItemCallback.EVENT.register((player, itemStack, slot) ->
+        GravestoneContentsEvents.registerSkipItem(Gravestones.id("tag_skip"), (player, itemStack, slot) ->
                 itemStack.is(GravestonesApi.ITEM_SKIPS_GRAVESTONES) ||
                 //? if >=1.21 {
                 EnchantmentHelper.hasTag(itemStack, GravestonesApi.ENCHANTMENT_SKIPS_GRAVESTONES)
@@ -52,8 +55,8 @@ public class GravestonesApiUsages {
                 /*hasTagSkippableEnchantments(itemStack)
                 *///?}
         );
-        SkipItemCallback.EVENT.register((player, itemStack, slot) -> hasSkippedEnchantments(itemStack));
-        SkipItemCallback.EVENT.register((player, itemStack, slot) ->
+        GravestoneContentsEvents.registerSkipItem(Gravestones.id("skipped_enchantments"), (player, itemStack, slot) -> hasSkippedEnchantments(itemStack));
+        GravestoneContentsEvents.registerSkipItem(Gravestones.id("curse_of_vanishing"), (player, itemStack, slot) ->
                 //? if >=1.21 {
                 EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)
                 //?} else {
@@ -61,16 +64,44 @@ public class GravestonesApiUsages {
                 *///?}
         );
 
-        CancelGravestonePlacementCallback.EVENT.register((level, player, deathPos) -> {
-            //? if >=1.21.11 {
-            boolean keepInv = level.getGameRules().get(GameRules.KEEP_INVENTORY);
-            //?} else {
-            /*boolean keepInv = level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
-            *///?}
-            return keepInv && !GravestonesConfig.SPAWN_GRAVESTONES_WITH_KEEPINV.getValue();
-        });
-        CancelGravestonePlacementCallback.EVENT.register((level, player, deathPos) ->
-                player.isCreative() && !GravestonesConfig.SPAWN_GRAVESTONES_IN_CREATIVE.getValue()
+        GravestonePlacementEvents.registerRedirectPosition(
+                Gravestones.id("move_to_nearby_free_space"),
+                (server, player, pos) -> {
+                    ServerLevel level = server.getLevel(pos.dimension());
+                    if (level == null) return pos;
+
+                    return GravestonePlacement.getPlacementPos(level, pos);
+                }
+        );
+
+        GravestonePlacementEvents.registerValidatePosition(
+                Gravestones.id("valid_block_properties"),
+                (level, state, pos) -> {
+                    Block block = state.getBlock();
+                    return block.defaultDestroyTime() >= 0 &&
+                            block.getExplosionResistance() < 3600000 &&
+                            block != Blocks.VOID_AIR;
+                }
+        );
+        GravestonePlacementEvents.registerValidatePosition(
+                Gravestones.id("not_in_irreplaceable_tag"),
+                (level, state, pos) -> !state.is(GravestonesApi.BLOCK_GRAVESTONE_IRREPLACEABLE)
+        );
+
+        GravestonePlacementEvents.registerCancelPlace(
+                Gravestones.id("keep_inventory"),
+                (server, player, pos) -> {
+                    //? if >=1.21.11 {
+                    boolean keepInv = server.getGameRules().get(GameRules.KEEP_INVENTORY);
+                    //?} else {
+                    /*boolean keepInv = server.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+                    *///?}
+                    return keepInv && !GravestonesConfig.SPAWN_GRAVESTONES_WITH_KEEPINV.getValue();
+                }
+        );
+        GravestonePlacementEvents.registerCancelPlace(
+                Gravestones.id("creative_mode"),
+                (server, player, pos) -> player.isCreative() && !GravestonesConfig.SPAWN_GRAVESTONES_IN_CREATIVE.getValue()
         );
     }
 

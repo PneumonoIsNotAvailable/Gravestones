@@ -4,12 +4,13 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.pneumono.gravestones.api.event.GravestoneContentsEvents;
 
 /**
- * @deprecated Use {@link SkipItemCallback} or {@link OnInsertItemCallback} instead
+ * @deprecated Use {@link GravestoneContentsEvents.SkipItem} or {@link GravestoneContentsEvents.InsertItem} instead
  */
-@Deprecated
 @SuppressWarnings("DeprecatedIsStillUsed")
+@Deprecated(forRemoval = true)
 public interface InsertGravestoneItemCallback {
     Event<InsertGravestoneItemCallback> EVENT = EventFactory.createArrayBacked(InsertGravestoneItemCallback.class,
         listeners -> (player, itemStack) -> {

@@ -7,18 +7,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.api.CancelGravestonePlacementCallback;
-import net.pneumono.gravestones.api.GravestonePlacedCallback;
+import net.pneumono.gravestones.api.DeprecatedEventHandler;
 import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.api.event.GravestonePlacementEvents;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.content.GravestonesRegistry;
 import net.pneumono.gravestones.multiversion.GraveOwner;
@@ -49,13 +47,15 @@ public class GravestoneCreation extends GravestoneManager {
 
         // Check if placement should be cancelled
         info("Checking if Gravestone Placement should be cancelled...");
-        if (CancelGravestonePlacementCallback.EVENT.invoker().shouldCancel(
-                deathLevel, player, deathPos
-        )) {
+        if (GravestonePlacementEvents.runCancelPlace(server, player, deathPos) ||
+                DeprecatedEventHandler.cancelGravestonePlacementCallback(deathLevel, player, deathPos)) {
             info("Placement cancelled!");
             return;
         }
         info("Placement not cancelled");
+
+        // Run BeforePlace listeners
+        GravestonePlacementEvents.runBeforePlace(server, player, deathPos);
 
         // Read gravestone history
         UUID uuid = player.getUUID();
@@ -132,9 +132,11 @@ public class GravestoneCreation extends GravestoneManager {
             server.getPlayerList().broadcastSystemMessage(Component.translatable("gravestones.grave_spawned", playerName, posToString(gravestonePos)), false);
         }
 
-        // Callbacks
-        info("Invoking GravestonePlacedCallbacks...");
-        GravestonePlacedCallback.EVENT.invoker().afterGravestonePlace(deathLevel, player, deathPos, globalGravestonePos);
+        // Run AfterPlace listeners (and invoke deprecated event)
+        info("Invoking deprecated GravestonePlacedCallbacks...");
+        DeprecatedEventHandler.gravestonePlacedCallback(deathLevel, player, deathPos, globalGravestonePos);
+        info("Invoking AfterPlace listeners...");
+        GravestonePlacementEvents.runAfterPlace(server, player, deathPos, globalGravestonePos);
     }
 
     private static CompoundTag createContentsData(Player player) {
@@ -159,15 +161,23 @@ public class GravestoneCreation extends GravestoneManager {
     }
 
     private static GlobalPos getPlacementPos(ServerLevel level, Player player, GlobalPos deathPos) {
-        DimensionType dimension = level.dimensionType();
-        GlobalPos clampedDeathPos = VersionUtil.createGlobalPos(deathPos.dimension(), deathPos.pos().atY(
-                Mth.clamp(deathPos.pos().getY(), dimension.minY(), dimension.minY() + dimension.height())
-        ));
-        GlobalPos validPos = GravestonePlacement.getRedirectableValidPos(level, player, clampedDeathPos);
+        GlobalPos pos = DeprecatedEventHandler.redirectGravestonePositionCallback(level, player, deathPos);
+        if (pos == null) pos = deathPos;
 
-        if (validPos == null || level.getServer().getLevel(validPos.dimension()) == null) return null;
+        GlobalPos prevPos = null;
+        int attempts = 0;
+        while (pos != prevPos) {
+            attempts++;
+            if (attempts > 100) {
+                error("100 RedirectPosition attempts changed the gravestone position. This is likely the result of an infinite loop!");
+                break;
+            }
 
-        return validPos;
+            prevPos = pos;
+            pos = GravestonePlacementEvents.runRedirectPosition(level.getServer(), player, pos);
+        }
+
+        return pos;
     }
 
     protected static void placeGravestone(ServerLevel level, BlockPos pos) {

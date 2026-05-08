@@ -2,18 +2,22 @@ package net.pneumono.gravestones.gravestones;
 
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.pneumono.gravestones.Gravestones;
 import net.pneumono.gravestones.GravestonesConfig;
-import net.pneumono.gravestones.api.GravestoneCollectedCallback;
+import net.pneumono.gravestones.api.DeprecatedEventHandler;
 import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.api.event.GravestoneCollectionEvents;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
 import net.pneumono.gravestones.multiversion.GraveOwner;
 import net.pneumono.gravestones.multiversion.VersionUtil;
+import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
 public class GravestoneCollection extends GravestoneManager {
     public static boolean collect(ServerLevel level, Player player, BlockPos pos) {
@@ -56,7 +60,18 @@ public class GravestoneCollection extends GravestoneManager {
             message(player, Component.translatable("gravestones.cannot_open_wrong_player", graveOwner.getNotNullName()));
             return false;
         }
+
+        MinecraftServer server = level.getServer();
+        GlobalPos globalPos = MultiVersionUtil.createGlobalPos(level.dimension(), pos);
+        Component component = GravestoneCollectionEvents.runCancelCollect(server, player, globalPos, gravestone);
+        if (component != null) {
+            message(player, component);
+        }
+
         info("All checks passed");
+
+        // Run BeforeCollect listeners
+        GravestoneCollectionEvents.runBeforeCollect(server, player, globalPos, gravestone);
 
         // Return gravestone contents
         info("Returning gravestone contents...");
@@ -99,14 +114,17 @@ public class GravestoneCollection extends GravestoneManager {
                     text = Component.translatable("gravestones.player_collected_others_grave", player.getName().getString(), graveOwner.getNotNullName());
                 }
             }
-            level.getServer().getPlayerList().broadcastSystemMessage(text, false);
+            server.getPlayerList().broadcastSystemMessage(text, false);
         }
 
         // Break block
         info("Breaking gravestone...");
         level.destroyBlock(pos, true);
 
-        GravestoneCollectedCallback.EVENT.invoker().afterGravestoneCollect(level, player, pos);
+        DeprecatedEventHandler.gravestoneCollectedCallback(level, player, pos);
+
+        // Run AfterCollect listeners
+        GravestoneCollectionEvents.runAfterCollect(server, player, globalPos);
 
         return true;
     }
