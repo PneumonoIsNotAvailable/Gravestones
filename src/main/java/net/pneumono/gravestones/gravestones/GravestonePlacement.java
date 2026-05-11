@@ -33,7 +33,7 @@ public class GravestonePlacement extends GravestoneManager {
         return validPos;
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static GlobalPos getRedirectableValidPos(ServerLevel level, Player player, GlobalPos deathPos) {
         GlobalPos redirected = DeprecatedEventHandler.redirectGravestonePositionCallback(level, player, deathPos);
         if (redirected != null) return redirected;
@@ -56,7 +56,7 @@ public class GravestonePlacement extends GravestoneManager {
     }
 
     @Nullable
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static BlockPos getValidPos(Level level, BlockPos originalPos, int radius) {
         if (getCost(level, originalPos, originalPos) == 0) {
             return originalPos;
@@ -110,7 +110,7 @@ public class GravestonePlacement extends GravestoneManager {
         }
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static boolean isInvalid(BlockState state) {
         Block block = state.getBlock();
         return block.defaultDestroyTime() < 0 ||
@@ -119,7 +119,7 @@ public class GravestonePlacement extends GravestoneManager {
                 state.is(GravestonesApi.BLOCK_GRAVESTONE_IRREPLACEABLE);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     private static double getCost(Level level, BlockPos newPos, BlockPos origin) {
         BlockState state = level.getBlockState(newPos);
         if (

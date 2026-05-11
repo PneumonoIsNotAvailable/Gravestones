@@ -131,7 +131,7 @@ public class GravestonePlacementEvents {
     }
 
     /**
-     * CancelPlace listeners are run at the start of the gravestone creation process.
+     * Run at the start of the gravestone creation process.
      *
      * <p>Returning {@code true} will cancel gravestone creation, as well as further processing.
      * Returning {@code false} will fall back to further processing.
@@ -139,7 +139,7 @@ public class GravestonePlacementEvents {
      * <p>{@link GlobalPos} has a {@code dimension} field,
      * which can be used to get the level in which the player died using {@link MinecraftServer#getLevel(ResourceKey)}.
      *
-     * <p>CancelPlace listeners are ideal for situations in which gravestones should not be placed at all.
+     * <p>Ideal for situations in which gravestones should not be placed at all.
      * In many situations, it may instead be better to move the gravestone to another position (or dimension).
      * To do this, use a {@link RedirectPosition} listener.
      *
@@ -152,10 +152,10 @@ public class GravestonePlacementEvents {
     }
 
     /**
-     * BeforePlace listeners are run at the start of the gravestone creation process,
+     * Run at the start of the gravestone creation process,
      * after {@link CancelPlace CancelPlace} listeners.
      *
-     * <p>They will not run if a CancelPlace listener has canceled gravestone creation.
+     * <p>Will not run if a CancelPlace listener has canceled gravestone creation.
      *
      * <p>{@link GlobalPos} has a {@code dimension} field,
      * which can be used to get the level in which the player died using {@link MinecraftServer#getLevel(ResourceKey)}.
@@ -172,7 +172,7 @@ public class GravestonePlacementEvents {
     }
 
     /**
-     * AfterPlace listeners are run as the last step of the gravestone creation process.
+     * Run as the last step of the gravestone creation process, after everything else.
      *
      * <p>{@link GlobalPos} has a {@code dimension} field,
      * which can be used to get the level in which the player died, or the gravestone was placed,
@@ -187,20 +187,22 @@ public class GravestonePlacementEvents {
     }
 
     /**
-     * RedirectPosition listeners are run each time a "valid position" is found during the gravestone creation process.
-     * Typically, this is once for the death position, and then again each time a RedirectPosition listener moves it.
+     * Run each time a possible placement position is found during the gravestone creation process.
+     *
+     * <p>A possible placement position will be found once at the initial death position,
+     * and then again at the new position each time a RedirectPosition listener moves it.
      * This ensures that the final position meets the standards of all RedirectPosition listeners.
      *
      * <p>Returning a {@link GlobalPos} that is not the given position will redirect the gravestone to that position,
      * and trigger all RedirectPosition listeners again.
      * Returning {@code null}, or the given position, will fall back to further processing.
      *
-     * <p>Because a successful redirection triggers all RedirectPosition listeners again,
-     * you must make sure your listener does not end up infinitely looping.
-     *
-     * <p>RedirectPosition listeners are ideal for mods that do not want gravestones placed in particular locations.
+     * <p>Ideal for mods that do not want gravestones placed in particular locations.
      * For example, a roguelike dungeon mod would need to place the gravestone somewhere at the entrance of the dungeon,
      * so that items aren't lost when the dungeon is reset.
+     *
+     * <p>Because a successful redirection triggers all RedirectPosition listeners again,
+     * you must make sure your listener does not end up infinitely looping.
      *
      * <p>{@link GlobalPos} has a {@code dimension} field,
      * which can be used to get the level in which the player died using {@link MinecraftServer#getLevel(ResourceKey)},
@@ -218,17 +220,20 @@ public class GravestonePlacementEvents {
     }
 
     /**
-     * ValidatePosition listeners are run for each block position to see if they are valid for gravestone placement.
+     * Run for each block position in a 5x5x5 cube around a possible placement position.
+     *
+     * <p>Possible placement positions include the initial death position,
+     * and each position a {@link RedirectPosition} listener moves it to.
      *
      * <p>Returning {@code false} will prevent the gravestone from being placed at the position,
      * and cancel further processing.
      * Returning {@code true} will fall back to further processing.
      *
-     * <p>ValidatePosition listeners are ideal for preventing certain types of blocks being destroyed.
+     * <p>Ideal for preventing certain types of blocks being destroyed.
      * For example, an important treasure block.
      *
-     * <p>A ValidatePosition listener already exists that invalidates blocks with a default destroy time of < 1,
-     * or an explosion resistance of >=3600000.
+     * <p>There is a builtin ValidatePosition listener,
+     * which invalidates blocks with a default destroy time of < 0 or an explosion resistance of >= 3600000.
      * If these criteria are already met, you do not need to register another ValidatePosition listener.
      *
      * <p>If you want to prevent gravestones being placed in a larger area,

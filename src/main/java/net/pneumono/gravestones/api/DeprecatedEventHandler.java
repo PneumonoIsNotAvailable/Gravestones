@@ -10,6 +10,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Handles calling deprecated events.
+ */
 @SuppressWarnings("removal")
 public class DeprecatedEventHandler {
     public static void gravestonePlacedCallback(ServerLevel level, Player player, GlobalPos deathPos, GlobalPos gravePos) {

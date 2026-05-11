@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import net.pneumono.gravestones.api.event.GravestoneContentsEvents;
 
 /**
- * @deprecated Use {@link GravestoneContentsEvents.SkipItem} or {@link GravestoneContentsEvents.InsertItem} instead
+ * @deprecated Use {@link GravestoneContentsEvents.SkipItem} or {@link GravestoneContentsEvents.InsertItem} instead.
  */
 @SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated(forRemoval = true)

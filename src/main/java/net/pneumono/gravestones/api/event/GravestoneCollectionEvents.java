@@ -86,7 +86,7 @@ public class GravestoneCollectionEvents {
     }
 
     /**
-     * CancelCollect listeners are run at the start of the gravestone collection process.
+     * Run at the start of the gravestone collection process.
      *
      * <p>Returning a {@link Component} will cancel gravestone creation, as well as further processing.
      * The Component will be displayed to the client to explain the reason collection was canceled.
@@ -102,10 +102,10 @@ public class GravestoneCollectionEvents {
     }
 
     /**
-     * BeforeCollect listeners are run at the start of the gravestone collection process,
+     * Run at the start of the gravestone collection process,
      * after {@link CancelCollect} listeners.
      *
-     * <p>They will not run if a CancelCollect listener has canceled gravestone collection.
+     * <p>Will not run if a CancelCollect listener has canceled gravestone collection.
      *
      * <p>{@link GlobalPos} has a {@code dimension} field,
      * which can be used to get the level in which the grave is being collected using {@link MinecraftServer#getLevel(ResourceKey)}.
@@ -119,9 +119,10 @@ public class GravestoneCollectionEvents {
     }
 
     /**
-     * AfterCollect listeners are run as the last step of the gravestone collection process.
+     * Run as the last step of the gravestone collection process, after everything else.
      *
-     * <p>At this point, the contents have been returned to the player, and the gravestone block and block entity have been destroyed.
+     * <p>At this point, the contents have been returned to the player,
+     * and the gravestone block and block entity have been destroyed.
      *
      * <p>{@link GlobalPos} has a {@code dimension} field,
      * which can be used to get the level in which the grave is being collected using {@link MinecraftServer#getLevel(ResourceKey)}.

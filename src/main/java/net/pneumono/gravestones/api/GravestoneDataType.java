@@ -34,7 +34,7 @@ public abstract class GravestoneDataType extends GravestoneManager {
      * so make sure to clear/remove data when it's inserted to prevent it being duplicated.
      *
      * <p>When handling items, make sure to call {@link GravestonesApi#onInsertItem},
-     * and check the item with {@link GravestonesApi#shouldSkipItem}.
+     * and then check the item with {@link GravestonesApi#shouldSkipItem}.
      * If an item stack should be skipped, do not insert or remove it,
      * since it should fall back to non-gravestones processing.
      *
@@ -47,6 +47,8 @@ public abstract class GravestoneDataType extends GravestoneManager {
      *
      * <p>This can happen when a Creative Mode player breaks a gravestone manually,
      * or if other mods create new ways of breaking gravestones.
+     *
+     * <p>Is also called as a fallback if an error is thrown by {@link #onCollect}.
      *
      * <p>Exists so that data is not lost if graves are broken through other means.
      * In most cases, this involves dropping things on the ground (e.g. items or XP orbs).

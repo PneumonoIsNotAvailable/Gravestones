@@ -58,7 +58,7 @@ public class GravestoneContentsEvents {
     }
 
     /**
-     * SkipItem listeners are called for each item stack that might be inserted into the gravestone.
+     * Run for each item stack that might be inserted into the gravestone.
      *
      * <p>Returning {@code true} will "skip" the item stack, and it will be ignored by the gravestone.
      * Returning {@code false} will fall back to further processing.
@@ -72,7 +72,7 @@ public class GravestoneContentsEvents {
      * The slot identifier will often need to be converted to another format to be used,
      * make sure to check how the identifier is created in the relevant {@link GravestoneDataType}.
      *
-     * <p>SkipItem listeners are ideal for preserving the on-death functionality of certain items,
+     * <p>Ideal for preserving the on-death functionality of certain items,
      * since skipped items are still processed by vanilla or other mods after the gravestone is placed.
      * For example, items enchanted with Curse of Vanishing are skipped using a SkipItem listener,
      * which leaves them to be processed by vanilla death mechanics, which clear them from the inventory.
@@ -81,8 +81,7 @@ public class GravestoneContentsEvents {
      * In this situation, the on-death functionality will need to be triggered separately.
      * This should be done using an {@link InsertItem} listener.
      *
-     * <p>SkipItem listeners should not be used to add on-death functionality,
-     * as they may not run if a previous listener already skipped the item stack.
+     * <p>Should not be used to add on-death functionality.
      * To add on-death functionality, use an {@link InsertItem} listener.
      */
     @FunctionalInterface
@@ -91,16 +90,16 @@ public class GravestoneContentsEvents {
     }
 
     /**
-     * InsertItem listeners are called for each item stack before it gets inserted into the gravestone.
+     * Run for each item stack before it gets inserted into the gravestone.
      *
-     * <p>InsertItem listeners are still called for item stacks that will be skipped by {@link SkipItem} listeners.
+     * <p>Is run before {@link SkipItem} listeners, and so will still be called for item stacks that will be skipped.
      *
      * <p>The slot identifier may be null if the item stack does not come from a specific slot
      * (e.g. a bundle-like inventory).
      * The slot identifier will often need to be converted to another format to be used,
      * make sure to check how the identifier is created in the relevant {@link GravestoneDataType}.
      *
-     * <p>InsertItem listeners are ideal for items with on-death functionality that should still be inserted into gravestones.
+     * <p>Ideal for items with on-death functionality that should still be inserted into gravestones.
      * For example, a version of a Totem of Undying that can be used multiple times.
      *
      * <p>For items with existing on-death functionality that should not be inserted into gravestones,

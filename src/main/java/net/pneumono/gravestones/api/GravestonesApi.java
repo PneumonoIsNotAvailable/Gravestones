@@ -22,6 +22,7 @@ import net.pneumono.gravestones.api.event.GravestoneCollectionEvents;
 import net.pneumono.gravestones.api.event.GravestoneContentsEvents;
 import net.pneumono.gravestones.api.event.GravestonePlacementEvents;
 import net.pneumono.gravestones.block.TechnicalGravestoneBlockEntity;
+import net.pneumono.gravestones.content.GravestonesApiUsages;
 import net.pneumono.gravestones.gravestones.GravestoneManager;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.jetbrains.annotations.Nullable;
@@ -42,8 +43,11 @@ import java.util.function.BiPredicate;
  * {@link GravestoneContentsEvents.SkipItem}, and {@link GravestoneContentsEvents.InsertItem} (for items with different behavior on death)
  * and {@link #registerDataType} (for custom data that also needs to be saved on death).
  *
+ * <p>{@link GravestonesApiUsages} contains all the usages of the Gravestones API by Gravestones itself.
+ * These can be used as examples if needed.
+ *
  * <p>There is a page on the <a href="https://github.com/PneumonoIsNotAvailable/Gravestones/wiki">Gravestones Wiki</a>
- * for Gravestones' API features, however the documentation here is more detailed and likely to be up-to-date.
+ * for Gravestones' API features, however the documentation here is more detailed and more likely to be up-to-date.
  *
  * @see GravestoneDataType
  * @see GravestonePlacementEvents
@@ -69,7 +73,7 @@ public class GravestonesApi {
     /**
      * @deprecated Use {@link GravestoneContentsEvents.SkipItem} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void registerItemSkipPredicate(BiPredicate<Player, ItemStack> predicate) {
         ITEM_SKIP_PREDICATES.add(predicate);
     }
@@ -120,7 +124,7 @@ public class GravestonesApi {
     }
 
     /**
-     * Removes data from the player, and returns an NBT Compound with that data.
+     * Removes data from the player, and returns a CompoundTag with that data.
      */
     public static CompoundTag getDataToInsert(Player player) {
         CompoundTag contents = new CompoundTag();
