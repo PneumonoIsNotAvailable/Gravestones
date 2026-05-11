@@ -1,10 +1,21 @@
-- Changed gravestones to not finish being collected if an error occurs in the collection process
-  - If an error occurs, the gravestone will remain in a partially collected state,
-    so that any remaining data can be collected in future if the issue is fixed
-- Improved order of events in the gravestone creation process
-  - Items should no longer be lost when certain types of errors occur
-- Improved clarity of the descriptions of some configs
-- Changed 'Spawn Gravestones in Creative' config to be enabled by default
-- Minor logging improvements
-- Fixed the first gravestone created in a world per player not being saved correctly
-- Fixed the `/gravestones getdata player` command not working in some situations
+- Added 'Technical' config category
+  - Contains 'Console Info', 'Spawn Gravestones with Keep Inventory', and the new 'Allow Fake Players'
+  - This category is for highly technical things that may cause issues or unintended behavior. Change at your own risk!
+- Added 'Allow Fake Players' config
+  - 'Fake Players' are player-like objects used by mods to simulate player behavior.
+  For example, Deployers in Create
+  - Previously, they were fully blacklisted from interacting with gravestones
+  - Note that Fake Players are not intentionally supported,
+  and could cause major issues (for example, items collected by Deployers are completely lost!)
+- Major API improvements
+  - Reworked events and add several new events
+  - Improved documentation
+- Improved 'Console Info' logs
+  - All events now have an ID that is logged if 'Console Info' is enabled,
+  so that the exact listener that caused an issue can be identified easier
+  - Logs have been made clearer and more detailed
+- Fixed gravestone collection not updating cached 'Console Info' value
+- (26.1) Added Backpacked support
+- (26.1) Added Trinkets support through Trinkets Updated
+- (26.1) Added Resource Backpacks support
+- (1.20) Added Galosphere support
