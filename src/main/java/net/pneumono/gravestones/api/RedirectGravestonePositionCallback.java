@@ -11,7 +11,7 @@ import net.pneumono.gravestones.gravestones.GravestonePlacement;
 /**
  * @deprecated Use {@link GravestonePlacementEvents.RedirectPosition} instead.
  */
-@SuppressWarnings("DeprecatedIsStillUsed")
+@SuppressWarnings({"DeprecatedIsStillUsed", "removal"})
 @Deprecated(forRemoval = true)
 public interface RedirectGravestonePositionCallback {
     Event<RedirectGravestonePositionCallback> EVENT = EventFactory.createArrayBacked(RedirectGravestonePositionCallback.class,
