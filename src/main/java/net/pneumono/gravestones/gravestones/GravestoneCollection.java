@@ -19,6 +19,8 @@ import net.pneumono.gravestones.multiversion.GraveOwner;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 import net.pneumono.pneumonocore.util.MultiVersionUtil;
 
+import java.util.UUID;
+
 public class GravestoneCollection extends GravestoneManager {
     public static boolean collect(ServerLevel level, Player player, BlockPos pos) {
         if (level.getBlockEntity(pos) instanceof TechnicalGravestoneBlockEntity gravestone) {
@@ -49,16 +51,20 @@ public class GravestoneCollection extends GravestoneManager {
         }
 
         GraveOwner graveOwner = gravestone.getGraveOwner();
+        UUID ownerUuid;
+        String ownerName;
         if (graveOwner == null) {
-            info("Player cannot collect gravestone because it has no owner");
-            message(player, Component.translatable("gravestones.cannot_open_no_owner"));
-            return false;
+            ownerUuid = null;
+            ownerName = "???";
+        } else {
+            ownerUuid = graveOwner.getUuid();
+            ownerName = graveOwner.getNotNullName();
         }
 
-        boolean isOwner = graveOwner.getUuid().equals(VersionUtil.getId(player.getGameProfile()));
-        if (!isOwner && GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
+        boolean isOwner = VersionUtil.getId(player.getGameProfile()).equals(ownerUuid);
+        if (graveOwner != null && !isOwner && GravestonesConfig.GRAVESTONE_ACCESSIBLE_OWNER_ONLY.getValue()) {
             info("Player cannot collect gravestone because they are not the owner");
-            message(player, Component.translatable("gravestones.cannot_open_wrong_player", graveOwner.getNotNullName()));
+            message(player, Component.translatable("gravestones.cannot_open_wrong_player", ownerName));
             return false;
         }
 
@@ -85,16 +91,16 @@ public class GravestoneCollection extends GravestoneManager {
         gravestone.setContents(new CompoundTag());
 
         // Log grave collection
-        String uuid = "";
+        String uuidString = "";
         if (GravestonesConfig.CONSOLE_INFO.getValue()) {
-            uuid = " (" + VersionUtil.getId(player.getGameProfile()) + ")";
+            uuidString = " (" + VersionUtil.getId(player.getGameProfile()) + ")";
         }
         if (isOwner) {
-            Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuid, GravestoneManager.posToString(pos));
+            Gravestones.LOGGER.info("{}{} has found their grave at {}", player.getName().getString(), uuidString, GravestoneManager.posToString(pos));
         } else {
             Gravestones.LOGGER.info("{}{} has found {}{}'s grave at {}",
-                    player.getName().getString(), uuid,
-                    graveOwner.getNotNullName(), graveOwner.getUuid(),
+                    player.getName().getString(), uuidString,
+                    ownerName, graveOwner == null ? "" : ownerUuid,
                     pos.toString()
             );
         }
@@ -107,13 +113,13 @@ public class GravestoneCollection extends GravestoneManager {
                 if (isOwner) {
                     text = Component.translatable("gravestones.player_collected_grave_at_coords", player.getName().getString(), GravestoneManager.posToString(pos));
                 } else {
-                    text = Component.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), graveOwner.getNotNullName(), GravestoneManager.posToString(pos));
+                    text = Component.translatable("gravestones.player_collected_others_grave_at_coords", player.getName().getString(), ownerName, GravestoneManager.posToString(pos));
                 }
             } else {
                 if (isOwner) {
                     text = Component.translatable("gravestones.player_collected_grave", player.getName().getString());
                 } else {
-                    text = Component.translatable("gravestones.player_collected_others_grave", player.getName().getString(), graveOwner.getNotNullName());
+                    text = Component.translatable("gravestones.player_collected_others_grave", player.getName().getString(), ownerName);
                 }
             }
             server.getPlayerList().broadcastSystemMessage(text, false);
