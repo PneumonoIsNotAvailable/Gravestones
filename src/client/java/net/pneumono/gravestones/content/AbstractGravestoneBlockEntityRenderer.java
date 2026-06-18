@@ -2,7 +2,6 @@ package net.pneumono.gravestones.content;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
@@ -18,6 +17,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import java.util.List;
 import java.util.function.Function;
+
+//? if <26.2
+//import net.minecraft.client.renderer.MultiBufferSource;
 
 //? if >=26.1 {
 import net.minecraft.client.renderer.state.level.CameraRenderState;

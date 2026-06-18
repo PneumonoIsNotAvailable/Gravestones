@@ -326,6 +326,6 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     private void finishEditing() {
-        Objects.requireNonNull(this.minecraft).setScreen(null);
+        Objects.requireNonNull(this.minecraft)/*? if >=26.2 {*/.gui/*?}*/.setScreen(null);
     }
 }

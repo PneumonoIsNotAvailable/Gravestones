@@ -1,7 +1,6 @@
 package net.pneumono.gravestones.content;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.world.item.BlockItem;
@@ -10,6 +9,9 @@ import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.SignText;
 import net.pneumono.gravestones.block.AestheticGravestoneBlockEntity;
+
+//? if <26.2
+//import net.minecraft.client.renderer.MultiBufferSource;
 
 //? if >=1.21.11 {
 import net.minecraft.client.renderer.rendertype.RenderType;

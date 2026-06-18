@@ -1,7 +1,7 @@
 package net.pneumono.gravestones.compat;
 
 //? if backpacked {
-import com.mojang.serialization.Codec;
+/*import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mrcrayfish.backpacked.BackpackHelper;
@@ -63,4 +63,4 @@ public class BackpackedDataType extends GravestoneDataType {
         ).apply(instance, SavedBackpack::new));
     }
 }
-//?}
+*///?}
