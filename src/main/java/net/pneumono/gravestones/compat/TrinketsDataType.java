@@ -120,7 +120,7 @@ public class TrinketsDataType extends GravestoneDataType {
                 /^TrinketInventory inventory = trinketInventories.get(slot.groupName()).get(slot.slotId());
                 ^///?}
 
-                if (inventory.getItem(slot.index()).isEmpty()) {
+                if (inventory != null && inventory.getItem(slot.index()).isEmpty()) {
                     inventory.setItem(slot.index(), slot.stack());
                     continue;
                 }
