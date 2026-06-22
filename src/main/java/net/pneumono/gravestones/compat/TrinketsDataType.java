@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-//? if >=1.21.11 {
+//? if >=26.1 {
 import eu.pb4.trinkets.api.*;
 //?} else {
 /^import dev.emi.trinkets.api.*;
@@ -36,7 +36,7 @@ public class TrinketsDataType extends GravestoneDataType {
 
     @Override
     public void writeData(CompoundTag tag, DynamicOps<Tag> ops, Player player) throws Exception {
-        //? if >=1.21.11 {
+        //? if >=26.1 {
         TrinketAttachment attachment = TrinketsApi.getAttachment(player);
         //?} else {
         /^TrinketComponent attachment = TrinketsApi.getTrinketComponent(player).orElse(null);
@@ -44,7 +44,7 @@ public class TrinketsDataType extends GravestoneDataType {
         if (attachment == null) return;
 
         List<TrinketsSlot> storedTrinkets = new ArrayList<>();
-        //? if >=1.21.11 {
+        //? if >=26.1 {
         attachment.forEachDroppable((reference, stack) -> {
             GravestonesApi.onInsertItem(player, stack, getId(reference));
 
@@ -67,9 +67,9 @@ public class TrinketsDataType extends GravestoneDataType {
         VersionUtil.put(ops, tag, KEY, TrinketsSlot.CODEC.listOf(), storedTrinkets);
     }
 
-    private Identifier getId(/^? if >=1.21.11 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ reference) {
-        SlotType slotType = reference.inventory()./^? if >=1.21.11 {^/slotType/^?} else {^//^getSlotType^//^?}^/();
-        //? if >=1.21.11 {
+    private Identifier getId(/^? if >=26.1 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ reference) {
+        SlotType slotType = reference.inventory()./^? if >=26.1 {^/slotType/^?} else {^//^getSlotType^//^?}^/();
+        //? if >=26.1 {
         return VersionUtil.createId("trinkets",
                 slotType.group() + "/" + slotType.getId() + "/" + reference.index());
         //?} else {
@@ -91,7 +91,7 @@ public class TrinketsDataType extends GravestoneDataType {
     public void onCollect(CompoundTag tag, DynamicOps<Tag> ops, Level level, BlockPos pos, Player player, int decay) {
         List<TrinketsSlot> list = VersionUtil.get(ops, tag, KEY, TrinketsSlot.CODEC.listOf()).orElseThrow();
 
-        //? if >=1.21.11 {
+        //? if >=26.1 {
         TrinketAttachment attachment = TrinketsApi.getAttachment(player);
         Map<String, TrinketInventory> trinketInventories;
         if (attachment == null) {
@@ -114,7 +114,7 @@ public class TrinketsDataType extends GravestoneDataType {
             remainingSlots.addAll(list);
         } else {
             for (TrinketsSlot slot : list) {
-                //? if >=1.21.11 {
+                //? if >=26.1 {
                 TrinketInventory inventory = trinketInventories.get(slot.slotId());
                 //?} else {
                 /^TrinketInventory inventory = trinketInventories.get(slot.groupName()).get(slot.slotId());
@@ -135,10 +135,10 @@ public class TrinketsDataType extends GravestoneDataType {
         }
     }
 
-    public boolean shouldSkipTrinket(Player player, /^? if >=1.21.11 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ slot, ItemStack stack) {
+    public boolean shouldSkipTrinket(Player player, /^? if >=26.1 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ slot, ItemStack stack) {
         boolean shouldSkipItem = GravestonesApi.shouldSkipItem(player, stack);
 
-        //? if >=1.21.11 {
+        //? if >=26.1 {
         TrinketDropRule dropRule = TrinketsApi.getDropRule(stack, slot, player, false);
         //?} else {
         /^TrinketEnums.DropRule dropRule = TrinketsApi.getTrinket(stack.getItem()).getDropRule(stack, slot, player);
@@ -166,7 +166,7 @@ public class TrinketsDataType extends GravestoneDataType {
         }
         ^///?}
 
-        return stack.isEmpty() || dropRule != /^? if >=1.21.11 {^/TrinketDropRule/^?} else {^//^TrinketEnums.DropRule^//^?}^/.DROP || shouldSkipItem;
+        return stack.isEmpty() || dropRule != /^? if >=26.1 {^/TrinketDropRule/^?} else {^//^TrinketEnums.DropRule^//^?}^/.DROP || shouldSkipItem;
     }
 
     public record TrinketsSlot(String groupName, String slotId, int index, ItemStack stack) {
@@ -177,10 +177,10 @@ public class TrinketsDataType extends GravestoneDataType {
                 ItemStack.CODEC.fieldOf("stack").forGetter(TrinketsSlot::stack)
         ).apply(builder, TrinketsSlot::new));
 
-        public TrinketsSlot(/^? if >=1.21.11 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ slot, ItemStack stack) {
+        public TrinketsSlot(/^? if >=26.1 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ slot, ItemStack stack) {
             this(
-                    slot.inventory()./^? if >=1.21.11 {^/slotType/^?} else {^//^getSlotType^//^?}^/()./^? if >=1.21.11 {^/group/^?} else {^//^getGroup^//^?}^/(),
-                    slot.inventory()./^? if >=1.21.11 {^/slotType/^?} else {^//^getSlotType^//^?}^/()./^? if >=1.21.11 {^/getId/^?} else {^//^getName^//^?}^/(),
+                    slot.inventory()./^? if >=26.1 {^/slotType/^?} else {^//^getSlotType^//^?}^/()./^? if >=26.1 {^/group/^?} else {^//^getGroup^//^?}^/(),
+                    slot.inventory()./^? if >=26.1 {^/slotType/^?} else {^//^getSlotType^//^?}^/()./^? if >=26.1 {^/getId/^?} else {^//^getName^//^?}^/(),
                     slot.index(),
                     stack
             );
