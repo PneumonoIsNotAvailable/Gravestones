@@ -5,6 +5,8 @@ import net.pneumono.gravestones.api.GravestonesApi;
 
 public class TrinketsCompat {
     public static void register() {
-        GravestonesApi.registerDataType(Gravestones.id("trinkets"), new TrinketsDataType());
+        //? if trinkets {
+        /*GravestonesApi.registerDataType(Gravestones.id("trinkets"), new TrinketsDataType());
+        *///?}
     }
 }
