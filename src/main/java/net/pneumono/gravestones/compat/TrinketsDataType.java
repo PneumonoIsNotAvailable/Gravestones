@@ -44,14 +44,26 @@ public class TrinketsDataType extends GravestoneDataType {
         if (attachment == null) return;
 
         List<TrinketsSlot> storedTrinkets = new ArrayList<>();
-        attachment.forEach((reference, stack) -> {
+        //? if >=26.1 {
+        attachment.forEachDroppable((reference, stack) -> {
+            GravestonesApi.onInsertItem(player, stack, getId(reference));
+
+            if (stack.isEmpty() || GravestonesApi.shouldSkipItem(player, stack)) {
+                return;
+            }
+
+            storedTrinkets.add(new TrinketsSlot(reference, stack));
+            reference.inventory().removeItemNoUpdate(reference.index());
+        });
+        //?} else {
+        /^attachment.forEach((reference, stack) -> {
             GravestonesApi.onInsertItem(player, stack, getId(reference));
             if (shouldSkipTrinket(player, reference, stack)) return;
 
             storedTrinkets.add(new TrinketsSlot(reference, stack));
             reference.inventory().removeItemNoUpdate(reference.index());
         });
-
+        ^///?}
         VersionUtil.put(ops, tag, KEY, TrinketsSlot.CODEC.listOf(), storedTrinkets);
     }
 
@@ -108,7 +120,7 @@ public class TrinketsDataType extends GravestoneDataType {
                 /^TrinketInventory inventory = trinketInventories.get(slot.groupName()).get(slot.slotId());
                 ^///?}
 
-                if (inventory.getItem(slot.index()).isEmpty()) {
+                if (inventory != null && inventory.getItem(slot.index()).isEmpty()) {
                     inventory.setItem(slot.index(), slot.stack());
                     continue;
                 }
