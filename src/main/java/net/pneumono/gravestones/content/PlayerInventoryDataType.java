@@ -33,8 +33,14 @@ public class PlayerInventoryDataType extends GravestoneDataType {
             Identifier slotIdentifier = VersionUtil.createId("minecraft", Integer.toString(i));
             GravestonesApi.onInsertItem(player, itemStack, slotIdentifier);
             if (!GravestonesApi.shouldSkipItem(player, itemStack, slotIdentifier) && !itemStack.isEmpty()) {
-                DataResult<Tag> result = StackWithSlot.CODEC.encodeStart(ops, new StackWithSlot(i, inventory.removeItemNoUpdate(i)));
-                list.add(result.result().orElseThrow());
+                ItemStack stackToSave = inventory.removeItemNoUpdate(i);
+                DataResult<Tag> result = StackWithSlot.CODEC.encodeStart(ops, new StackWithSlot(i, stackToSave));
+                if (result.result().isPresent()) {
+                    list.add(result.result().get());
+                } else {
+                    Gravestones.LOGGER.error("Failed to serialize item {} for gravestone: {}", stackToSave, result.error().get().message());
+                    player.drop(stackToSave, true, false);
+                }
             }
         }
         tag.put(KEY, list);
@@ -45,8 +51,10 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         ListTag list = VersionUtil.getCompoundListOrEmpty(tag, KEY);
 
         for (Tag element : list) {
-            ItemStack stack = StackWithSlot.CODEC.decode(ops, element).result().orElseThrow().getFirst().stack();
-            dropStack(level, pos, stack);
+            StackWithSlot.CODEC.decode(ops, element).resultOrPartial(Gravestones.LOGGER::error).ifPresent(pair -> {
+                ItemStack stack = pair.getFirst().stack();
+                dropStack(level, pos, stack);
+            });
         }
     }
 
@@ -56,7 +64,7 @@ public class PlayerInventoryDataType extends GravestoneDataType {
         ListTag list = VersionUtil.getCompoundListOrEmpty(tag, KEY);
         List<StackWithSlot> stacks = new ArrayList<>();
         for (Tag element : list) {
-            stacks.add(StackWithSlot.CODEC.decode(ops, element).result().orElseThrow().getFirst());
+            StackWithSlot.CODEC.decode(ops, element).resultOrPartial(Gravestones.LOGGER::error).ifPresent(pair -> stacks.add(pair.getFirst()));
         }
 
         List<ItemStack> remainingStacks = new ArrayList<>();
