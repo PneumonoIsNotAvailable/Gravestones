@@ -1,7 +1,7 @@
 package net.pneumono.gravestones.compat;
 
 //? if trinkets {
-/*import com.mojang.serialization.Codec;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
@@ -22,10 +22,10 @@ import java.util.Map;
 //? if >=26.1 {
 import eu.pb4.trinkets.api.*;
 //?} else {
-/^import dev.emi.trinkets.api.*;
+/*import dev.emi.trinkets.api.*;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-^///?}
+*///?}
 
 //? if >=1.21 {
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
@@ -39,8 +39,8 @@ public class TrinketsDataType extends GravestoneDataType {
         //? if >=26.1 {
         TrinketAttachment attachment = TrinketsApi.getAttachment(player);
         //?} else {
-        /^TrinketComponent attachment = TrinketsApi.getTrinketComponent(player).orElse(null);
-        ^///?}
+        /*TrinketComponent attachment = TrinketsApi.getTrinketComponent(player).orElse(null);
+        *///?}
         if (attachment == null) return;
 
         List<TrinketsSlot> storedTrinkets = new ArrayList<>();
@@ -55,15 +55,15 @@ public class TrinketsDataType extends GravestoneDataType {
         VersionUtil.put(ops, tag, KEY, TrinketsSlot.CODEC.listOf(), storedTrinkets);
     }
 
-    private Identifier getId(/^? if >=26.1 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ reference) {
-        SlotType slotType = reference.inventory()./^? if >=26.1 {^/slotType/^?} else {^//^getSlotType^//^?}^/();
+    private Identifier getId(/*? if >=26.1 {*/TrinketSlotAccess/*?} else {*//*SlotReference*//*?}*/ reference) {
+        SlotType slotType = reference.inventory()./*? if >=26.1 {*/slotType/*?} else {*//*getSlotType*//*?}*/();
         //? if >=26.1 {
         return VersionUtil.createId("trinkets",
                 slotType.group() + "/" + slotType.getId() + "/" + reference.index());
         //?} else {
-        /^return VersionUtil.createId("trinkets",
+        /*return VersionUtil.createId("trinkets",
                 slotType.getGroup() + "/" + slotType.getName() + "/" + reference.index());
-        ^///?}
+        *///?}
     }
 
     @Override
@@ -88,14 +88,14 @@ public class TrinketsDataType extends GravestoneDataType {
             trinketInventories = attachment.getInventories();
         }
         //?} else {
-        /^TrinketComponent attachment = TrinketsApi.getTrinketComponent(player).orElse(null);
+        /*TrinketComponent attachment = TrinketsApi.getTrinketComponent(player).orElse(null);
         Map<String, Map<String, TrinketInventory>> trinketInventories;
         if (attachment == null) {
             trinketInventories = null;
         } else {
             trinketInventories = attachment.getInventory();
         }
-        ^///?}
+        *///?}
 
         List<TrinketsSlot> remainingSlots = new ArrayList<>();
         if (trinketInventories == null) {
@@ -105,10 +105,10 @@ public class TrinketsDataType extends GravestoneDataType {
                 //? if >=26.1 {
                 TrinketInventory inventory = trinketInventories.get(slot.slotId());
                 //?} else {
-                /^TrinketInventory inventory = trinketInventories.get(slot.groupName()).get(slot.slotId());
-                ^///?}
+                /*TrinketInventory inventory = trinketInventories.get(slot.groupName()).get(slot.slotId());
+                *///?}
 
-                if (inventory.getItem(slot.index()).isEmpty()) {
+                if (inventory != null && inventory.getItem(slot.index()).isEmpty()) {
                     inventory.setItem(slot.index(), slot.stack());
                     continue;
                 }
@@ -123,13 +123,13 @@ public class TrinketsDataType extends GravestoneDataType {
         }
     }
 
-    public boolean shouldSkipTrinket(Player player, /^? if >=26.1 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ slot, ItemStack stack) {
+    public boolean shouldSkipTrinket(Player player, /*? if >=26.1 {*/TrinketSlotAccess/*?} else {*//*SlotReference*//*?}*/ slot, ItemStack stack) {
         boolean shouldSkipItem = GravestonesApi.shouldSkipItem(player, stack);
 
         //? if >=26.1 {
         TrinketDropRule dropRule = TrinketsApi.getDropRule(stack, slot, player, false);
         //?} else {
-        /^TrinketEnums.DropRule dropRule = TrinketsApi.getTrinket(stack.getItem()).getDropRule(stack, slot, player);
+        /*TrinketEnums.DropRule dropRule = TrinketsApi.getTrinket(stack.getItem()).getDropRule(stack, slot, player);
 
         dropRule = TrinketDropCallback.EVENT.invoker().drop(dropRule, stack, slot, player);
 
@@ -144,17 +144,17 @@ public class TrinketsDataType extends GravestoneDataType {
             //? if >=1.21 {
             EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP);
             //?} else {
-            /^¹EnchantmentHelper.hasVanishingCurse(stack);
-            ¹^///?}
+            /^EnchantmentHelper.hasVanishingCurse(stack);
+            ^///?}
             if (vanishing) {
                 dropRule = TrinketEnums.DropRule.DESTROY;
             } else {
                 dropRule = TrinketEnums.DropRule.DROP;
             }
         }
-        ^///?}
+        *///?}
 
-        return stack.isEmpty() || dropRule != /^? if >=26.1 {^/TrinketDropRule/^?} else {^//^TrinketEnums.DropRule^//^?}^/.DROP || shouldSkipItem;
+        return stack.isEmpty() || dropRule != /*? if >=26.1 {*/TrinketDropRule/*?} else {*//*TrinketEnums.DropRule*//*?}*/.DROP || shouldSkipItem;
     }
 
     public record TrinketsSlot(String groupName, String slotId, int index, ItemStack stack) {
@@ -165,14 +165,14 @@ public class TrinketsDataType extends GravestoneDataType {
                 ItemStack.CODEC.fieldOf("stack").forGetter(TrinketsSlot::stack)
         ).apply(builder, TrinketsSlot::new));
 
-        public TrinketsSlot(/^? if >=26.1 {^/TrinketSlotAccess/^?} else {^//^SlotReference^//^?}^/ slot, ItemStack stack) {
+        public TrinketsSlot(/*? if >=26.1 {*/TrinketSlotAccess/*?} else {*//*SlotReference*//*?}*/ slot, ItemStack stack) {
             this(
-                    slot.inventory()./^? if >=26.1 {^/slotType/^?} else {^//^getSlotType^//^?}^/()./^? if >=26.1 {^/group/^?} else {^//^getGroup^//^?}^/(),
-                    slot.inventory()./^? if >=26.1 {^/slotType/^?} else {^//^getSlotType^//^?}^/()./^? if >=26.1 {^/getId/^?} else {^//^getName^//^?}^/(),
+                    slot.inventory()./*? if >=26.1 {*/slotType/*?} else {*//*getSlotType*//*?}*/()./*? if >=26.1 {*/group/*?} else {*//*getGroup*//*?}*/(),
+                    slot.inventory()./*? if >=26.1 {*/slotType/*?} else {*//*getSlotType*//*?}*/()./*? if >=26.1 {*/getId/*?} else {*//*getName*//*?}*/(),
                     slot.index(),
                     stack
             );
         }
     }
 }
-*///?}
+//?}
