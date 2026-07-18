@@ -54,11 +54,11 @@ public class GravestonesRegistry {
     public static final Block GRAVESTONE_TECHNICAL = registerGravestone("gravestone_technical",
             TechnicalGravestoneBlock::new, copy(Blocks.STONE).strength(-1.0F, 3600000.0F).noOcclusion());
     public static final Block GRAVESTONE = registerAestheticGravestone("gravestone",
-            AestheticGravestoneBlock::new, copy(Blocks.STONE).strength(3.5F).noOcclusion().requiresCorrectToolForDrops());
+            AestheticGravestoneBlock::new, copy(Blocks.STONE).strength(2.0F, 6.0F).noOcclusion().requiresCorrectToolForDrops());
     public static final Block GRAVESTONE_CHIPPED = registerAestheticGravestone("gravestone_chipped",
-            AestheticGravestoneBlock::new, copy(Blocks.STONE).strength(3.5F).noOcclusion().requiresCorrectToolForDrops());
+            AestheticGravestoneBlock::new, copy(Blocks.STONE).strength(2.0F, 6.0F).noOcclusion().requiresCorrectToolForDrops());
     public static final Block GRAVESTONE_DAMAGED = registerAestheticGravestone("gravestone_damaged",
-            AestheticGravestoneBlock::new, copy(Blocks.STONE).strength(3.5F).noOcclusion().requiresCorrectToolForDrops());
+            AestheticGravestoneBlock::new, copy(Blocks.STONE).strength(2.0F, 6.0F).noOcclusion().requiresCorrectToolForDrops());
 
     public static BlockEntityType<TechnicalGravestoneBlockEntity> TECHNICAL_GRAVESTONE_ENTITY = Registry.register(
             BuiltInRegistries.BLOCK_ENTITY_TYPE, Gravestones.id("technical_gravestone"), FabricBlockEntityTypeBuilder.create(
