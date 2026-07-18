@@ -67,7 +67,7 @@ public class Gravestones implements ModInitializer {
 			usingAccessories = true;
 		}
 
-		if (!usingAccessories && isModLoaded("trinkets")) {
+		if (!usingAccessories && (isModLoaded("trinkets") || isModLoaded("trinkets_updated"))) {
 			TrinketsCompat.register();
 		}
 	}
