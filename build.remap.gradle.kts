@@ -1,7 +1,7 @@
 plugins {
-	id("fabric-loom") version "1.15-SNAPSHOT"
+	id("fabric-loom") version "1.17-SNAPSHOT"
 	id("maven-publish")
-	id("me.modmuss50.mod-publish-plugin") version "1.0.0"
+	id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 	id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
 }
 
