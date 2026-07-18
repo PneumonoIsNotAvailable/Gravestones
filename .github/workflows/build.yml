@@ -10,275 +10,275 @@ on: [push]
 
 jobs:
   build-1-20:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.20:build
+        run: ./gradlew :1.20:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-20-2:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.20.2:build
+        run: ./gradlew :1.20.2:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-20-3:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.20.3:build
+        run: ./gradlew :1.20.3:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-20-5:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.20.5:build
+        run: ./gradlew :1.20.5:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-21:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.21:build
+        run: ./gradlew :1.21:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-21-2:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.21.2:build
+        run: ./gradlew :1.21.2:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-21-4:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.21.4:build
+        run: ./gradlew :1.21.4:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-21-5:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.21.5:build
+        run: ./gradlew :1.21.5:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-21-6:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.21.6:build
+        run: ./gradlew :1.21.6:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-21-9:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.21.9:build
+        run: ./gradlew :1.21.9:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-1-21-11:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :1.21.11:build
+        run: ./gradlew :1.21.11:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-26-1:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :26.1:build
+        run: ./gradlew :26.1:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
   build-26-2:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: setup jdk 25
-        uses: actions/setup-java@v4
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: 25
+          java-version: '25'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
       - name: build
-        run: |
-          ./gradlew :26.2:build
+        run: ./gradlew :26.2:build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
