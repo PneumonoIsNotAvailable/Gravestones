@@ -28,6 +28,7 @@ version = "${project.property("mod_version")}+${stonecutter.current.project}+${p
 val galosphere = "${property("galosphere_version")}" != "[VERSIONED]"
 val resourceBackpacks = "${property("resource_backpacks_version")}" != "[VERSIONED]"
 val backpacked = "${property("backpacked_version")}" != "[VERSIONED]"
+val nemosBackpacks = "${property("nemos_backpacks_version")}" != "[VERSIONED]"
 val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
 val trinketsCanary = "${property("trinkets_canary_version")}" != "[VERSIONED]"
 val trinketsUpdated = "${property("trinkets_updated_version")}" != "[VERSIONED]"
@@ -66,7 +67,7 @@ repositories {
 		maven("https://maven.shedaniel.me/")
 	}
 
-	// Core, Trinkets Canary, Galosphere, Resource Backpacks
+	// Core, Trinkets Canary, Galosphere, Resource Backpacks, Nemo's Backpacks
 	exclusiveContent {
 		forRepository {
 			maven("https://api.modrinth.com/maven")
@@ -98,6 +99,7 @@ stonecutter {
 	constants["galosphere"] = galosphere
 	constants["resource_backpacks"] = resourceBackpacks
 	constants["backpacked"] = backpacked
+	constants["nemos_backpacks"] = nemosBackpacks
 	constants["accessories"] = accessories
 	constants["trinkets"] = trinkets || trinketsCanary || trinketsUpdated
 }
@@ -147,6 +149,11 @@ dependencies {
 	// Backpacked
 	if (backpacked) {
 		modCompileOnly("curse.maven:backpacked-352835:${property("backpacked_version")}")
+	}
+
+	// Nemo's Backpacks
+	if (nemosBackpacks) {
+		modCompileOnly("maven.modrinth:nemos-backpacks:${property("nemos_backpacks_version")}")
 	}
 
 	// Accessories

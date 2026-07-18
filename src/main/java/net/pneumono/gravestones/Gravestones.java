@@ -35,7 +35,10 @@ public class Gravestones implements ModInitializer {
 		GravestonesRegistry.registerModContent();
 		GravestonesApiUsages.register();
 		GravestonesCommands.registerCommands();
+		registerCompat();
+	}
 
+	private void registerCompat() {
 		if (isModLoaded("spelunkery")) {
 			SpelunkeryCompat.register();
 		}
@@ -46,6 +49,10 @@ public class Gravestones implements ModInitializer {
 
 		if (isModLoaded("resource_backpacks")) {
 			ResourceBackpacksCompat.register();
+		}
+
+		if (isModLoaded("nemos_backpacks")) {
+			NemosBackpacksCompat.register();
 		}
 
 		if (isModLoaded("backpacked")) {
