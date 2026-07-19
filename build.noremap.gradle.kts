@@ -23,9 +23,6 @@ val trinketsUpdated = "${property("trinkets_updated_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
 
 repositories {
-	// Mod Menu
-	maven("https://maven.terraformersmc.com/")
-
 	exclusiveContent {
 		forRepository {
 			maven("https://cursemaven.com")
@@ -105,9 +102,6 @@ dependencies {
 
 	// Core mod
 	implementation("maven.modrinth:pneumono_core:${property("core_version")}")
-
-	// ModMenu
-	runtimeOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
 	// Galosphere
 	if (galosphere) {

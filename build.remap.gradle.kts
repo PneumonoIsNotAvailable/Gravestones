@@ -35,12 +35,6 @@ val trinketsUpdated = "${property("trinkets_updated_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
 
 repositories {
-	// Mod Menu
-	maven("https://maven.terraformersmc.com/")
-	if (stonecutter.current.project == "1.20.3") {
-		maven("https://maven.nucleoid.xyz/")
-	}
-
 	exclusiveContent {
 		forRepository {
 			maven("https://cursemaven.com")
@@ -132,9 +126,6 @@ dependencies {
 
 	// Core mod
 	modImplementation("maven.modrinth:pneumono_core:${property("core_version")}")
-
-	// ModMenu
-	modRuntimeOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
 	// Galosphere
 	if (galosphere) {
