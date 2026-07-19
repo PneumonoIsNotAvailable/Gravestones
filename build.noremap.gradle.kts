@@ -23,6 +23,9 @@ val trinketsUpdated = "${property("trinkets_updated_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
 
 repositories {
+	// Trinkets
+	maven("https://maven.terraformersmc.com/")
+
 	exclusiveContent {
 		forRepository {
 			maven("https://cursemaven.com")
