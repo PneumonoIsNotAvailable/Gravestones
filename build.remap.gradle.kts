@@ -5,19 +5,23 @@ plugins {
 	id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
 }
 
-val javaVersion = if (stonecutter.eval(stonecutter.current.version, ">=1.20.5"))
+fun evalCurrent(predicate: String): Boolean {
+	return stonecutter.eval(stonecutter.current.version, predicate)
+}
+
+val javaVersion = if (evalCurrent(">=1.20.5"))
 	JavaVersion.VERSION_21 else JavaVersion.VERSION_17
 java.targetCompatibility = javaVersion
 java.sourceCompatibility = javaVersion
 
 val awFile =
-	if (stonecutter.eval(stonecutter.current.version, ">=1.21.9"))
+	if (evalCurrent(">=1.21.9"))
 		"1.21.9.accesswidener"
-	else if (stonecutter.eval(stonecutter.current.version, ">=1.21.4"))
+	else if (evalCurrent(">=1.21.4"))
 		"1.21.4.accesswidener"
-	else if (stonecutter.eval(stonecutter.current.version, ">=1.20.5"))
+	else if (evalCurrent(">=1.20.5"))
 		"1.20.5.accesswidener"
-	else if (stonecutter.eval(stonecutter.current.version, ">=1.20.2"))
+	else if (evalCurrent(">=1.20.2"))
 		"1.20.2.accesswidener"
 	else
 		"1.20.accesswidener"
@@ -84,13 +88,14 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		create("gravestones") {
-			sourceSet(sourceSets["main"])
-			sourceSet(sourceSets["client"])
+		register("gravestones") {
+			sourceSet(sourceSets.main.get())
+			sourceSet(sourceSets.getByName("client"))
 		}
 	}
 
 	runConfigs.all {
+		@Suppress("DEPRECATION")
 		ideConfigGenerated(true)
 	}
 }
@@ -106,7 +111,7 @@ stonecutter {
 
 fletchingTable {
 	j52j.register("main") {
-		if (stonecutter.eval(stonecutter.current.version, ">=1.21")) {
+		if (evalCurrent(">=1.21")) {
 			extension("json", "data/**/*.json5")
 		} else {
 			extension("json", "data/gravestones/advancement/recipes/decorations/*.json5 -> /data/gravestones/advancements/recipes/decorations")
@@ -165,8 +170,7 @@ dependencies {
 		if (stonecutter.current.project == "1.20.2") {
 			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0")
 		}
-	}
-	if (trinketsCanary) {
+	} else if (trinketsCanary) {
 		modCompileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
 		val ccaVersion = when (stonecutter.current.project) {
 			"1.21.4" -> "6.2.2"
@@ -180,8 +184,7 @@ dependencies {
 			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${ccaVersion}")
 			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${ccaVersion}")
 		}
-	}
-	if (trinketsUpdated) {
+	} else if (trinketsUpdated) {
 		modCompileOnly("eu.pb4:trinkets:${property("trinkets_updated_version")}")
 	}
 }
@@ -193,7 +196,7 @@ tasks {
 
 		filesMatching("fabric.mod.json") {
 			expand(
-				mutableMapOf(
+				mapOf(
 					"version" to project.property("mod_version"),
 					"supported_versions" to ">=${project.property("min_supported_version")} <=${project.property("max_supported_version")}",
 					"aw_file" to awFile
@@ -201,12 +204,12 @@ tasks {
 			)
 		}
 
-		val mixins = if (stonecutter.eval(stonecutter.current.version, ">=1.20.3"))
+		val mixins = if (evalCurrent(">=1.20.3"))
 			"LivingEntityMixin" else "ExplosionMixin\", \"LivingEntityMixin"
 
 		filesMatching("gravestones.mixins.json") {
 			expand(
-				mutableMapOf(
+				mapOf(
 					"mixins" to mixins
 				)
 			)
@@ -214,7 +217,7 @@ tasks {
 	}
 
 	withType<JavaCompile> {
-		val java = if (stonecutter.eval(stonecutter.current.version, ">=1.20.5")) 21 else 17
+		val java = if (evalCurrent(">=1.20.5")) 21 else 17
 		options.release.set(java)
 	}
 
@@ -223,15 +226,18 @@ tasks {
 	}
 
 	jar {
+		val projectName = project.name
+		inputs.property("projectName", projectName)
+
 		from("LICENSE") {
-			rename {"${it}_${base.archivesName.get()}"}
+			rename { "${it}_$projectName" }
 		}
 	}
 }
 
 stonecutter {
 	replacements.string {
-		direction = eval(current.version, ">=1.21.11")
+		direction = evalCurrent(">=1.21.11")
 		replace("ResourceLocation", "Identifier")
 	}
 }

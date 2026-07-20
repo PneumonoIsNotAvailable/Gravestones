@@ -1,2 +1,6 @@
-- Added support for 26.2
-- Changed ownerless gravestones to now be accessible by any player
+- Added Trinkets support to 26.2
+- Added Nemo's Backpacks support to 26.1 and 26.2
+- Changed Aesthetic Gravestones to only require Wooden Pickaxes and break faster
+- Changed implementation of PlayerInventoryDataType to drop items if serialization fails (renwixx)
+- Fixed Trinkets Updated not being detected in certain versions
+- Fixed some compatibility issues with Trinkets in >=26.1

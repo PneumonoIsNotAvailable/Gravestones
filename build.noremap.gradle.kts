@@ -5,6 +5,10 @@ plugins {
 	id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
 }
 
+fun evalCurrent(predicate: String): Boolean {
+	return stonecutter.eval(stonecutter.current.version, predicate)
+}
+
 val javaVersion = JavaVersion.VERSION_25
 java.targetCompatibility = javaVersion
 java.sourceCompatibility = javaVersion
@@ -69,13 +73,14 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		create("gravestones") {
-			sourceSet(sourceSets["main"])
-			sourceSet(sourceSets["client"])
+		register("gravestones") {
+			sourceSet(sourceSets.main.get())
+			sourceSet(sourceSets.getByName("client"))
 		}
 	}
 
 	runConfigs.all {
+		@Suppress("DEPRECATION")
 		ideConfigGenerated(true)
 	}
 }
@@ -138,8 +143,7 @@ dependencies {
 		if (stonecutter.current.project == "1.20.2") {
 			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0")
 		}
-	}
-	if (trinketsCanary) {
+	} else if (trinketsCanary) {
 		compileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
 		val ccaVersion = when (stonecutter.current.project) {
 			"1.21.4" -> "6.2.2"
@@ -153,8 +157,7 @@ dependencies {
 			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${ccaVersion}")
 			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${ccaVersion}")
 		}
-	}
-	if (trinketsUpdated) {
+	} else if (trinketsUpdated) {
 		compileOnly("eu.pb4:trinkets:${property("trinkets_updated_version")}")
 	}
 }
@@ -166,7 +169,7 @@ tasks {
 
 		filesMatching("fabric.mod.json") {
 			expand(
-				mutableMapOf(
+				mapOf(
 					"version" to project.property("mod_version"),
 					"supported_versions" to "~${project.property("min_supported_version")}",
 					"aw_file" to awFile
@@ -178,7 +181,7 @@ tasks {
 
 		filesMatching("gravestones.mixins.json") {
 			expand(
-				mutableMapOf(
+				mapOf(
 					"mixins" to mixins
 				)
 			)
@@ -195,15 +198,18 @@ tasks {
 	}
 
 	jar {
+		val projectName = project.name
+		inputs.property("projectName", projectName)
+
 		from("LICENSE") {
-			rename {"${it}_${base.archivesName.get()}"}
+			rename { "${it}_$projectName" }
 		}
 	}
 }
 
 stonecutter {
 	replacements.string {
-		direction = eval(current.version, ">=1.21.11")
+		direction = evalCurrent(">=1.21.11")
 		replace("ResourceLocation", "Identifier")
 	}
 }
