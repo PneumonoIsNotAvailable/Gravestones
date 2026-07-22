@@ -198,11 +198,8 @@ tasks {
 	}
 
 	jar {
-		val projectName = project.name
-		inputs.property("projectName", projectName)
-
 		from("LICENSE") {
-			rename { "${it}_$projectName" }
+			rename { "${it}_${base.archivesName.get()}" }
 		}
 	}
 }

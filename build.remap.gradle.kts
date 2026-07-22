@@ -1,5 +1,5 @@
 plugins {
-	id("fabric-loom") version "1.17-SNAPSHOT"
+	id("net.fabricmc.fabric-loom-remap") version "1.17-SNAPSHOT"
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 	id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
@@ -226,11 +226,8 @@ tasks {
 	}
 
 	jar {
-		val projectName = project.name
-		inputs.property("projectName", projectName)
-
 		from("LICENSE") {
-			rename { "${it}_$projectName" }
+			rename { "${it}_${base.archivesName.get()}" }
 		}
 	}
 }
