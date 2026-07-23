@@ -27,9 +27,6 @@ val trinketsUpdated = "${property("trinkets_updated_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
 
 repositories {
-	// Trinkets
-	maven("https://maven.terraformersmc.com/")
-
 	exclusiveContent {
 		forRepository {
 			maven("https://cursemaven.com")
@@ -139,7 +136,7 @@ dependencies {
 
 	// Trinkets
 	if (trinkets) {
-		compileOnly("dev.emi:trinkets:${property("trinkets_version")}")
+		compileOnly("maven.modrinth:trinkets:${property("trinkets_version")}")
 		if (stonecutter.current.project == "1.20.2") {
 			compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0")
 		}
