@@ -33,12 +33,13 @@ val galosphere = "${property("galosphere_version")}" != "[VERSIONED]"
 val resourceBackpacks = "${property("resource_backpacks_version")}" != "[VERSIONED]"
 val backpacked = "${property("backpacked_version")}" != "[VERSIONED]"
 val nemosBackpacks = "${property("nemos_backpacks_version")}" != "[VERSIONED]"
-val trinkets = "${property("trinkets_version")}" != "[VERSIONED]"
-val trinketsCanary = "${property("trinkets_canary_version")}" != "[VERSIONED]"
+val trinkets = "${property("trinkets_version")}" != "[VERSIONED]" && "${property("cca_version")}" != "[VERSIONED]"
+val trinketsCanary = "${property("trinkets_canary_version")}" != "[VERSIONED]" && "${property("cca_version")}" != "[VERSIONED]"
 val trinketsUpdated = "${property("trinkets_updated_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
 
 repositories {
+	// Backpacked
 	exclusiveContent {
 		forRepository {
 			maven("https://cursemaven.com")
@@ -65,7 +66,7 @@ repositories {
 		maven("https://maven.shedaniel.me/")
 	}
 
-	// Core, Trinkets Canary, Galosphere, Resource Backpacks, Nemo's Backpacks
+	// Core, Trinkets, Trinkets Canary, Galosphere, Resource Backpacks, Nemo's Backpacks
 	exclusiveContent {
 		forRepository {
 			maven("https://api.modrinth.com/maven")
@@ -160,26 +161,16 @@ dependencies {
 
 	// Trinkets
 	if (trinkets) {
-		modCompileOnly("maven.modrinth:trinkets:${property("trinkets_version")}")
-		if (stonecutter.current.project == "1.20.2") {
-			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0")
-		}
+		compileOnly("maven.modrinth:trinkets:${property("trinkets_version")}")
+		compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${property("cca_version")}")
+
 	} else if (trinketsCanary) {
-		modCompileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
-		val ccaVersion = when (stonecutter.current.project) {
-			"1.21.4" -> "6.2.2"
-			"1.21.5" -> "6.3.1"
-			"1.21.6" -> "7.0.0-beta.1"
-			"1.21.9" -> "7.2.0"
-			"1.21.11" -> "7.3.0"
-			else -> "null"
-		}
-		if (ccaVersion != "null") {
-			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${ccaVersion}")
-			modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${ccaVersion}")
-		}
+		compileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
+		compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${property("cca_version")}")
+		compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${property("cca_version")}")
+
 	} else if (trinketsUpdated) {
-		modCompileOnly("eu.pb4:trinkets:${property("trinkets_updated_version")}")
+		compileOnly("eu.pb4:trinkets:${property("trinkets_updated_version")}")
 	}
 }
 
