@@ -170,16 +170,16 @@ dependencies {
 
 	// Trinkets
 	if (trinkets) {
-		compileOnly("dev.emi:trinkets:${property("trinkets_version")}")
-		compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${property("cca_version")}")
+		modCompileOnly("dev.emi:trinkets:${property("trinkets_version")}")
+		modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${property("cca_version")}")
 
 	} else if (trinketsCanary) {
-		compileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
-		compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${property("cca_version")}")
-		compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${property("cca_version")}")
+		modCompileOnly("maven.modrinth:trinkets-canary:${property("trinkets_canary_version")}")
+		modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${property("cca_version")}")
+		modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${property("cca_version")}")
 
 	} else if (trinketsUpdated) {
-		compileOnly("eu.pb4:trinkets:${property("trinkets_updated_version")}")
+		modCompileOnly("eu.pb4:trinkets:${property("trinkets_updated_version")}")
 	}
 }
 
