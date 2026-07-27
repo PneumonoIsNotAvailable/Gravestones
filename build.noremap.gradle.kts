@@ -27,6 +27,9 @@ val trinketsUpdated = "${property("trinkets_updated_version")}" != "[VERSIONED]"
 val accessories = "${property("accessories_version")}" != "[VERSIONED]" && "${property("owo_version")}" != "[VERSIONED]"
 
 repositories {
+	// Mod Menu, Trinkets
+	maven("https://maven.terraformersmc.com/")
+
 	// Backpacked
 	exclusiveContent {
 		forRepository {
@@ -109,6 +112,9 @@ dependencies {
 	// Core mod
 	implementation("maven.modrinth:pneumono_core:${property("core_version")}")
 
+	// ModMenu
+	runtimeOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
+
 	// Galosphere
 	if (galosphere) {
 		compileOnly("maven.modrinth:galosphere:${property("galosphere_version")}")
@@ -137,7 +143,7 @@ dependencies {
 
 	// Trinkets
 	if (trinkets) {
-		compileOnly("maven.modrinth:trinkets:${property("trinkets_version")}")
+		compileOnly("dev.emi:trinkets:${property("trinkets_version")}")
 		compileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${property("cca_version")}")
 
 	} else if (trinketsCanary) {
