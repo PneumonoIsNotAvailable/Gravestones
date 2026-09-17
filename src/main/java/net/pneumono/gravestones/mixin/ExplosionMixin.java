@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Explosion.class)
-public abstract class ExplosionMixin {
+public /*? if >=26.3 {*/interface/*?} else {*//*abstract class*//*?}*/ ExplosionMixin {
     //? if <1.20.3 {
     /*@ModifyVariable(method = "finalizeExplosion", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
     private BlockState modifyAffectedBlocks(BlockState old) {
