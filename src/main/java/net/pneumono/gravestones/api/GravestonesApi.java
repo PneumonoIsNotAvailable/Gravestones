@@ -65,6 +65,8 @@ public class GravestonesApi {
 
     /**
      * Registers a type of data that gravestones save, and how gravestones should handle that data.
+     *
+     * <p>The namespace of the identifier should be the namespace of the mod registering the data type, for easier debugging.
      */
     public static void registerDataType(Identifier identifier, GravestoneDataType dataType) {
         DATA_TYPES.put(identifier, dataType);
