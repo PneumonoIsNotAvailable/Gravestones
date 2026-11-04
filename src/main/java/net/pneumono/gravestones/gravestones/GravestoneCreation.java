@@ -151,7 +151,11 @@ public class GravestoneCreation extends GravestoneManager {
     }
 
     private static void insertGravestoneContents(ServerLevel level, Player player, BlockPos gravestonePos, CompoundTag contents) {
-        if (!(level.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone)) return;
+        if (!(level.getBlockEntity(gravestonePos) instanceof TechnicalGravestoneBlockEntity gravestone)) {
+            error("Gravestone Block Entity at ({}) could not be accessed. Dropping Gravestone contents on floor...", gravestonePos.toShortString());
+            GravestonesApi.onBreak(level, gravestonePos, 0, contents);
+            return;
+        }
 
         gravestone.setContents(contents);
         gravestone.setGraveOwner(new GraveOwner(player.getGameProfile()));
