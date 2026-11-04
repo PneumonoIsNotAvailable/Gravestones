@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.pneumono.gravestones.api.GravestonesApi;
 import net.pneumono.gravestones.compat.*;
 import net.pneumono.gravestones.content.GravestonesApiUsages;
 import net.pneumono.gravestones.content.GravestonesCommands;
@@ -70,6 +71,14 @@ public class Gravestones implements ModInitializer {
 		if (!usingAccessories && (isModLoaded("trinkets") || isModLoaded("trinkets_updated"))) {
 			TrinketsCompat.register();
 		}
+
+		GravestonesApi.addSkippedEnchantment(VersionUtil.createId("enderio", "soulbound"));
+		GravestonesApi.addSkippedEnchantment(VersionUtil.createId("alessandrvenchantments", "soulbound"));
+		GravestonesApi.addSkippedEnchantment(VersionUtil.createId("enchantery", "soulbound"));
+		GravestonesApi.addSkippedEnchantment(VersionUtil.createId("enderzoology", "soulbound"));
+		GravestonesApi.addSkippedEnchantment(VersionUtil.createId("soulbound", "soulbound"));
+		GravestonesApi.addSkippedEnchantment(VersionUtil.createId("soulbound_enchantment", "soulbound"));
+		GravestonesApi.addSkippedEnchantment(VersionUtil.createId("bagofholding", "preservation"));
 	}
 
 	private static boolean isModLoaded(String id) {

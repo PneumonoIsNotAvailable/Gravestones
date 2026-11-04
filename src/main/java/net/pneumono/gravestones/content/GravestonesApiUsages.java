@@ -41,14 +41,6 @@ public class GravestonesApiUsages {
         GravestonesApi.registerDataType(Gravestones.id("inventory"), new PlayerInventoryDataType());
         GravestonesApi.registerDataType(Gravestones.id("experience"), new ExperienceDataType());
 
-        GravestonesApi.addSkippedEnchantment(VersionUtil.createId("enderio", "soulbound"));
-        GravestonesApi.addSkippedEnchantment(VersionUtil.createId("alessandrvenchantments", "soulbound"));
-        GravestonesApi.addSkippedEnchantment(VersionUtil.createId("enchantery", "soulbound"));
-        GravestonesApi.addSkippedEnchantment(VersionUtil.createId("enderzoology", "soulbound"));
-        GravestonesApi.addSkippedEnchantment(VersionUtil.createId("soulbound", "soulbound"));
-        GravestonesApi.addSkippedEnchantment(VersionUtil.createId("soulbound_enchantment", "soulbound"));
-        GravestonesApi.addSkippedEnchantment(VersionUtil.createId("bagofholding", "preservation"));
-
         GravestoneContentsEvents.registerSkipItem(Gravestones.id("tag_skip"), (player, itemStack, slot) ->
                 itemStack.is(GravestonesApi.ITEM_SKIPS_GRAVESTONES) ||
                 //? if >=1.21 {
