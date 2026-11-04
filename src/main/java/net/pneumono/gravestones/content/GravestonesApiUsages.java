@@ -47,6 +47,7 @@ public class GravestonesApiUsages {
         GravestonesApi.addSkippedEnchantment(VersionUtil.createId("enderzoology", "soulbound"));
         GravestonesApi.addSkippedEnchantment(VersionUtil.createId("soulbound", "soulbound"));
         GravestonesApi.addSkippedEnchantment(VersionUtil.createId("soulbound_enchantment", "soulbound"));
+        GravestonesApi.addSkippedEnchantment(VersionUtil.createId("bagofholding", "preservation"));
 
         GravestoneContentsEvents.registerSkipItem(Gravestones.id("tag_skip"), (player, itemStack, slot) ->
                 itemStack.is(GravestonesApi.ITEM_SKIPS_GRAVESTONES) ||

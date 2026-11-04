@@ -23,6 +23,10 @@
         {
             "id": "soulbound_enchantment:soulbound",
             "required": false
+        },
+        {
+            "id": "bagofholding:preservation",
+            "required": false
         }
     ]
 }
