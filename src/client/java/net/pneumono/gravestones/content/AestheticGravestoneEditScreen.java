@@ -56,7 +56,11 @@ public class AestheticGravestoneEditScreen extends Screen {
     public static final int TEXT_WIDTH = 86;
     private static final int TEXT_LINE_HEIGHT = 14;
     protected final AestheticGravestoneBlockEntity blockEntity;
-    private SignText text;
+    //? if >=26.3 {
+    private final SignText.Mutable text;
+    //?} else {
+    /*private SignText text;
+    *///?}
     private final String[] messages;
     private int ticksSinceOpened;
     private int currentRow;
@@ -67,8 +71,14 @@ public class AestheticGravestoneEditScreen extends Screen {
     public AestheticGravestoneEditScreen(AestheticGravestoneBlockEntity blockEntity, boolean filtered) {
         super(Component.translatable("gravestones.edit_text"));
         this.blockEntity = blockEntity;
-        this.text = blockEntity.getText();
-        this.messages = IntStream.range(0, 4).mapToObj(line -> this.text.getMessage(line, filtered)).map(Component::getString).toArray(String[]::new);
+        this.text = blockEntity.getText()/*? if >=26.3 {*/.asMutable()/*?}*/;
+        this.messages = IntStream.range(0, 4).mapToObj(
+                //? if >=26.3 {
+                line -> this.blockEntity.getText().getMessages(filtered).get(line)
+                //?} else {
+                /*line -> this.text.getMessage(line, filtered)
+                *///?}
+        ).map(Component::getString).toArray(String[]::new);
         Level level = blockEntity.getLevel();
         Block block;
         if (level != null) {
@@ -105,6 +115,9 @@ public class AestheticGravestoneEditScreen extends Screen {
                 TextFieldHelper.createClipboardSetter(this.minecraft),
                 string -> this.minecraft.font.width(string) <= TEXT_WIDTH
         );
+        //? if >=26.3 {
+        this.minecraft.textInputManager().startTextInput(this);
+        //?}
     }
 
     @Override
@@ -263,7 +276,8 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     private void renderGravestoneText(/*? if >=26.1 {*/GuiGraphicsExtractor/*?} else {*//*GuiGraphics*//*?}*/ context) {
-        int color = this.text.hasGlowingText() ? this.text.getColor().getTextColor() : /*? if >=1.21.4 {*/AbstractSignRenderer.getDarkColor(this.text)/*?} else {*//*SignRenderer.getDarkColor(this.text)*//*?}*/;
+        SignText signText = /*? if >=26.3 {*/this.text.asImmutable()/*?} else {*//*this.text*//*?}*/;
+        int color = signText.hasGlowingText() ? signText.getColor().getTextColor() : /*? if >=1.21.4 {*/AbstractSignRenderer.getDarkColor(signText)/*?} else {*//*SignRenderer.getDarkColor(signText)*//*?}*/;
         boolean shouldFlashCursor = this.ticksSinceOpened / 6 % 2 == 0;
         Objects.requireNonNull(this.selectionManager);
         int selectionStart = this.selectionManager.getCursorPos();
@@ -320,9 +334,18 @@ public class AestheticGravestoneEditScreen extends Screen {
     }
 
     private void setCurrentRowMessage(String message) {
-        this.messages[this.currentRow] = message;
+        //? if >=26.3 {
+        String currentMessage = this.messages[this.currentRow];
+        if (!currentMessage.equals(message)) {
+            this.messages[this.currentRow] = message;
+            this.text.setLine(this.currentRow, Component.literal(message));
+            this.blockEntity.setText(this.text.asImmutable());
+        }
+        //?} else {
+        /*this.messages[this.currentRow] = message;
         this.text = this.text.setMessage(this.currentRow, Component.literal(message));
         this.blockEntity.setText(this.text);
+        *///?}
     }
 
     private void finishEditing() {

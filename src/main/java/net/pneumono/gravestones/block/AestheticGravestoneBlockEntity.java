@@ -71,7 +71,11 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     protected SignText createText() {
-        return new SignText();
+        //? if >=26.3 {
+        return SignText.EMPTY;
+        //?} else {
+        /*return new SignText();
+        *///?}
     }
 
     //? if >=1.21.6 {
@@ -81,7 +85,15 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
         if (!this.headStack.isEmpty()) {
             view.store("head", ItemStack.CODEC, this.headStack);
         }
-        view.store("text", SignText.DIRECT_CODEC, this.text);
+        view.store(
+                "text",
+                //? if >=26.3 {
+                SignText.CODEC,
+                //?} else {
+                /*SignText.DIRECT_CODEC,
+                *///?}
+                this.text
+        );
         view.putBoolean("is_waxed", this.waxed);
     }
 
@@ -89,7 +101,14 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     public void loadAdditional(ValueInput view) {
         super.loadAdditional(view);
         this.headStack = view.read("head", ItemStack.CODEC).orElse(ItemStack.EMPTY);
-        this.text = view.read("text", SignText.DIRECT_CODEC).map(this::parseLines).orElseGet(SignText::new);
+        this.text = view.read(
+                "text",
+                //? if >=26.3 {
+                SignText.CODEC
+                //?} else {
+                /*SignText.DIRECT_CODEC
+                *///?}
+        ).map(this::parseLines).orElseGet(this::createText);
         this.waxed = view.getBooleanOr("is_waxed", false);
     }
     //?} else if >=1.20.5 {
@@ -168,9 +187,15 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
     private SignText parseLines(SignText signText) {
         for (int i = 0; i < 4; ++i) {
-            Component text = this.parseLine(signText.getMessage(i, false));
+            //? if >=26.3 {
+            Component text = this.parseLine(signText.getMessages(false).get(i));
+            Component text2 = this.parseLine(signText.getMessages(false).get(i));
+            signText = signText.asMutable().setLine(i, text, text2).asImmutable();
+            //?} else {
+            /*Component text = this.parseLine(signText.getMessage(i, false));
             Component text2 = this.parseLine(signText.getMessage(i, true));
             signText = signText.setMessage(i, text, text2);
+            *///?}
         }
         return signText;
     }
@@ -206,12 +231,21 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     private SignText getTextWithMessages(Player player, List<FilteredText> messages, SignText text) {
         for (int i = 0; i < messages.size(); i++) {
             FilteredText filteredMessage = messages.get(i);
-            Style style = text.getMessage(i, player.isTextFilteringEnabled()).getStyle();
+            //? if >=26.3 {
+            Style style = text.getMessages(player.isTextFilteringEnabled()).get(i).getStyle();
+            if (player.isTextFilteringEnabled()) {
+                text = text.asMutable().setLine(i, Component.literal(filteredMessage.filteredOrEmpty()).setStyle(style)).asImmutable();
+            } else {
+                text = text.asMutable().setLine(i, Component.literal(filteredMessage.raw()).setStyle(style), Component.literal(filteredMessage.filteredOrEmpty()).setStyle(style)).asImmutable();
+            }
+            //?} else {
+            /*Style style = text.getMessage(i, player.isTextFilteringEnabled()).getStyle();
             if (player.isTextFilteringEnabled()) {
                 text = text.setMessage(i, Component.literal(filteredMessage.filteredOrEmpty()).setStyle(style));
             } else {
                 text = text.setMessage(i, Component.literal(filteredMessage.raw()).setStyle(style), Component.literal(filteredMessage.filteredOrEmpty()).setStyle(style));
             }
+            *///?}
         }
 
         return text;
@@ -242,13 +276,25 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
     }
 
     private static CommandSourceStack createCommandSource(@Nullable Player player, Level level, BlockPos pos) {
-        String string = player == null ? "Gravestone" : player.getName().getString();
+        //? if >=26.3 {
+        return player == null ? new CommandSourceStack(
+                CommandSource.NULL, Vec3.atCenterOf(pos), Vec2.ZERO, (ServerLevel) level,
+                /*? if >=1.21.11 {*/LevelBasedPermissionSet.GAMEMASTER/*?} else {*//*2*//*?}*/,
+                Component.literal("Gravestone"), level.getServer()
+        ) : new CommandSourceStack(
+                CommandSource.NULL, Vec3.atCenterOf(pos), Vec2.ZERO, (ServerLevel) level,
+                /*? if >=1.21.11 {*/LevelBasedPermissionSet.GAMEMASTER/*?} else {*//*2*//*?}*/,
+                level.getServer(), player
+        );
+        //?} else {
+        /*String string = player == null ? "Gravestone" : player.getName().getString();
         Component text = player == null ? Component.literal("Gravestone") : player.getDisplayName();
         return new CommandSourceStack(
                 CommandSource.NULL, Vec3.atCenterOf(pos), Vec2.ZERO, (ServerLevel) level,
-                /*? if >=1.21.11 {*/LevelBasedPermissionSet.GAMEMASTER/*?} else {*//*2*//*?}*/,
+                /^? if >=1.21.11 {^/LevelBasedPermissionSet.GAMEMASTER/^?} else {^//^2^//^?}^/,
                 string, text, level.getServer(), player
         );
+        *///?}
     }
 
     public boolean isPlayerTooFarToEdit(UUID uuid) {

@@ -106,13 +106,17 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
         poseStack.pushPose();
 
         poseStack.translate(0.5F, 0.0F, 0.5F);
-        int rotation = switch (/*? if >=1.21.9 {*/state.direction/*?} else {*//*entity.getGravestoneDirection()*//*?}*/) {
+        //? if >=26.3 {
+        poseStack.rotate(Axis.YP.rotationDegrees(180 - state.direction.toYRot()));
+        //?} else {
+        /*int rotation = switch (/^? if >=1.21.9 {^/state.direction/^?} else {^//^entity.getGravestoneDirection()^//^?}^/) {
             case DOWN, UP, NORTH -> 0;
             case WEST -> 90;
             case SOUTH -> 180;
             case EAST -> 270;
         };
         poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        *///?}
         poseStack.translate(-0.5F, 0.0F, -0.5F);
 
         //? if >=1.21.9 {
@@ -133,7 +137,12 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
     *///?}
         poseStack.pushPose();
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        //? if >=26.3 {
+        poseStack.rotate(Axis.YP.rotationDegrees(180));
+        //?} else {
+        /*poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        *///?}
+
         poseStack.scale(0.0625F, -0.0625F, 0.0625F);
         poseStack.translate(-8, -14, -11.95);
 
@@ -262,7 +271,11 @@ public abstract class AbstractGravestoneBlockEntityRenderer<T extends AbstractGr
         skullState.xRot = pitch;
         skullState.animationPos = 0.0F;
         model.setupAnim(skullState);
-        queue.submitModel(model, skullState, poseStack, renderLayer, info.lightCoords, OverlayTexture.NO_OVERLAY, 0, info.breakProgress);
+        queue.submitModel(
+                model, skullState, poseStack, renderLayer, info.lightCoords, OverlayTexture.NO_OVERLAY, 0
+                //? if <26.3
+                //, info.breakProgress
+        );
     }
     //?} else {
     /*public void renderHeadModel(PoseStack poseStack, SkullModelBase model, VertexConsumer vertexConsumer, float yaw, float pitch, int light) {

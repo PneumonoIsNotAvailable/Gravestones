@@ -67,7 +67,13 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "gravestones:gravestone_damaged"
+        //? if >=26.3 {
+        "recipes": [
+          "gravestones:gravestone_damaged"
+        ],
+        //?} else {
+        /*"recipe": "gravestones:gravestone_damaged"
+        *///?}
       },
       "trigger": "minecraft:recipe_unlocked"
     }

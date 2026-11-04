@@ -42,14 +42,14 @@ public class TechnicalGravestoneBlock extends AbstractGravestoneBlock {
         super(settings);
     }
 
-    //? if >=1.20.3 {
-    public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.simpleCodec(TechnicalGravestoneBlock::new);
+    //? if >=1.20.3 && <26.3 {
+    /*public static final MapCodec<TechnicalGravestoneBlock> CODEC = TechnicalGravestoneBlock.simpleCodec(TechnicalGravestoneBlock::new);
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
-    //?}
+    *///?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

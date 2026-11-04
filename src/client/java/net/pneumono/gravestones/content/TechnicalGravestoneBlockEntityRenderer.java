@@ -14,6 +14,7 @@ import net.pneumono.gravestones.multiversion.GraveOwner;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 //? if >=1.21.11 {
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -44,12 +45,21 @@ public class TechnicalGravestoneBlockEntityRenderer extends AbstractGravestoneBl
     @Override
     public SignText getSignText(TechnicalGravestoneBlockEntity entity) {
         GraveOwner graveOwner = entity.getGraveOwner();
-        Component[] messages = new Component[]{
+        //? if >=26.3 {
+        List<Component> messages = List.of(
+                Component.literal(graveOwner == null ? "???" : graveOwner.getNotNullName()),
+                Component.literal(getGravestoneTimeLines(entity,true)),
+                Component.literal(getGravestoneTimeLines(entity,false)),
+                Component.empty()
+        );
+        //?} else {
+        /*Component[] messages = new Component[]{
                 Component.literal(graveOwner == null ? "???" : graveOwner.getNotNullName()),
                 Component.literal(getGravestoneTimeLines(entity,true)),
                 Component.literal(getGravestoneTimeLines(entity,false)),
                 Component.empty()
         };
+        *///?}
 
         return new SignText(messages, messages, DyeColor.BLACK, false);
     }

@@ -20,6 +20,9 @@ import net.pneumono.gravestones.multiversion.VersionUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+//? if >=26.3
+import net.minecraft.util.Prediction;
+
 public class PlayerInventoryDataType extends GravestoneDataType {
     private static final String KEY = "inventory";
 
@@ -39,7 +42,14 @@ public class PlayerInventoryDataType extends GravestoneDataType {
                     list.add(result.result().get());
                 } else {
                     Gravestones.LOGGER.error("Failed to serialize item {} for gravestone: {}", stackToSave, result.error().get().message());
-                    player.drop(stackToSave, true, false);
+                    player.drop(
+                            stackToSave, true,
+                            //? if >=26.3 {
+                            Prediction.PREDICTED
+                            //?} else {
+                            /*false
+                            *///?}
+                    );
                 }
             }
         }
