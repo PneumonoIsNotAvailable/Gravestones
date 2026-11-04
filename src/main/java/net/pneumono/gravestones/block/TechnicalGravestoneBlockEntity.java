@@ -111,10 +111,10 @@ public class TechnicalGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
         this.contents = VersionUtil.get(ops, tag, "contents", CompoundTag.CODEC).orElse(new CompoundTag());
         this.setGraveOwner(VersionUtil.get(ops, tag, "owner", GraveOwner.CODEC).orElse(null));
-        this.spawnDateTime = tag.getString("spawnDateTime")/^? if >=1.21.5 {^//^.orElse(null)^//^?}^/;
-        this.spawnDateTicks = tag.getLong("spawnDateTicks")/^? if >=1.21.5 {^//^.orElse(0L)^//^?}^/;
-        this.deathDamage = tag.getInt("deathDamage")/^? if >=1.21.5 {^//^.orElse(0)^//^?}^/;
-        this.ageDamage = tag.getInt("ageDamage")/^? if >=1.21.5 {^//^.orElse(0)^//^?}^/;
+        this.spawnDateTime = tag.getString("spawnDateTime")/^? if >=1.21.5 {^/.orElse(null)/^?}^/;
+        this.spawnDateTicks = tag.getLong("spawnDateTicks")/^? if >=1.21.5 {^/.orElse(0L)/^?}^/;
+        this.deathDamage = tag.getInt("deathDamage")/^? if >=1.21.5 {^/.orElse(0)/^?}^/;
+        this.ageDamage = tag.getInt("ageDamage")/^? if >=1.21.5 {^/.orElse(0)/^?}^/;
     }
     *///?} else {
     /*@Override

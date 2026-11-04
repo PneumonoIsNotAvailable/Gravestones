@@ -131,7 +131,7 @@ public class AestheticGravestoneBlockEntity extends AbstractGravestoneBlockEntit
 
         this.headStack = VersionUtil.get(ops, tag, "head", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         this.text = VersionUtil.get(ops, tag, "text", SignText.DIRECT_CODEC).map(this::parseLines).orElseGet(SignText::new);
-        this.waxed = tag.getBoolean("is_waxed")/^? if >=1.21.5 {^//^.orElse(false)^//^?}^/;
+        this.waxed = tag.getBoolean("is_waxed")/^? if >=1.21.5 {^/.orElse(false)/^?}^/;
     }
     *///?} else {
     /*@Override

@@ -42,13 +42,13 @@ import io.wispforest.accessories.impl.ExpandedSimpleContainer;
 
 //? if >=1.21.9 {
 import io.wispforest.accessories.misc.AccessoriesGameRules;
-//?} else if >=1.21.4 {
+//?} else {
 /^import io.wispforest.accessories.Accessories;
 ^///?}
 
 //? if >=1.21.11 {
 import net.minecraft.world.level.gamerules.GameRules;
-//?} else >=1.21.4 {
+//?} else {
 /^import net.minecraft.world.level.GameRules;
 ^///?}
 
@@ -63,10 +63,10 @@ public class AccessoriesDataType extends GravestoneDataType {
         MinecraftServer server = player.level().getServer();
         //? if >=1.21.9 {
         GameRules.Key<GameRules.BooleanValue> gameRule = AccessoriesGameRules.RULE_KEEP_ACCESSORY_INVENTORY;
-        //?} else if >=1.21.4 {
+        //?} else {
         /^GameRules.Key<GameRules.BooleanValue> gameRule = Accessories.RULE_KEEP_ACCESSORY_INVENTORY;
         ^///?}
-        if (server == null /^? if >=1.21.4 {^/|| server.getGameRules().getBoolean(gameRule)/^?}^/) {
+        if (server == null || server.getGameRules().getBoolean(gameRule)) {
             return;
         }
 
