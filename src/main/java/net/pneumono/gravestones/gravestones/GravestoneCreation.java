@@ -172,9 +172,9 @@ public class GravestoneCreation extends GravestoneManager {
         int attempts = 0;
         while (pos != prevPos) {
             attempts++;
-            if (attempts > 100) {
-                error("100 RedirectPosition attempts changed the gravestone position. This is likely the result of an infinite loop!");
-                break;
+            if (attempts > 10) {
+                warn("10 RedirectPosition attempts changed the gravestone position. Forcing placement at death position...");
+                return deathPos;
             }
 
             prevPos = pos;

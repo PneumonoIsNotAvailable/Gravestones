@@ -17,10 +17,58 @@ import net.pneumono.gravestones.api.event.GravestonePlacementEvents;
 import net.pneumono.gravestones.multiversion.VersionUtil;
 import org.jetbrains.annotations.Nullable;
 
-// Everything here is a mess, and will be improved soon!
 public class GravestonePlacement extends GravestoneManager {
     public static final int RADIUS = 2;
 
+    public static GlobalPos shiftToValidPos(ServerLevel level, GlobalPos deathPos) {
+        if (level.getServer().getLevel(deathPos.dimension()) == null) return null;
+
+        DimensionType dimension = level.dimensionType();
+        BlockPos pos = deathPos.pos().atY(
+                Mth.clamp(deathPos.pos().getY(), dimension.minY(), dimension.minY() + dimension.height())
+        );
+
+        double bestCost = Double.MAX_VALUE;
+        BlockPos bestOffsetPos = null;
+        for (int x = -RADIUS; x <= RADIUS; ++x) for (int y = -RADIUS; y <= RADIUS; ++y) for (int z = -RADIUS; z <= RADIUS; ++z) {
+            BlockPos offsetPos = pos.offset(x, y, z);
+            BlockState state = level.getBlockState(offsetPos);
+            double cost = getCost(level, state, offsetPos, pos);
+            if (cost < bestCost) {
+                bestCost = cost;
+                bestOffsetPos = offsetPos;
+            }
+        }
+
+        return VersionUtil.createGlobalPos(deathPos.dimension(), bestOffsetPos == null ? pos : bestOffsetPos);
+    }
+
+    public static double getCost(ServerLevel level, BlockState state, BlockPos pos, BlockPos origin) {
+        if (
+                !GravestonePlacementEvents.invokeValidatePosition(level, state, pos) || !DeprecatedEventHandler.positionValidationCallback(level, state, pos)
+        ) {
+            return Double.MAX_VALUE;
+        }
+
+        double cost = 0;
+        if (!state.getFluidState().isEmpty()) {
+            if (state.getFluidState().is(FluidTags.WATER)) {
+                cost += 1.5;
+            } else {
+                cost += 5;
+            }
+        }
+        if (!state.isAir()) cost += state.canBeReplaced() ? 0.5 : 5;
+        if (level.getBlockState(pos.below()).canBeReplaced()) cost += 1.5;
+
+        if (level.getBlockEntity(pos) != null) cost += 3;
+
+        cost += pos.distSqr(origin);
+
+        return cost;
+    }
+
+    @Deprecated(forRemoval = true)
     public static GlobalPos getPlacementPos(ServerLevel level, GlobalPos deathPos) {
         DimensionType dimension = level.dimensionType();
         GlobalPos clampedDeathPos = VersionUtil.createGlobalPos(deathPos.dimension(), deathPos.pos().atY(
@@ -46,6 +94,7 @@ public class GravestonePlacement extends GravestoneManager {
         }
     }
 
+    @Deprecated(forRemoval = true)
     public static GlobalPos getNewRedirectableValidPos(ServerLevel level, GlobalPos pos) {
         BlockPos validPos = getNewValidPos(level, pos.pos(), RADIUS);
         if (validPos == null) {
@@ -84,6 +133,7 @@ public class GravestonePlacement extends GravestoneManager {
     }
 
     @Nullable
+    @Deprecated(forRemoval = true)
     public static BlockPos getNewValidPos(ServerLevel level, BlockPos originalPos, int radius) {
         if (getNewCost(level, originalPos, originalPos) == 0) {
             return originalPos;
@@ -144,6 +194,7 @@ public class GravestonePlacement extends GravestoneManager {
         return cost;
     }
 
+    @Deprecated(forRemoval = true)
     private static double getNewCost(ServerLevel level, BlockPos newPos, BlockPos origin) {
         BlockState state = level.getBlockState(newPos);
         if (

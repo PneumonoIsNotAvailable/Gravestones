@@ -64,7 +64,7 @@ public class GravestonesApiUsages {
                     ServerLevel level = server.getLevel(pos.dimension());
                     if (level == null) return pos;
 
-                    return GravestonePlacement.getPlacementPos(level, pos);
+                    return GravestonePlacement.shiftToValidPos(level, pos);
                 }
         );
 
