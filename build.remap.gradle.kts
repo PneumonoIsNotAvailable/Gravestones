@@ -30,6 +30,7 @@ base.archivesName.set(project.property("mod_id") as String)
 version = "${project.property("mod_version")}+${stonecutter.current.project}+${property("mod_subversion")}"
 
 val galosphere = "${property("galosphere_version")}" != "[VERSIONED]"
+val inventorio = "${property("inventorio_version")}" != "[VERSIONED]"
 val resourceBackpacks = "${property("resource_backpacks_version")}" != "[VERSIONED]"
 val backpacked = "${property("backpacked_version")}" != "[VERSIONED]"
 val nemosBackpacks = "${property("nemos_backpacks_version")}" != "[VERSIONED]"
@@ -103,6 +104,7 @@ loom {
 
 stonecutter {
 	constants["galosphere"] = galosphere
+	constants["inventorio"] = inventorio
 	constants["resource_backpacks"] = resourceBackpacks
 	constants["backpacked"] = backpacked
 	constants["nemos_backpacks"] = nemosBackpacks
@@ -145,6 +147,11 @@ dependencies {
 	// Galosphere
 	if (galosphere) {
 		modCompileOnly("maven.modrinth:galosphere:${property("galosphere_version")}")
+	}
+
+	// Inventorio
+	if (inventorio) {
+		compileOnly("maven.modrinth:inventorio:${property("inventorio_version")}")
 	}
 
 	// Resource Backpacks

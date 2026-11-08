@@ -48,6 +48,10 @@ public class Gravestones implements ModInitializer {
 			GalosphereCompat.register();
 		}
 
+		if (isModLoaded("inventorio")) {
+			InventorioCompat.register();
+		}
+
 		if (isModLoaded("resource_backpacks")) {
 			ResourceBackpacksCompat.register();
 		}
