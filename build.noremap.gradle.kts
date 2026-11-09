@@ -246,7 +246,7 @@ publishMods {
 		}
 	}
 
-	if (stonecutter.current.project == "26.2") {
+	if (stonecutter.current.project == "26.3") {
 		discord {
 			webhookUrl = discordToken
 
