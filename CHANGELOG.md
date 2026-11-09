@@ -1,6 +1,9 @@
-- Added Trinkets support to 26.2
-- Added Nemo's Backpacks support to 26.1 and 26.2
-- Changed Aesthetic Gravestones to only require Wooden Pickaxes and break faster
-- Changed implementation of PlayerInventoryDataType to drop items if serialization fails (renwixx)
-- Fixed Trinkets Updated not being detected in certain versions
-- Fixed some compatibility issues with Trinkets in >=26.1
+- Added support for 26.3.X
+- Added support for Inventorio
+- Added support for Bag of Holding
+- Changed Gravestone placement behavior slightly
+- Changed Gravestone behavior when it cannot find the Gravestone Block Entity
+  - Items will now be dropped on the floor in these situations instead of voided
+  - This most commonly occurs when dying on contraptions from Create. A proper fix will be implemented in the future
+- Fixed Gravestones being placed 200 blocks away when dying in the void
+- Fixed Accessories' Keep Inventory gamerule not being respected in certain versions
