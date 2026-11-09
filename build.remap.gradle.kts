@@ -173,6 +173,11 @@ dependencies {
 	if (accessories) {
 		modCompileOnly("io.wispforest:accessories-fabric:${property("accessories_version")}")
 		modCompileOnly("io.wispforest:owo-lib:${property("owo_version")}")
+		if (stonecutter.current.project == "1.20") {
+			modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:14.0.125") {
+				exclude("net.fabricmc.fabric-api")
+			}
+		}
 	}
 
 	// Trinkets
