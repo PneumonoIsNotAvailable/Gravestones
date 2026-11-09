@@ -55,20 +55,22 @@ import net.minecraft.world.level.gamerules.GameRules;
 public class AccessoriesDataType extends GravestoneDataType {
     private static final String KEY = "accessories";
 
-    //? if >=1.21.4 {
     @SuppressWarnings("UnstableApiUsage")
-    //?}
     @Override
     public void writeData(CompoundTag tag, DynamicOps<Tag> ops, Player player) throws Exception {
         MinecraftServer server = player.level().getServer();
+        if (server == null) return;
         //? if >=1.21.9 {
         GameRules.Key<GameRules.BooleanValue> gameRule = AccessoriesGameRules.RULE_KEEP_ACCESSORY_INVENTORY;
-        //?} else {
-        /^GameRules.Key<GameRules.BooleanValue> gameRule = Accessories.RULE_KEEP_ACCESSORY_INVENTORY;
-        ^///?}
-        if (server == null || server.getGameRules().getBoolean(gameRule)) {
+        if (server.getGameRules().getBoolean(gameRule)) {
             return;
         }
+        //?} else if !=1.21.2 {
+        /^GameRules.Key<GameRules.BooleanValue> gameRule = Accessories.RULE_KEEP_ACCESSORY_INVENTORY;
+        if (server.getGameRules().getBoolean(gameRule)) {
+            return;
+        }
+        ^///?}
 
         AccessoriesCapability capability = AccessoriesCapability.get(player);
         if (capability == null) {
