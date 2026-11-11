@@ -64,15 +64,14 @@ public class Gravestones implements ModInitializer {
 			BackpackedCompat.register();
 		}
 
-		// Accessories' Compat Layers exist, so to prevent issues Gravestones will prioritize Accessories directly over other mods
-		boolean usingAccessories = false;
-
 		if (isModLoaded("accessories")) {
 			AccessoriesCompat.register();
-			usingAccessories = true;
 		}
 
-		if (!usingAccessories && (isModLoaded("trinkets") || isModLoaded("trinkets_updated"))) {
+		// Accessories' Trinkets Compat Layer ("tclayer", also provided by "accessories_compat_layer") stores Trinkets
+		// items in Accessories slots, which AccessoriesCompat already handles. Only skip Trinkets compat in that case,
+		// so packs running the real Trinkets mod alongside Accessories still have their Trinkets slots saved
+		if (!isModLoaded("tclayer") && (isModLoaded("trinkets") || isModLoaded("trinkets_updated"))) {
 			TrinketsCompat.register();
 		}
 
